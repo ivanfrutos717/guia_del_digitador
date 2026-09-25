@@ -1,0 +1,58 @@
+<!DOCTYPE html> <!-- Declaración HTML5 -->
+<html lang="es"> <!-- Idioma del documento -->
+<head>
+    <meta charset="UTF-8"> <!-- Codificación universal -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsividad -->
+    <title>Menú Principal - Guía del Digitador</title> <!-- Título -->
+    <link rel="stylesheet" href="style.css"> <!-- Estilos globales -->
+</head>
+<body>
+
+    <!-- Contenedor principal del menú -->
+    <div class="menu-container">
+        <h1>GUÍA DEL DIGITADOR (beta 1)</h1>
+        <h2>Seleccione una Herramienta</h2>
+
+        <div class="menu-grid">
+            <a href="index.html" class="opcion-card">
+                <h3>Calculadora de Vencimientos</h3>
+                <p>Cálculo de fechas límite de pago para facturas.</p>
+                <span class="estado activo">Disponible</span>
+            </a>
+
+            <div class="opcion-card deshabilitado">
+                <h3>Próximamente</h3>
+                <p>Nueva herramienta en desarrollo.</p>
+                <span class="estado pendiente">En Construcción</span>
+            </div>
+
+            <div class="opcion-card deshabilitado">
+                <h3>Próximamente</h3>
+                <p>Nueva herramienta en desarrollo.</p>
+                <span class="estado pendiente">En Construcción</span>
+            </div>
+        </div>
+
+        <a href="login.html" class="btn-salir">Cerrar Sesión</a>
+    </div>
+
+    <!-- Pie de página con firma y panel de colores -->
+    <footer>
+        <div class="desarrollado-by">Desarrollado by: Ivan Frutos</div>
+        
+        <div class="panel-colores">
+            <div class="control-color">
+                <label for="pickerFondo">Fondo:</label>
+                <input type="color" id="pickerFondo" value="#0b0b0d">
+            </div>
+            <div class="control-color">
+                <label for="pickerPrincipal">Acento:</label>
+                <input type="color" id="pickerPrincipal" value="#dc2626">
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cargador de temas -->
+    <script src="temas.js"></script>
+</body>
+</html>

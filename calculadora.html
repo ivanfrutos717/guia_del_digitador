@@ -1,0 +1,52 @@
+<!DOCTYPE html> <!-- Declaración de estándar HTML5 -->
+<html lang="es"> <!-- Idioma español -->
+<head>
+    <meta charset="UTF-8"> <!-- Caracteres universales -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Adaptación móvil -->
+    <title>Calculadora de Vencimientos</title> <!-- Título -->
+    <link rel="stylesheet" href="style.css"> <!-- Estilos del proyecto -->
+</head>
+<body>
+
+    <!-- Tarjeta principal de la calculadora -->
+    <div class="card">
+        <h1>GUÍA DEL DIGITADOR (BETA 1)</h1>
+        <h2>Vencimiento de Factura</h2>
+
+        <label for="fechaEmision">FECHA DE EMISIÓN:</label>
+        <input type="date" id="fechaEmision" required>
+
+        <label for="diasPlazo">DÍAS DE PLAZO:</label>
+        <input type="number" id="diasPlazo" placeholder="Ej: 31" min="1" required>
+
+        <button id="btnCalcular" type="button">Calcular Vencimiento</button>
+
+        <div class="resultado-box">
+            <span>FECHA LÍMITE DE PAGO</span>
+            <h3 id="fechaResultado">-- / --- / ----</h3>
+        </div>
+
+        <a href="menu.html" class="btn-salir" style="margin-top: 20px; text-align: center;">Volver al Menú</a>
+    </div>
+
+    <!-- Pie de página con firma y panel de temas -->
+    <footer>
+        <div class="desarrollado-by">Desarrollado by: Ivan Frutos</div>
+        
+        <div class="panel-colores">
+            <div class="control-color">
+                <label for="pickerFondo">Fondo:</label>
+                <input type="color" id="pickerFondo" value="#0b0b0d">
+            </div>
+            <div class="control-color">
+                <label for="pickerPrincipal">Acento:</label>
+                <input type="color" id="pickerPrincipal" value="#dc2626">
+            </div>
+        </div>
+    </footer>
+
+    <!-- Carga de scripts -->
+    <script src="temas.js"></script>
+    <script src="calculadora.js"></script>
+</body>
+</html>

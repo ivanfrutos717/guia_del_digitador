@@ -1,0 +1,329 @@
+/* Importación de tipografías desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&display=swap');
+
+/* Variables globales de color personalizables mediante JavaScript */
+:root {
+    --color-fondo: #0b0b0d; /* Color de fondo general de la aplicación */
+    --color-tarjeta: #141417; /* Fondo de las tarjetas y contenedores */
+    --color-principal: #dc2626; /* Color de acento para títulos y bordes brillantes */
+    --color-boton: #991b1b; /* Color primario para botones */
+}
+
+/* Estilos globales para la estructura principal del fondo y alineación centradora */
+body {
+    font-family: 'Cinzel', serif; /* Aplica la tipografía predeterminada */
+    background-color: var(--color-fondo); /* Utiliza la variable de fondo */
+    color: #ffffff; /* Establece el color de texto en blanco */
+    margin: 0; /* Elimina márgenes por defecto del navegador */
+    min-height: 100vh; /* Define la altura mínima al 100% de la pantalla */
+    display: flex; /* Activa el modelo Flexbox para centrar contenido */
+    flex-direction: column; /* Organiza elementos de arriba hacia abajo */
+    justify-content: center; /* Centra el contenido verticalmente */
+    align-items: center; /* Centra el contenido horizontalmente */
+    padding: 20px; /* Relleno externo de seguridad */
+    box-sizing: border-box; /* Previene desbordamiento de pantalla */
+}
+
+/* Estilos compartidos para el formulario de login y la tarjeta de la calculadora */
+form, .card {
+    background-color: var(--color-tarjeta); /* Fondo dinamizado mediante variable */
+    padding: 45px 35px; /* Espaciado interno superior e inferior / lateral */
+    border-radius: 8px; /* Bordes redondeados */
+    border: 1px solid #2d0a0a; /* Borde sutil en tono rojo oscuro */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(185, 28, 28, 0.15); /* Sombra exterior */
+    width: 340px; /* Ancho fijo del contenedor */
+    box-sizing: border-box; /* Incluye padding y bordes dentro del tamaño total */
+    display: flex; /* Flexbox interno */
+    flex-direction: column; /* Organiza los elementos verticales uno debajo de otro */
+}
+
+/* Estilos para el título principal GUÍA DEL DIGITADOR */
+h1 {
+    font-family: 'Cinzel Decorative', serif; /* Tipografía para el título principal */
+    color: #ffffff; /* Color del texto en blanco */
+    font-size: 20px; /* Tamaño de letra */
+    text-align: center; /* Centra el texto horizontalmente */
+    margin-top: 0; /* Remueve el margen superior */
+    margin-bottom: 15px; /* Margen inferior hacia el siguiente elemento */
+    letter-spacing: 2px; /* Espaciado entre caracteres */
+    text-transform: uppercase; /* Fuerza la conversión del texto a mayúsculas */
+}
+
+/* Estilos para los subtítulos h2 */
+h2 {
+    font-family: 'Cinzel Decorative', serif; /* Tipografía con diseño */
+    color: var(--color-principal); /* Utiliza el color principal configurable */
+    font-size: 16px; /* Tamaño de letra */
+    margin: 0 0 25px 0; /* Margen inferior de separación */
+    text-align: center; /* Centrado del texto */
+    letter-spacing: 1px; /* Espaciado entre letras */
+}
+
+/* Estilos para las etiquetas descriptivas */
+label {
+    font-size: 11px; /* Tamaño pequeño para etiquetas */
+    color: #a1a1aa; /* Tono de gris claro */
+    margin-bottom: 6px; /* Separación respecto al input inferior */
+    letter-spacing: 1px; /* Espaciado de letras */
+}
+
+/* Estilos aplicados a todos los campos de entrada de texto, número y contraseña */
+input {
+    font-family: Arial, sans-serif; /* Fuente legible para datos ingresados */
+    width: 100%; /* Ocupa el 100% del ancho disponible */
+    padding: 12px 15px; /* Relleno interno */
+    margin-bottom: 15px; /* Separación inferior entre campos */
+    background-color: #08080a; /* Fondo negro de los campos */
+    border: 1px solid #2a2a30; /* Borde gris oscuro */
+    border-radius: 4px; /* Bordes levemente redondeados */
+    color: #ffffff; /* Texto escrito en color blanco */
+    font-size: 14px; /* Tamaño de la letra escrita */
+    box-sizing: border-box; /* Previene el desbordamiento de ancho */
+    outline: none; /* Elimina el contorno predeterminado del navegador */
+    transition: border-color 0.3s; /* Transición suave para efectos visuales */
+}
+
+/* Adaptación del selector de fecha al modo oscuro */
+input[type="date"] {
+    color-scheme: dark; /* Adapta el ícono del calendario al esquema oscuro */
+}
+
+/* Efecto al seleccionar o enfocar un campo de texto */
+input:focus {
+    border-color: var(--color-principal); /* Borde cambia al color de acento */
+    box-shadow: 0 0 10px rgba(185, 28, 28, 0.4); /* Resplandor al enfocar */
+}
+
+/* Estilos para el botón de acción */
+button {
+    font-family: 'Cinzel', serif; /* Tipografía para el botón */
+    width: 100%; /* Ancho completo */
+    padding: 12px; /* Relleno interno */
+    background-color: var(--color-boton); /* Fondo asignado desde la variable */
+    color: #ffffff; /* Texto en blanco */
+    border: 1px solid var(--color-principal); /* Borde acentuado */
+    border-radius: 4px; /* Esquinas redondeadas */
+    font-size: 14px; /* Tamaño de letra */
+    font-weight: 600; /* Grosor de letra seminegrita */
+    letter-spacing: 2px; /* Espaciado entre caracteres */
+    cursor: pointer; /* Cambia el cursor a puntero al pasar por encima */
+    transition: background-color 0.3s; /* Transición para efecto hover */
+    margin-top: 10px; /* Margen superior */
+}
+
+/* Efecto visual al pasar el cursor sobre el botón */
+button:hover {
+    background-color: var(--color-principal); /* Cambia al tono principal al pasar cursor */
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); /* Intensifica la sombra luminosa */
+}
+
+/* Estilo para el mensaje de error de inicio de sesión */
+#mensajeError {
+    font-family: Arial, sans-serif; /* Fuente estándar para lectura clara */
+    font-size: 12px; /* Tamaño pequeño */
+    margin-top: 15px; /* Espaciado superior */
+    margin-bottom: 0; /* Remueve margen inferior */
+    text-align: center; /* Texto centrado */
+}
+
+/* Caja receptora donde se muestra el resultado en la calculadora */
+.resultado-box {
+    margin-top: 25px; /* Distancia superior con respecto al botón */
+    padding: 15px; /* Espaciado interno */
+    background-color: #08080a; /* Fondo muy oscuro */
+    border: 1px solid #2d0a0a; /* Borde rojo oscuro */
+    border-radius: 4px; /* Esquinas redondeadas */
+    text-align: center; /* Alineación del contenido al centro */
+}
+
+/* Etiqueta del título dentro de la caja de resultado */
+.resultado-box span {
+    font-size: 10px; /* Texto compacto */
+    color: #a1a1aa; /* Color gris */
+    letter-spacing: 1px; /* Espaciado de letras */
+}
+
+/* Texto grande de la fecha de vencimiento calculada */
+.resultado-box h3 {
+    color: var(--color-principal); /* Texto destacado según color elegido */
+    margin: 8px 0 0 0; /* Margen superior de separación */
+    font-size: 22px; /* Tamaño de letra grande */
+    font-weight: 700; /* Letra negrita */
+}
+
+/* Contenedor del menú principal */
+.menu-container {
+    background-color: var(--color-tarjeta); /* Fondo de tarjeta personalizable */
+    padding: 40px; /* Espaciado interior general */
+    border-radius: 8px; /* Bordes suavemente redondeados */
+    border: 1px solid #2d0a0a; /* Borde rojo oscuro */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(185, 28, 28, 0.15); /* Sombra exterior */
+    max-width: 900px; /* Ancho máximo adaptable */
+    width: 90%; /* Ocupa el 90% del ancho de pantalla */
+    box-sizing: border-box; /* Incluye bordes dentro del tamaño total */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Alinea los elementos verticalmente */
+    align-items: center; /* Centra los hijos horizontalmente */
+}
+
+/* Cuadrícula para tarjetas del menú */
+.menu-grid {
+    display: grid; /* Activa la maquetación CSS Grid */
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Columnas responsivas */
+    gap: 20px; /* Espacio entre tarjetas */
+    width: 100%; /* Ancho completo */
+    margin-bottom: 30px; /* Espaciado inferior */
+}
+
+/* Tarjeta individual del menú */
+.opcion-card {
+    background-color: #08080a; /* Fondo negro profundo */
+    border: 1px solid #2a2a30; /* Borde gris oscuro */
+    border-radius: 6px; /* Bordes redondeados */
+    padding: 25px 20px; /* Relleno interno */
+    text-decoration: none; /* Quita subrayado de enlaces */
+    color: #ffffff; /* Texto en blanco */
+    display: flex; /* Flexbox */
+    flex-direction: column; /* Contenido vertical */
+    justify-content: space-between; /* Distribuye espacio proporcionalmente */
+    transition: all 0.3s ease; /* Transición suave */
+    box-sizing: border-box; /* Mantiene proporciones */
+}
+
+/* Efecto hover sobre tarjetas activas */
+.opcion-card:not(.deshabilitado):hover {
+    border-color: var(--color-principal); /* Cambia borde según tema */
+    transform: translateY(-5px); /* Elevación sutil */
+    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3); /* Resplandor */
+}
+
+/* Título dentro de las tarjetas */
+.opcion-card h3 {
+    font-family: 'Cinzel Decorative', serif; /* Tipografía temática */
+    font-size: 15px; /* Tamaño de texto */
+    color: #ffffff; /* Texto en blanco */
+    margin: 0 0 10px 0; /* Margen inferior */
+}
+
+/* Descripción de tarjetas */
+.opcion-card p {
+    font-family: Arial, sans-serif; /* Fuente de lectura */
+    font-size: 12px; /* Tamaño compacto */
+    color: #a1a1aa; /* Color gris */
+    margin: 0 0 15px 0; /* Margen inferior */
+    line-height: 1.4; /* Altura de línea */
+}
+
+/* Etiquetas de estado */
+.estado {
+    font-family: Arial, sans-serif; /* Fuente estándar */
+    font-size: 10px; /* Tamaño pequeño */
+    font-weight: bold; /* Negrita */
+    letter-spacing: 1px; /* Espaciado */
+    text-transform: uppercase; /* Mayúsculas */
+    padding: 4px 8px; /* Padding interno */
+    border-radius: 3px; /* Bordes redondeados */
+    align-self: flex-start; /* Alinea a la izquierda */
+}
+
+/* Estado disponible */
+.estado.activo {
+    background-color: rgba(220, 38, 38, 0.2); /* Fondo transparente */
+    color: #f87171; /* Texto rojo claro */
+    border: 1px solid var(--color-principal); /* Borde acentuado */
+}
+
+/* Estado pendiente */
+.estado.pendiente {
+    background-color: rgba(255, 255, 255, 0.05); /* Fondo neutro */
+    color: #71717a; /* Texto gris */
+    border: 1px solid #3f3f46; /* Borde tenue */
+}
+
+/* Opción no disponible */
+.opcion-card.deshabilitado {
+    opacity: 0.5; /* Opacidad reducida */
+    cursor: not-allowed; /* Cursor bloqueado */
+}
+
+/* Botón de retorno o salida */
+.btn-salir {
+    font-family: 'Cinzel', serif; /* Tipografía temática */
+    color: #a1a1aa; /* Texto gris */
+    text-decoration: none; /* Sin subrayado */
+    font-size: 12px; /* Tamaño pequeño */
+    letter-spacing: 1px; /* Espaciado entre letras */
+    transition: color 0.3s ease; /* Transición */
+    border: 1px solid #2a2a30; /* Borde sutil */
+    padding: 8px 20px; /* Padding interior */
+    border-radius: 4px; /* Redondeado */
+}
+
+/* Hover en botón de salida */
+.btn-salir:hover {
+    color: #ffffff; /* Texto en blanco */
+    border-color: var(--color-principal); /* Borde temático */
+    background-color: rgba(220, 38, 38, 0.1); /* Fondo leve */
+}
+
+/* ==========================================================================
+   ESTILOS PARA PIE DE PÁGINA (FOOTER) Y PANEL DE PERSONALIZACIÓN
+   ========================================================================== */
+
+/* Pie de página en letras pequeñas */
+footer {
+    margin-top: 25px; /* Distancia respecto al contenedor superior */
+    text-align: center; /* Alineación del texto al centro */
+}
+
+.desarrollado-by {
+    font-family: Arial, sans-serif; /* Fuente ligera para texto informativo */
+    font-size: 11px; /* Tamaño de letra pequeño */
+    color: #71717a; /* Tono de gris suave */
+    letter-spacing: 1px; /* Espaciado entre caracteres */
+    text-transform: uppercase; /* Convertido a mayúsculas */
+}
+
+/* Panel desplegable/flotante para personalizar colores */
+.panel-colores {
+    margin-top: 15px; /* Separación respecto a la firma */
+    display: flex; /* Flexbox horizontal */
+    gap: 15px; /* Separación entre selectores */
+    align-items: center; /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
+    background-color: var(--color-tarjeta); /* Fondo sincronizado */
+    padding: 8px 15px; /* Relleno compacto */
+    border-radius: 20px; /* Bordes completamente redondeados tipo píldora */
+    border: 1px solid #2a2a30; /* Borde gris sutil */
+}
+
+.control-color {
+    display: flex; /* Alinea ícono/texto junto al selector */
+    align-items: center; /* Centra elementos verticalmente */
+    gap: 6px; /* Separación entre etiqueta e input */
+    font-family: Arial, sans-serif; /* Fuente neutra */
+    font-size: 10px; /* Texto compacto */
+    color: #a1a1aa; /* Color de texto suave */
+}
+
+/* Cajas circulares seleccionables de color */
+.control-color input[type="color"] {
+    -webkit-appearance: none; /* Elimina apariencia por defecto en Chrome/Safari */
+    border: none; /* Remueve borde por defecto */
+    width: 20px; /* Ancho de la burbuja */
+    height: 20px; /* Altura de la burbuja */
+    border-radius: 50%; /* Transforma la caja en un círculo perfecto */
+    cursor: pointer; /* Cursor selector */
+    background: none; /* Quita fondo */
+    padding: 0; /* Remueve padding por defecto */
+}
+
+/* Elimina el borde interno que agrega Chrome a los inputs de color */
+.control-color input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.control-color input[type="color"]::-webkit-color-swatch {
+    border: 1px solid #ffffff; /* Borde blanco fino en el círculo de color */
+    border-radius: 50%; /* Mantiene forma circular */
+}
