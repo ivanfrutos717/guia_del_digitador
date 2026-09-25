@@ -1,17 +1,20 @@
-<!DOCTYPE html> <!-- Declaración HTML5 -->
-<html lang="es"> <!-- Idioma del documento -->
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8"> <!-- Codificación universal -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsividad -->
-    <title>Menú Principal - Guía del Digitador</title> <!-- Título -->
-    <link rel="stylesheet" href="style.css"> <!-- Estilos globales -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal - Guía del Digitador</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Contenedor principal del menú -->
     <div class="menu-container">
-        <h1>GUÍA DEL DIGITADOR (beta 1)</h1>
-        <h2>Seleccione una Herramienta</h2>
+        <h1>GUÍA DEL DIGITADOR</h1>
+        
+        <!-- Saludo con estilo degradado -->
+        <h2 id="saludoUsuario" class="saludo-degradado">
+            ¡Bienvenido!
+        </h2>
 
         <div class="menu-grid">
             <a href="calculadora.html" class="opcion-card">
@@ -33,10 +36,9 @@
             </div>
         </div>
 
-        <a href="index.html" class="btn-salir">Cerrar Sesión</a>
+        <a href="index.html" class="btn-salir" id="btnCerrarSesion">Cerrar Sesión</a>
     </div>
 
-    <!-- Pie de página con firma y panel de colores -->
     <footer>
         <div class="desarrollado-by">Desarrollado by: Ivan Frutos</div>
         
@@ -52,7 +54,38 @@
         </div>
     </footer>
 
-    <!-- Cargador de temas -->
     <script src="temas.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuarioGuardado = localStorage.getItem('usuarioActivo');
+            const saludoElemento = document.getElementById('saludoUsuario');
+
+            if (usuarioGuardado) {
+                const nombreFormateado = usuarioGuardado.charAt(0).toUpperCase() + usuarioGuardado.slice(1);
+                saludoElemento.textContent = `¡Bienvenido, ${nombreFormateado}!`;
+            }
+
+            /* Mantiene el saludo visible 3 segundos y luego aplica la animación para desaparecer */
+            setTimeout(function() {
+                if (saludoElemento) {
+                    saludoElemento.classList.add('saludo-oculto');
+                    
+                    /* Remueve el elemento del flujo visual completamente tras la transición de 1s */
+                    setTimeout(function() {
+                        saludoElemento.style.display = 'none';
+                    }, 1000);
+                }
+            }, 3000); /* 3000 ms = 3 segundos visible */
+
+            /* Manejo de cierre de sesión */
+            const btnSalir = document.getElementById('btnCerrarSesion');
+            if (btnSalir) {
+                btnSalir.addEventListener('click', function() {
+                    localStorage.removeItem('usuarioActivo');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
