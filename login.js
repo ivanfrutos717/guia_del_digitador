@@ -39,7 +39,10 @@ formLogin.addEventListener('submit', function(event) {
 
     /* Estructura condicional que evalúa la variable de acceso */
     if (accesoConcedido) {
-        /* CAMBIO AQUÍ: Redirige hacia el nuevo menú de opciones */
+        /* Guarda el nombre ingresado en localStorage para mostrarlo en el menú */
+        localStorage.setItem('usuarioActivo', inputUsuario.value.trim());
+
+        /* Redirige hacia el nuevo menú de opciones */
         window.location.href = "menu.html";
     } else {
         /* Despliega mensaje de advertencia en caso de datos inválidos */
