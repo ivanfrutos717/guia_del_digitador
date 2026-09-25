@@ -1,7 +1,7 @@
 /* Matriz de objetos que contiene los credenciales de acceso predeterminados */
 const usuariosPermitidos = [
     { usuario: "Ivan", clave: "220606" }, /* Usuario 1 */
-    { usuario: "maria", clave: "5678" },  /* Usuario 2 */
+    { usuario: "Ulises", clave: "QWERTY12345" },  /* Usuario 2 */
     { usuario: "admin", clave: "0000" }   /* Usuario 3 */
 ];
 
