@@ -11,24 +11,27 @@
     <div class="menu-container">
         <h1>GUÍA DEL DIGITADOR</h1>
         
-        <!-- Saludo con estilo degradado -->
+        <!-- Saludo -->
         <h2 id="saludoUsuario" class="saludo-degradado">
             ¡Bienvenido!
         </h2>
 
         <div class="menu-grid">
+            <!-- TARJETA 1: CALCULADORA -->
             <a href="calculadora.html" class="opcion-card">
                 <h3>Calculadora de Vencimientos</h3>
                 <p>Cálculo de fechas límite de pago para facturas.</p>
                 <span class="estado activo">Disponible</span>
             </a>
 
-            <div class="opcion-card deshabilitado">
-                <h3>Próximamente</h3>
-                <p>Nueva herramienta en desarrollo.</p>
-                <span class="estado pendiente">En Construcción</span>
-            </div>
+            <!-- TARJETA 2: CADASTRO AUTOMÁTICO -->
+            <a href="cadastro.html" class="opcion-card">
+                <h3>Cadastro Automático</h3>
+                <p>Escaneo EAN, consulta con IA y crea descripciones para productos (en desarrollo).</p>
+                <span class="estado activo">Disponible</span>
+            </a>
 
+            <!-- TARJETA 3: PRÓXIMAMENTE -->
             <div class="opcion-card deshabilitado">
                 <h3>Próximamente</h3>
                 <p>Nueva herramienta en desarrollo.</p>
@@ -58,27 +61,63 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const usuarioGuardado = localStorage.getItem('usuarioActivo');
+            // 1. OBTENER Y MOSTRAR NOMBRE DE USUARIO
             const saludoElemento = document.getElementById('saludoUsuario');
+            const usuarioGuardado = localStorage.getItem('usuarioActivo');
 
-            if (usuarioGuardado) {
-                const nombreFormateado = usuarioGuardado.charAt(0).toUpperCase() + usuarioGuardado.slice(1);
+            if (usuarioGuardado && usuarioGuardado.trim() !== '') {
+                const nombreLimpio = usuarioGuardado.replace(/["']/g, '');
+                const nombreFormateado = nombreLimpio.charAt(0).toUpperCase() + nombreLimpio.slice(1).toLowerCase();
                 saludoElemento.textContent = `¡Bienvenido, ${nombreFormateado}!`;
+            } else {
+                saludoElemento.textContent = '¡Bienvenido!';
             }
 
-            /* Mantiene el saludo visible 3 segundos y luego aplica la animación para desaparecer */
+            // Mantiene el saludo visible 3 segundos y luego se oculta
             setTimeout(function() {
                 if (saludoElemento) {
                     saludoElemento.classList.add('saludo-oculto');
-                    
-                    /* Remueve el elemento del flujo visual completamente tras la transición de 1s */
                     setTimeout(function() {
                         saludoElemento.style.display = 'none';
                     }, 1000);
                 }
-            }, 3000); /* 3000 ms = 3 segundos visible */
+            }, 3000);
 
-            /* Manejo de cierre de sesión */
+            // 2. PERSONALIZACIÓN DE COLORES DE ACENTO Y FONDO
+            const pickerFondo = document.getElementById('pickerFondo');
+            const pickerPrincipal = document.getElementById('pickerPrincipal');
+
+            const fondoGuardado = localStorage.getItem('colorFondo') || '#0b0b0d';
+            const acentoGuardado = localStorage.getItem('colorAcento') || '#dc2626';
+
+            aplicarColorFondo(fondoGuardado);
+            aplicarColorAcento(acentoGuardado);
+
+            if (pickerFondo) {
+                pickerFondo.value = fondoGuardado;
+                pickerFondo.addEventListener('input', (e) => aplicarColorFondo(e.target.value));
+            }
+
+            if (pickerPrincipal) {
+                pickerPrincipal.value = acentoGuardado;
+                pickerPrincipal.addEventListener('input', (e) => aplicarColorAcento(e.target.value));
+            }
+
+            function aplicarColorFondo(color) {
+                document.documentElement.style.setProperty('--color-fondo', color);
+                document.documentElement.style.setProperty('--bg-color', color);
+                document.body.style.backgroundColor = color;
+                localStorage.setItem('colorFondo', color);
+            }
+
+            function aplicarColorAcento(color) {
+                document.documentElement.style.setProperty('--color-acento', color);
+                document.documentElement.style.setProperty('--color-principal', color);
+                document.documentElement.style.setProperty('--accent-color', color);
+                localStorage.setItem('colorAcento', color);
+            }
+
+            // 3. BOTÓN DE SALIR
             const btnSalir = document.getElementById('btnCerrarSesion');
             if (btnSalir) {
                 btnSalir.addEventListener('click', function() {

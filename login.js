@@ -2,21 +2,21 @@
 const usuariosPermitidos = [
     { usuario: "Ivan", clave: "220606" }, 
     { usuario: "Ulises", clave: "QWERTY12345" },  
-    { usuario: "Mario", clave: "papoi" },              /* <--- Coma agregada */
-    { usuario: "Junior", clave: "gtafifa2008nfs" },    /* <--- Coma agregada */
+    { usuario: "Mario", clave: "papoi" }, 
+    { usuario: "Junior", clave: "gtafifa2008nfs" }, 
     { usuario: "monica", clave: "chefeechefenepai" }
 ];
 
 /* Referencias a los elementos del DOM en login.html */
-const formLogin = document.getElementById('formLogin'); /* Obtiene la etiqueta del formulario */
-const inputUsuario = document.getElementById('usuario'); /* Obtiene el campo de texto del usuario */
-const inputClave = document.getElementById('clave'); /* Obtiene el campo de texto de la contraseña */
-const mensajeError = document.getElementById('mensajeError'); /* Obtiene el párrafo para avisos */
+const formLogin = document.getElementById('formLogin');
+const inputUsuario = document.getElementById('usuario');
+const inputClave = document.getElementById('clave');
+const mensajeError = document.getElementById('mensajeError');
 
 /* Evento que escucha el momento en que el usuario intenta enviar el formulario */
 formLogin.addEventListener('submit', function(event) {
     
-    /* Detiene el envío por defecto para evitar que la página se recargue */
+    /* Detiene el envío por defecto */
     event.preventDefault();
 
     /* Convierte el texto del usuario a minúsculas y elimina espacios innecesarios */
@@ -25,35 +25,34 @@ formLogin.addEventListener('submit', function(event) {
     /* Almacena la contraseña escrita por el usuario tal cual fue ingresada */
     const claveEscrita = inputClave.value;
 
-    /* Variable de control para registrar la validez del acceso */
+    /* Variable de control y almacenamiento del usuario validado */
     let accesoConcedido = false;
+    let nombreUsuarioValidado = "";
 
     /* Ciclo que itera a través del listado de usuarios autorizados */
     for (let i = 0; i < usuariosPermitidos.length; i++) {
-        let cuenta = usuariosPermitidos[i]; /* Asigna la cuenta evaluada en el ciclo actual */
+        let cuenta = usuariosPermitidos[i];
 
-        /* Evalúa coincidencia sin distinguir mayúsculas/minúsculas en el usuario */
+        /* Evalúa coincidencia sin distinguir mayúsculas/minúsculas */
         if (cuenta.usuario.toLowerCase() === usuarioEscrito && cuenta.clave === claveEscrita) {
-            accesoConcedido = true; /* Marca la validación como exitosa */
-            break; /* Interrumpe la ejecución del ciclo al encontrar coincidencia */
+            accesoConcedido = true;
+            // Guardamos el nombre exactamente como está definido en el array (ej. "Ivan")
+            nombreUsuarioValidado = cuenta.usuario;
+            break;
         }
     }
 
     /* Estructura condicional que evalúa la variable de acceso */
     if (accesoConcedido) {
-        /* Guarda el nombre ingresado en localStorage para mostrarlo en el menú */
-        localStorage.setItem('usuarioActivo', inputUsuario.value.trim());
-
-        /* Redirige hacia el nuevo menú de opciones */
+        /* Guarda el nombre oficial del objeto en localStorage */
+        localStorage.setItem('usuarioActivo', nombreUsuarioValidado);
+        
+        /* Redirige hacia el menú de opciones */
         window.location.href = "menu.html";
     } else {
         /* Despliega mensaje de advertencia en caso de datos inválidos */
         mensajeError.textContent = "Usuario o contraseña incorrectos";
-        
-        /* Modifica el color del texto de la advertencia a rojo */
         mensajeError.style.color = "#dc2626";
-        
-        /* Blanquea el campo de contraseña para un nuevo intento */
         inputClave.value = "";
     }
 });

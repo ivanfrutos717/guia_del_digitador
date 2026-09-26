@@ -355,3 +355,569 @@ footer {
     transform: translateY(-10px); /* Ligero desplazamiento hacia arriba al desaparecer */
     pointer-events: none; /* Evita interferencias cuando ya no se ve */
 }
+/* ==========================================================================
+   ESTILOS HORIZONTALES PARA EL ASISTENTE DE CADASTRO (cadastro.html)
+   ========================================================================== */
+
+/* Contenedor amplio e imponente (horizontal) */
+.cadastro-container {
+    max-width: 2000px; /* Ampliado significativamente para abarcar la pantalla */
+    width: 92%;
+    margin: 25px auto;
+    padding: 35px 40px;
+}
+
+/* Encabezado */
+.header-herramienta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #27272a;
+}
+
+.btn-volver {
+    color: #a1a1aa;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+    color: #ffffff;
+    border-color: #3f3f46;
+    background-color: #27272a;
+}
+
+/* Badge Nube */
+.badge-nube {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.punto-estado {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.badge-nube.conectando {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid #f59e0b;
+}
+
+.badge-nube.conectando .punto-estado {
+    background-color: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+}
+
+.badge-nube.conectado {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid #10b981;
+}
+
+.badge-nube.conectado .punto-estado {
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.badge-nube.error {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid #ef4444;
+}
+
+.badge-nube.error .punto-estado {
+    background-color: #ef4444;
+}
+
+.titulo-seccion {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.titulo-seccion h1 {
+    font-size: 28px;
+    margin-bottom: 6px;
+    letter-spacing: 1.5px;
+}
+
+.subtitulo {
+    color: #a1a1aa;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   ESTILOS CORREGIDOS Y ALINEADOS PARA LOS PASOS (cadastro.html)
+   ========================================================================== */
+
+/* Bloques contenedores principales de cada paso */
+.bloque-paso {
+    background-color: #141417;
+    border: 1px solid #27272a;
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.encabezado-paso {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.num-paso {
+    background-color: var(--color-principal);
+    color: #ffffff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.encabezado-paso h2 {
+    font-size: 17px;
+    color: #f4f4f5;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.label-accesible {
+    display: block;
+    color: #d4d4d8;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* Formularios internos a ancho completo */
+.form-busqueda, 
+#formProducto {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* PASO 1: Grupo de Escaneo (Barra arriba, Botón abajo) */
+.input-escaneo-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.input-escaneo-group input {
+    width: 100% !important;
+    padding: 16px 20px;
+    background-color: #09090b;
+    border: 2px solid #3f3f46;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    outline: none;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease;
+}
+
+.input-escaneo-group input:focus {
+    border-color: var(--color-principal);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+.btn-primario {
+    background-color: var(--color-principal);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primario:hover {
+    filter: brightness(1.2);
+}
+
+.btn-primario:active {
+    transform: scale(0.98);
+}
+
+/* PASO 2: Grid de Atributos (4 Columnas Horizontales) */
+.grid-atributos {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 20px;
+}
+
+.campo-atributo {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.campo-atributo label {
+    display: block;
+    color: #a1a1aa;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.campo-atributo input {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 14px 16px;
+    background-color: #09090b;
+    border: 1.5px solid #27272a;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s ease;
+}
+
+.campo-atributo input:focus {
+    border-color: var(--color-principal);
+}
+
+.acciones-form {
+    text-align: right;
+    width: 100% !important;
+}
+
+.btn-exito {
+    background-color: #059669;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-exito:hover {
+    background-color: #10b981;
+}
+
+.btn-exito:active {
+    transform: scale(0.98);
+}
+
+/* PASO 3: Resultado de Descripción Formateada */
+.bloque-resultado {
+    background-color: #0d0d10;
+    border: 1.5px solid var(--color-principal);
+}
+
+.resultado-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.resultado-group input {
+    width: 100% !important;
+    padding: 16px 20px;
+    background-color: #18181b;
+    border: 1px solid #3f3f46;
+    border-radius: 8px;
+    color: #22c55e;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-sizing: border-box !important;
+}
+
+.btn-copiar {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box !important;
+    transition: background-color 0.2s ease;
+}
+
+.btn-copiar:not(:disabled):hover {
+    background-color: #3b82f6;
+}
+
+.btn-copiar:disabled {
+    background-color: #27272a;
+    color: #71717a;
+    cursor: not-allowed;
+}
+
+/* Adaptación táctil y responsiva */
+@media (max-width: 900px) {
+    .grid-atributos {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .grid-atributos {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* GRUPO ESCANEO: Barra encima del botón (Orientación vertical dentro del grupo) */
+.input-escaneo-group {
+    display: flex;
+    flex-direction: column; /* Coloca la barra arriba y el botón abajo */
+    gap: 100px;
+    width: 100%;
+}
+
+.input-escaneo-group input {
+    width: 100%; /* Ocupa todo el ancho horizontal disponible */
+    padding: 16px 20px;
+    background-color: #09090b;
+    border: 2px solid #3f3f46;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-escaneo-group input:focus {
+    border-color: var(--color-principal);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+.btn-primario {
+    background-color: var(--color-principal);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%; /* Botón amplio debajo de la barra */
+    transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primario:hover {
+    filter: brightness(1.2);
+}
+
+.btn-primario:active {
+    transform: scale(0.98);
+}
+
+/* Paneles de alerta */
+.panel-aviso {
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.panel-aviso.oculto {
+    display: none;
+}
+
+.panel-aviso.info {
+    background-color: rgba(59, 130, 246, 0.12);
+    color: #93c5fd;
+    border: 1px solid #3b82f6;
+}
+
+.panel-aviso.exito {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+    border: 1px solid #10b981;
+}
+
+.panel-aviso.sugerencia {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #fde047;
+    border: 1px solid #f59e0b;
+}
+
+/* GRID DE ATRIBUTOS: 4 columnas en pantalla ancha (Diseño puramente horizontal) */
+.grid-atributos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columnas perfectamente distribuidas */
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.campo-atributo label {
+    display: block;
+    color: #a1a1aa;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.campo-atributo input {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: #09090b;
+    border: 1.5px solid #27272a;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.campo-atributo input:focus {
+    border-color: var(--color-principal);
+}
+
+.acciones-form {
+    text-align: right;
+}
+
+.btn-exito {
+    background-color: #059669;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 36px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-exito:hover {
+    background-color: #10b981;
+}
+
+.btn-exito:active {
+    transform: scale(0.98);
+}
+
+/* RESULTADO FINAL: Barra arriba y botón debajo ocupando todo el ancho */
+.bloque-resultado {
+    background-color: #0d0d10;
+    border: 1.5px solid var(--color-principal);
+}
+
+.resultado-group {
+    display: flex;
+    flex-direction: column; /* Barra arriba y botón abajo */
+    gap: 15px;
+    width: 100%;
+}
+
+.resultado-group input {
+    width: 100%;
+    padding: 16px 20px;
+    background-color: #18181b;
+    border: 1px solid #3f3f46;
+    border-radius: 8px;
+    color: #22c55e;
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.btn-copiar {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-copiar:not(:disabled):hover {
+    background-color: #3b82f6;
+}
+
+.btn-copiar:disabled {
+    background-color: #27272a;
+    color: #71717a;
+    cursor: not-allowed;
+}
+
+/* Responsivo para tablets o pantallas pequeñas */
+@media (max-width: 900px) {
+    .grid-atributos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .grid-atributos {
+        grid-template-columns: 1fr;
+    }
+}
