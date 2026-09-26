@@ -2,8 +2,8 @@
 const usuariosPermitidos = [
     { usuario: "Ivan", clave: "220606" }, 
     { usuario: "Ulises", clave: "QWERTY12345" },  
-    { usuario: "Mario", clave: "papoi" } 
-    { usuario: "Junior", clave: "gtafifa2008nfs" }  
+    { usuario: "Mario", clave: "papoi" },              /* <--- Coma agregada */
+    { usuario: "Junior", clave: "gtafifa2008nfs" },    /* <--- Coma agregada */
     { usuario: "monica", clave: "chefeechefenepai" }
 ];
 
