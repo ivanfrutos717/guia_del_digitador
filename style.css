@@ -1,336 +1,373 @@
-/* Importación de tipografías desde Google Fonts */
+/* =========================================================
+   FUENTES
+   ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&display=swap');
 
-/* Variables globales de color personalizables mediante JavaScript */
+
+/* =========================================================
+   VARIABLES GLOBALES
+   ========================================================= */
 :root {
-    --color-fondo: #0b0b0d; /* Color de fondo general de la aplicación */
-    --color-tarjeta: #141417; /* Fondo de las tarjetas y contenedores */
-    --color-principal: #dc2626; /* Color de acento para títulos y bordes brillantes */
-    --color-boton: #991b1b; /* Color primario para botones */
+    --color-fondo: #0b0b0d;
+    --color-tarjeta: #141417;
+    --color-principal: #dc2626;
+    --color-boton: #991b1b;
 }
 
-/* Estilos globales para la estructura principal del fondo y alineación centradora */
+
+/* =========================================================
+   ESTILOS GLOBALES
+   ========================================================= */
 body {
-    font-family: 'Cinzel', serif; /* Aplica la tipografía predeterminada */
-    background-color: var(--color-fondo); /* Utiliza la variable de fondo */
-    color: #ffffff; /* Establece el color de texto en blanco */
-    margin: 0; /* Elimina márgenes por defecto del navegador */
-    min-height: 100vh; /* Define la altura mínima al 100% de la pantalla */
-    display: flex; /* Activa el modelo Flexbox para centrar contenido */
-    flex-direction: column; /* Organiza elementos de arriba hacia abajo */
-    justify-content: center; /* Centra el contenido verticalmente */
-    align-items: center; /* Centra el contenido horizontalmente */
-    padding: 20px; /* Relleno externo de seguridad */
-    box-sizing: border-box; /* Previene desbordamiento de pantalla */
+    font-family: 'Cinzel', serif;
+    background-color: var(--color-fondo);
+    color: #ffffff;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-/* Estilos compartidos para el formulario de login y la tarjeta de la calculadora */
-form, .card {
-    background-color: var(--color-tarjeta); /* Fondo dinamizado mediante variable */
-    padding: 45px 35px; /* Espaciado interno superior e inferior / lateral */
-    border-radius: 8px; /* Bordes redondeados */
-    border: 1px solid #2d0a0a; /* Borde sutil en tono rojo oscuro */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(185, 28, 28, 0.15); /* Sombra exterior */
-    width: 340px; /* Ancho fijo del contenedor */
-    box-sizing: border-box; /* Incluye padding y bordes dentro del tamaño total */
-    display: flex; /* Flexbox interno */
-    flex-direction: column; /* Organiza los elementos verticales uno debajo de otro */
+
+/* =========================================================
+   FORMULARIOS GENERALES Y TARJETAS
+   ========================================================= */
+form,
+.card {
+    background-color: var(--color-tarjeta);
+    padding: 45px 35px;
+    border-radius: 8px;
+    border: 1px solid #2d0a0a;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(185, 28, 28, 0.15);
+    width: 340px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Estilos para el título principal GUÍA DEL DIGITADOR */
+
+/* =========================================================
+   TÍTULOS
+   ========================================================= */
 h1 {
-    font-family: 'Cinzel Decorative', serif; /* Tipografía para el título principal */
-    color: #ffffff; /* Color del texto en blanco */
-    font-size: 20px; /* Tamaño de letra */
-    text-align: center; /* Centra el texto horizontalmente */
-    margin-top: 0; /* Remueve el margen superior */
-    margin-bottom: 15px; /* Margen inferior hacia el siguiente elemento */
-    letter-spacing: 2px; /* Espaciado entre caracteres */
-    text-transform: uppercase; /* Fuerza la conversión del texto a mayúsculas */
+    font-family: 'Cinzel Decorative', serif;
+    color: #ffffff;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-/* Estilos para los subtítulos h2 */
 h2 {
-    font-family: 'Cinzel Decorative', serif; /* Tipografía con diseño */
-    color: var(--color-principal); /* Utiliza el color principal configurable */
-    font-size: 16px; /* Tamaño de letra */
-    margin: 0 0 25px 0; /* Margen inferior de separación */
-    text-align: center; /* Centrado del texto */
-    letter-spacing: 1px; /* Espaciado entre letras */
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--color-principal);
+    font-size: 16px;
+    margin: 0 0 25px 0;
+    text-align: center;
+    letter-spacing: 1px;
 }
 
-/* Estilos para las etiquetas descriptivas */
+
+/* =========================================================
+   LABELS
+   ========================================================= */
 label {
-    font-size: 11px; /* Tamaño pequeño para etiquetas */
-    color: #a1a1aa; /* Tono de gris claro */
-    margin-bottom: 6px; /* Separación respecto al input inferior */
-    letter-spacing: 1px; /* Espaciado de letras */
+    font-size: 11px;
+    color: #a1a1aa;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
 }
 
-/* Estilos aplicados a todos los campos de entrada de texto, número y contraseña */
+
+/* =========================================================
+   INPUTS GENERALES
+   ========================================================= */
 input {
-    font-family: Arial, sans-serif; /* Fuente legible para datos ingresados */
-    width: 100%; /* Ocupa el 100% del ancho disponible */
-    padding: 12px 15px; /* Relleno interno */
-    margin-bottom: 15px; /* Separación inferior entre campos */
-    background-color: #08080a; /* Fondo negro de los campos */
-    border: 1px solid #2a2a30; /* Borde gris oscuro */
-    border-radius: 4px; /* Bordes levemente redondeados */
-    color: #ffffff; /* Texto escrito en color blanco */
-    font-size: 14px; /* Tamaño de la letra escrita */
-    box-sizing: border-box; /* Previene el desbordamiento de ancho */
-    outline: none; /* Elimina el contorno predeterminado del navegador */
-    transition: border-color 0.3s; /* Transición suave para efectos visuales */
+    font-family: Arial, sans-serif;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    background-color: #08080a;
+    border: 1px solid #2a2a30;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-/* Adaptación del selector de fecha al modo oscuro */
 input[type="date"] {
-    color-scheme: dark; /* Adapta el ícono del calendario al esquema oscuro */
+    color-scheme: dark;
 }
 
-/* Efecto al seleccionar o enfocar un campo de texto */
 input:focus {
-    border-color: var(--color-principal); /* Borde cambia al color de acento */
-    box-shadow: 0 0 10px rgba(185, 28, 28, 0.4); /* Resplandor al enfocar */
+    border-color: var(--color-principal);
+    box-shadow: 0 0 10px rgba(185, 28, 28, 0.4);
 }
 
-/* Estilos para el botón de acción */
+
+/* =========================================================
+   BOTONES GENERALES
+   ========================================================= */
 button {
-    font-family: 'Cinzel', serif; /* Tipografía para el botón */
-    width: 100%; /* Ancho completo */
-    padding: 12px; /* Relleno interno */
-    background-color: var(--color-boton); /* Fondo asignado desde la variable */
-    color: #ffffff; /* Texto en blanco */
-    border: 1px solid var(--color-principal); /* Borde acentuado */
-    border-radius: 4px; /* Esquinas redondeadas */
-    font-size: 14px; /* Tamaño de letra */
-    font-weight: 600; /* Grosor de letra seminegrita */
-    letter-spacing: 2px; /* Espaciado entre caracteres */
-    cursor: pointer; /* Cambia el cursor a puntero al pasar por encima */
-    transition: background-color 0.3s; /* Transición para efecto hover */
-    margin-top: 10px; /* Margen superior */
+    font-family: 'Cinzel', serif;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-boton);
+    color: #ffffff;
+    border: 1px solid var(--color-principal);
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
-/* Efecto visual al pasar el cursor sobre el botón */
 button:hover {
-    background-color: var(--color-principal); /* Cambia al tono principal al pasar cursor */
-    box-shadow: 0 0 15px rgba(220, 38, 38, 0.6); /* Intensifica la sombra luminosa */
+    background-color: var(--color-principal);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
 }
 
-/* Estilo para el mensaje de error de inicio de sesión */
+
+/* =========================================================
+   MENSAJE DE ERROR
+   ========================================================= */
 #mensajeError {
-    font-family: Arial, sans-serif; /* Fuente estándar para lectura clara */
-    font-size: 12px; /* Tamaño pequeño */
-    margin-top: 15px; /* Espaciado superior */
-    margin-bottom: 0; /* Remueve margen inferior */
-    text-align: center; /* Texto centrado */
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin-top: 15px;
+    margin-bottom: 0;
+    text-align: center;
 }
 
-/* Caja receptora donde se muestra el resultado en la calculadora */
+
+/* =========================================================
+   RESULTADO DE CALCULADORA
+   ========================================================= */
 .resultado-box {
-    margin-top: 25px; /* Distancia superior con respecto al botón */
-    padding: 15px; /* Espaciado interno */
-    background-color: #08080a; /* Fondo muy oscuro */
-    border: 1px solid #2d0a0a; /* Borde rojo oscuro */
-    border-radius: 4px; /* Esquinas redondeadas */
-    text-align: center; /* Alineación del contenido al centro */
+    margin-top: 25px;
+    padding: 15px;
+    background-color: #08080a;
+    border: 1px solid #2d0a0a;
+    border-radius: 4px;
+    text-align: center;
 }
 
-/* Etiqueta del título dentro de la caja de resultado */
 .resultado-box span {
-    font-size: 10px; /* Texto compacto */
-    color: #a1a1aa; /* Color gris */
-    letter-spacing: 1px; /* Espaciado de letras */
+    font-size: 10px;
+    color: #a1a1aa;
+    letter-spacing: 1px;
 }
 
-/* Texto grande de la fecha de vencimiento calculada */
 .resultado-box h3 {
-    color: var(--color-principal); /* Texto destacado según color elegido */
-    margin: 8px 0 0 0; /* Margen superior de separación */
-    font-size: 22px; /* Tamaño de letra grande */
-    font-weight: 700; /* Letra negrita */
+    color: var(--color-principal);
+    margin: 8px 0 0 0;
+    font-size: 22px;
+    font-weight: 700;
 }
 
-/* Contenedor del menú principal */
+
+/* =========================================================
+   MENÚ PRINCIPAL
+   ========================================================= */
 .menu-container {
-    background-color: var(--color-tarjeta); /* Fondo de tarjeta personalizable */
-    padding: 40px; /* Espaciado interior general */
-    border-radius: 8px; /* Bordes suavemente redondeados */
-    border: 1px solid #2d0a0a; /* Borde rojo oscuro */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(185, 28, 28, 0.15); /* Sombra exterior */
-    max-width: 900px; /* Ancho máximo adaptable */
-    width: 90%; /* Ocupa el 90% del ancho de pantalla */
-    box-sizing: border-box; /* Incluye bordes dentro del tamaño total */
-    display: flex; /* Flexbox */
-    flex-direction: column; /* Alinea los elementos verticalmente */
-    align-items: center; /* Centra los hijos horizontalmente */
+    background-color: var(--color-tarjeta);
+    padding: 40px;
+    border-radius: 8px;
+    border: 1px solid #2d0a0a;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(185, 28, 28, 0.15);
+    max-width: 900px;
+    width: 90%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Cuadrícula para tarjetas del menú */
+
+/* =========================================================
+   GRID DEL MENÚ
+   ========================================================= */
 .menu-grid {
-    display: grid; /* Activa la maquetación CSS Grid */
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Columnas responsivas */
-    gap: 20px; /* Espacio entre tarjetas */
-    width: 100%; /* Ancho completo */
-    margin-bottom: 30px; /* Espaciado inferior */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 30px;
 }
 
-/* Tarjeta individual del menú */
+
+/* =========================================================
+   TARJETAS DEL MENÚ
+   ========================================================= */
 .opcion-card {
-    background-color: #08080a; /* Fondo negro profundo */
-    border: 1px solid #2a2a30; /* Borde gris oscuro */
-    border-radius: 6px; /* Bordes redondeados */
-    padding: 25px 20px; /* Relleno interno */
-    text-decoration: none; /* Quita subrayado de enlaces */
-    color: #ffffff; /* Texto en blanco */
-    display: flex; /* Flexbox */
-    flex-direction: column; /* Contenido vertical */
-    justify-content: space-between; /* Distribuye espacio proporcionalmente */
-    transition: all 0.3s ease; /* Transición suave */
-    box-sizing: border-box; /* Mantiene proporciones */
+    background-color: #08080a;
+    border: 1px solid #2a2a30;
+    border-radius: 6px;
+    padding: 25px 20px;
+    text-decoration: none;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
-/* Efecto hover sobre tarjetas activas */
 .opcion-card:not(.deshabilitado):hover {
-    border-color: var(--color-principal); /* Cambia borde según tema */
-    transform: translateY(-5px); /* Elevación sutil */
-    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3); /* Resplandor */
+    border-color: var(--color-principal);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
 }
 
-/* Título dentro de las tarjetas */
 .opcion-card h3 {
-    font-family: 'Cinzel Decorative', serif; /* Tipografía temática */
-    font-size: 15px; /* Tamaño de texto */
-    color: #ffffff; /* Texto en blanco */
-    margin: 0 0 10px 0; /* Margen inferior */
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 15px;
+    color: #ffffff;
+    margin: 0 0 10px 0;
 }
 
-/* Descripción de tarjetas */
 .opcion-card p {
-    font-family: Arial, sans-serif; /* Fuente de lectura */
-    font-size: 12px; /* Tamaño compacto */
-    color: #a1a1aa; /* Color gris */
-    margin: 0 0 15px 0; /* Margen inferior */
-    line-height: 1.4; /* Altura de línea */
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #a1a1aa;
+    margin: 0 0 15px 0;
+    line-height: 1.4;
 }
 
-/* Etiquetas de estado */
+
+/* =========================================================
+   ESTADOS
+   ========================================================= */
 .estado {
-    font-family: Arial, sans-serif; /* Fuente estándar */
-    font-size: 10px; /* Tamaño pequeño */
-    font-weight: bold; /* Negrita */
-    letter-spacing: 1px; /* Espaciado */
-    text-transform: uppercase; /* Mayúsculas */
-    padding: 4px 8px; /* Padding interno */
-    border-radius: 3px; /* Bordes redondeados */
-    align-self: flex-start; /* Alinea a la izquierda */
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 3px;
+    align-self: flex-start;
 }
 
-/* Estado disponible */
 .estado.activo {
-    background-color: rgba(220, 38, 38, 0.2); /* Fondo transparente */
-    color: #f87171; /* Texto rojo claro */
-    border: 1px solid var(--color-principal); /* Borde acentuado */
+    background-color: rgba(220, 38, 38, 0.2);
+    color: #f87171;
+    border: 1px solid var(--color-principal);
 }
 
-/* Estado pendiente */
 .estado.pendiente {
-    background-color: rgba(255, 255, 255, 0.05); /* Fondo neutro */
-    color: #71717a; /* Texto gris */
-    border: 1px solid #3f3f46; /* Borde tenue */
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #71717a;
+    border: 1px solid #3f3f46;
 }
 
-/* Opción no disponible */
 .opcion-card.deshabilitado {
-    opacity: 0.5; /* Opacidad reducida */
-    cursor: not-allowed; /* Cursor bloqueado */
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-/* Botón de retorno o salida */
+
+/* =========================================================
+   BOTÓN SALIR
+   ========================================================= */
 .btn-salir {
-    font-family: 'Cinzel', serif; /* Tipografía temática */
-    color: #a1a1aa; /* Texto gris */
-    text-decoration: none; /* Sin subrayado */
-    font-size: 12px; /* Tamaño pequeño */
-    letter-spacing: 1px; /* Espaciado entre letras */
-    transition: color 0.3s ease; /* Transición */
-    border: 1px solid #2a2a30; /* Borde sutil */
-    padding: 8px 20px; /* Padding interior */
-    border-radius: 4px; /* Redondeado */
+    font-family: 'Cinzel', serif;
+    color: #a1a1aa;
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+    border: 1px solid #2a2a30;
+    padding: 8px 20px;
+    border-radius: 4px;
 }
 
-/* Hover en botón de salida */
 .btn-salir:hover {
-    color: #ffffff; /* Texto en blanco */
-    border-color: var(--color-principal); /* Borde temático */
-    background-color: rgba(220, 38, 38, 0.1); /* Fondo leve */
+    color: #ffffff;
+    border-color: var(--color-principal);
+    background-color: rgba(220, 38, 38, 0.1);
 }
 
-/* ==========================================================================
-   ESTILOS PARA PIE DE PÁGINA (FOOTER) Y PANEL DE PERSONALIZACIÓN
-   ========================================================================== */
 
-/* Pie de página en letras pequeñas */
+/* =========================================================
+   FOOTER
+   ========================================================= */
 footer {
-    margin-top: 25px; /* Distancia respecto al contenedor superior */
-    text-align: center; /* Alineación del texto al centro */
+    margin-top: 25px;
+    text-align: center;
 }
 
 .desarrollado-by {
-    font-family: Arial, sans-serif; /* Fuente ligera para texto informativo */
-    font-size: 11px; /* Tamaño de letra pequeño */
-    color: #71717a; /* Tono de gris suave */
-    letter-spacing: 1px; /* Espaciado entre caracteres */
-    text-transform: uppercase; /* Convertido a mayúsculas */
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    color: #71717a;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-/* Panel desplegable/flotante para personalizar colores */
+
+/* =========================================================
+   PANEL DE COLORES
+   ========================================================= */
 .panel-colores {
-    margin-top: 15px; /* Separación respecto a la firma */
-    display: flex; /* Flexbox horizontal */
-    gap: 15px; /* Separación entre selectores */
-    align-items: center; /* Centrado vertical */
-    justify-content: center; /* Centrado horizontal */
-    background-color: var(--color-tarjeta); /* Fondo sincronizado */
-    padding: 8px 15px; /* Relleno compacto */
-    border-radius: 20px; /* Bordes completamente redondeados tipo píldora */
-    border: 1px solid #2a2a30; /* Borde gris sutil */
+    margin-top: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-tarjeta);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid #2a2a30;
 }
 
 .control-color {
-    display: flex; /* Alinea ícono/texto junto al selector */
-    align-items: center; /* Centra elementos verticalmente */
-    gap: 6px; /* Separación entre etiqueta e input */
-    font-family: Arial, sans-serif; /* Fuente neutra */
-    font-size: 10px; /* Texto compacto */
-    color: #a1a1aa; /* Color de texto suave */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    color: #a1a1aa;
 }
 
-/* Cajas circulares seleccionables de color */
 .control-color input[type="color"] {
-    -webkit-appearance: none; /* Elimina apariencia por defecto en Chrome/Safari */
-    border: none; /* Remueve borde por defecto */
-    width: 20px; /* Ancho de la burbuja */
-    height: 20px; /* Altura de la burbuja */
-    border-radius: 50%; /* Transforma la caja en un círculo perfecto */
-    cursor: pointer; /* Cursor selector */
-    background: none; /* Quita fondo */
-    padding: 0; /* Remueve padding por defecto */
+    -webkit-appearance: none;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: none;
+    padding: 0;
 }
 
-/* Elimina el borde interno que agrega Chrome a los inputs de color */
 .control-color input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;
 }
 
 .control-color input[type="color"]::-webkit-color-swatch {
-    border: 1px solid #ffffff; /* Borde blanco fino en el círculo de color */
-    border-radius: 50%; /* Mantiene forma circular */
+    border: 1px solid #ffffff;
+    border-radius: 50%;
 }
-/* ==========================================================================
-   ESTILOS Y ANIMACIÓN PARA EL SALUDO DE BIENVENIDA
-   ========================================================================== */
 
+
+/* =========================================================
+   SALUDO
+   ========================================================= */
 .saludo-degradado {
     font-family: 'Cinzel Decorative', serif;
     font-size: 22px;
@@ -338,36 +375,40 @@ footer {
     text-align: center;
     margin-bottom: 20px;
     letter-spacing: 2px;
-    
-    /* Efecto de texto con degradado brillante */
-    background: linear-gradient(135deg, #ffffff 20%, var(--color-principal) 100%);
+    background: linear-gradient(
+        135deg,
+        #ffffff 20%,
+        var(--color-principal) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    
-    /* Animación de entrada y desvanecimiento */
     opacity: 1;
-    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transition:
+        opacity 1s ease-in-out,
+        transform 1s ease-in-out;
 }
 
-/* Clase que JS activará para desvanecer el título */
 .saludo-oculto {
     opacity: 0;
-    transform: translateY(-10px); /* Ligero desplazamiento hacia arriba al desaparecer */
-    pointer-events: none; /* Evita interferencias cuando ya no se ve */
+    transform: translateY(-10px);
+    pointer-events: none;
 }
-/* ==========================================================================
-   ESTILOS HORIZONTALES PARA EL ASISTENTE DE CADASTRO (cadastro.html)
-   ========================================================================== */
 
-/* Contenedor amplio e imponente (horizontal) */
+
+/* =========================================================
+   ASISTENTE DE CADASTRO
+   ========================================================= */
 .cadastro-container {
-    max-width: 2000px; /* Ampliado significativamente para abarcar la pantalla */
+    max-width: 2000px;
     width: 92%;
     margin: 25px auto;
     padding: 35px 40px;
 }
 
-/* Encabezado */
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
 .header-herramienta {
     display: flex;
     justify-content: space-between;
@@ -395,7 +436,10 @@ footer {
     background-color: #27272a;
 }
 
-/* Badge Nube */
+
+/* =========================================================
+   BADGE NUBE
+   ========================================================= */
 .badge-nube {
     display: inline-flex;
     align-items: center;
@@ -446,6 +490,10 @@ footer {
     background-color: #ef4444;
 }
 
+
+/* =========================================================
+   TÍTULO DE SECCIÓN
+   ========================================================= */
 .titulo-seccion {
     text-align: center;
     margin-bottom: 30px;
@@ -463,11 +511,10 @@ footer {
     letter-spacing: 0.5px;
 }
 
-/* ==========================================================================
-   ESTILOS CORREGIDOS Y ALINEADOS PARA LOS PASOS (cadastro.html)
-   ========================================================================== */
 
-/* Bloques contenedores principales de cada paso */
+/* =========================================================
+   BLOQUES DE PASOS
+   ========================================================= */
 .bloque-paso {
     background-color: #141417;
     border: 1px solid #27272a;
@@ -475,8 +522,8 @@ footer {
     padding: 25px 30px;
     margin-bottom: 25px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    width: 100% !important;
-    box-sizing: border-box !important;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .encabezado-paso {
@@ -508,6 +555,21 @@ footer {
     letter-spacing: 0.5px;
 }
 
+
+/* =========================================================
+   FORMULARIOS DEL CADASTRO
+   ========================================================= */
+.form-busqueda,
+#formProducto {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+
+/* =========================================================
+   PASO 1 - BÚSQUEDA
+   ========================================================= */
 .label-accesible {
     display: block;
     color: #d4d4d8;
@@ -516,15 +578,6 @@ footer {
     margin-bottom: 12px;
 }
 
-/* Formularios internos a ancho completo */
-.form-busqueda, 
-#formProducto {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* PASO 1: Grupo de Escaneo (Barra arriba, Botón abajo) */
 .input-escaneo-group {
     display: flex;
     flex-direction: column;
@@ -578,14 +631,52 @@ footer {
     transform: scale(0.98);
 }
 
-/* PASO 2: Grid de Atributos (4 Columnas Horizontales) */
+
+/* =========================================================
+   AVISOS
+   ========================================================= */
+.panel-aviso {
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.panel-aviso.oculto {
+    display: none;
+}
+
+.panel-aviso.info {
+    background-color: rgba(59, 130, 246, 0.12);
+    color: #93c5fd;
+    border: 1px solid #3b82f6;
+}
+
+.panel-aviso.exito {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+    border: 1px solid #10b981;
+}
+
+.panel-aviso.sugerencia {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #fde047;
+    border: 1px solid #f59e0b;
+}
+
+
+/* =========================================================
+   PASO 2 - ATRIBUTOS
+   ========================================================= */
 .grid-atributos {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 15px !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .campo-atributo {
@@ -647,7 +738,10 @@ footer {
     transform: scale(0.98);
 }
 
-/* PASO 3: Resultado de Descripción Formateada */
+
+/* =========================================================
+   PASO 3 - RESULTADO
+   ========================================================= */
 .bloque-resultado {
     background-color: #0d0d10;
     border: 1.5px solid var(--color-principal);
@@ -702,7 +796,10 @@ footer {
     cursor: not-allowed;
 }
 
-/* Adaptación táctil y responsiva */
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 @media (max-width: 900px) {
     .grid-atributos {
         grid-template-columns: repeat(2, 1fr) !important;
@@ -712,212 +809,5 @@ footer {
 @media (max-width: 600px) {
     .grid-atributos {
         grid-template-columns: 1fr !important;
-    }
-}
-
-/* GRUPO ESCANEO: Barra encima del botón (Orientación vertical dentro del grupo) */
-.input-escaneo-group {
-    display: flex;
-    flex-direction: column; /* Coloca la barra arriba y el botón abajo */
-    gap: 100px;
-    width: 100%;
-}
-
-.input-escaneo-group input {
-    width: 100%; /* Ocupa todo el ancho horizontal disponible */
-    padding: 16px 20px;
-    background-color: #09090b;
-    border: 2px solid #3f3f46;
-    border-radius: 8px;
-    color: #ffffff;
-    font-size: 17px;
-    letter-spacing: 0.5px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-.input-escaneo-group input:focus {
-    border-color: var(--color-principal);
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
-}
-
-.btn-primario {
-    background-color: var(--color-principal);
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 14px 28px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%; /* Botón amplio debajo de la barra */
-    transition: filter 0.2s ease, transform 0.1s ease;
-}
-
-.btn-primario:hover {
-    filter: brightness(1.2);
-}
-
-.btn-primario:active {
-    transform: scale(0.98);
-}
-
-/* Paneles de alerta */
-.panel-aviso {
-    padding: 16px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 25px;
-    line-height: 1.5;
-}
-
-.panel-aviso.oculto {
-    display: none;
-}
-
-.panel-aviso.info {
-    background-color: rgba(59, 130, 246, 0.12);
-    color: #93c5fd;
-    border: 1px solid #3b82f6;
-}
-
-.panel-aviso.exito {
-    background-color: rgba(16, 185, 129, 0.12);
-    color: #6ee7b7;
-    border: 1px solid #10b981;
-}
-
-.panel-aviso.sugerencia {
-    background-color: rgba(245, 158, 11, 0.12);
-    color: #fde047;
-    border: 1px solid #f59e0b;
-}
-
-/* GRID DE ATRIBUTOS: 4 columnas en pantalla ancha (Diseño puramente horizontal) */
-.grid-atributos {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columnas perfectamente distribuidas */
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
-.campo-atributo label {
-    display: block;
-    color: #a1a1aa;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.campo-atributo input {
-    width: 100%;
-    padding: 14px 16px;
-    background-color: #09090b;
-    border: 1.5px solid #27272a;
-    border-radius: 8px;
-    color: #ffffff;
-    font-size: 15px;
-    font-weight: 600;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.campo-atributo input:focus {
-    border-color: var(--color-principal);
-}
-
-.acciones-form {
-    text-align: right;
-}
-
-.btn-exito {
-    background-color: #059669;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 14px 36px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.btn-exito:hover {
-    background-color: #10b981;
-}
-
-.btn-exito:active {
-    transform: scale(0.98);
-}
-
-/* RESULTADO FINAL: Barra arriba y botón debajo ocupando todo el ancho */
-.bloque-resultado {
-    background-color: #0d0d10;
-    border: 1.5px solid var(--color-principal);
-}
-
-.resultado-group {
-    display: flex;
-    flex-direction: column; /* Barra arriba y botón abajo */
-    gap: 15px;
-    width: 100%;
-}
-
-.resultado-group input {
-    width: 100%;
-    padding: 16px 20px;
-    background-color: #18181b;
-    border: 1px solid #3f3f46;
-    border-radius: 8px;
-    color: #22c55e;
-    font-size: 19px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.btn-copiar {
-    background-color: #2563eb;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: background-color 0.2s ease;
-}
-
-.btn-copiar:not(:disabled):hover {
-    background-color: #3b82f6;
-}
-
-.btn-copiar:disabled {
-    background-color: #27272a;
-    color: #71717a;
-    cursor: not-allowed;
-}
-
-/* Responsivo para tablets o pantallas pequeñas */
-@media (max-width: 900px) {
-    .grid-atributos {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .grid-atributos {
-        grid-template-columns: 1fr;
     }
 }
