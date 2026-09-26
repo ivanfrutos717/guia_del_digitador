@@ -1,8 +1,10 @@
 /* Matriz de objetos que contiene los credenciales de acceso predeterminados */
 const usuariosPermitidos = [
-    { usuario: "Ivan", clave: "220606" }, /* Usuario 1 */
-    { usuario: "Ulises", clave: "QWERTY12345" },  /* Usuario 2 */
-    { usuario: "admin", clave: "0000" }   /* Usuario 3 */
+    { usuario: "Ivan", clave: "220606" }, 
+    { usuario: "Ulises", clave: "QWERTY12345" },  
+    { usuario: "Mario", clave: "papoi" } 
+    { usuario: "Junior", clave: "gtafifa2008nfs" }  
+    { usuario: "monica", clave: "chefeechefenepai" }
 ];
 
 /* Referencias a los elementos del DOM en login.html */
