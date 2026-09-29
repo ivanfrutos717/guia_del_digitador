@@ -1,595 +1,1008 @@
 // ==========================================================================
 // ASISTENTE DE CADASTRO
-// Firebase -> API Vercel -> Gemini + Google Search -> Firebase
+// BUSCADOR UNIVERSAL
 // ==========================================================================
 
+
 // ==========================================================================
-// 1. CONFIGURACIÓN E INICIALIZACIÓN DE FIREBASE
+// 1. FIREBASE
 // ==========================================================================
+
 const firebaseConfig = {
+
   apiKey: "AIzaSyBnZuOpXhLk-_yCVCfsD6q2rRwgQ5hiE3I",
-  authDomain: "guia-del-digitador.firebaseapp.com",
-  databaseURL: "https://guia-del-digitador-default-rtdb.firebaseio.com",
-  projectId: "guia-del-digitador",
-  storageBucket: "guia-del-digitador.firebasestorage.app",
-  messagingSenderId: "238391888412",
-  appId: "1:238391888412:web:604f08ebefdde4b2eb2dd9"
+
+  authDomain:
+    "guia-del-digitador.firebaseapp.com",
+
+  databaseURL:
+    "https://guia-del-digitador-default-rtdb.firebaseio.com",
+
+  projectId:
+    "guia-del-digitador",
+
+  storageBucket:
+    "guia-del-digitador.firebasestorage.app",
+
+  messagingSenderId:
+    "238391888412",
+
+  appId:
+    "1:238391888412:web:604f08ebefdde4b2eb2dd9"
+
 };
 
-if (!window.firebase) {
-  console.error("Firebase SDK no fue cargado.");
-  alert("❌ No se pudo cargar Firebase. Revisa la conexión y los scripts del HTML.");
-  throw new Error("Firebase SDK no disponible");
-}
 
 firebase.initializeApp(firebaseConfig);
 
-const database = firebase.database();
-const productosRef = database.ref("productos");
+
+const database =
+  firebase.database();
+
+
+const productosRef =
+  database.ref("productos");
+
 
 // ==========================================================================
-// 2. REFERENCIAS DEL DOM
+// 2. ELEMENTOS
 // ==========================================================================
-const inputEan = document.getElementById("inputEan");
-const formBusqueda = document.getElementById("formBusqueda");
-const formProducto = document.getElementById("formProducto");
 
-const inputMarca = document.getElementById("marca");
-const inputModelo = document.getElementById("modelo");
-const inputTipoProducto = document.getElementById("tipoProducto");
-const inputColor = document.getElementById("color");
+const inputBusqueda =
+  document.getElementById("inputBusqueda");
 
-const inputResultado = document.getElementById("resultadoDescripcion");
-const btnCopiar = document.getElementById("btnCopiar");
-const btnBuscar = document.getElementById("btnBuscar");
-const badgeNube = document.getElementById("badgeNube");
+const formBusqueda =
+  document.getElementById("formBusqueda");
+
+const formProducto =
+  document.getElementById("formProducto");
+
+const inputMarca =
+  document.getElementById("marca");
+
+const inputModelo =
+  document.getElementById("modelo");
+
+const inputTipoProducto =
+  document.getElementById("tipoProducto");
+
+const inputColor =
+  document.getElementById("color");
+
+const inputResultado =
+  document.getElementById("resultadoDescripcion");
+
+const btnCopiar =
+  document.getElementById("btnCopiar");
+
+const btnBuscar =
+  document.getElementById("btnBuscar");
+
+const badgeNube =
+  document.getElementById("badgeNube");
+
+const tipoBusqueda =
+  document.getElementById("tipoBusqueda");
+
+const fuenteResultado =
+  document.getElementById("fuenteResultado");
+
 
 // ==========================================================================
-// 3. ESTADO DE CONEXIÓN CON FIREBASE
+// 3. ESTADO FIREBASE
 // ==========================================================================
-database.ref(".info/connected").on("value", (snap) => {
-  if (!badgeNube) return;
 
-  if (snap.val() === true) {
-    badgeNube.className = "badge-nube conectada";
-    badgeNube.innerHTML =
-      '<span class="punto-estado"></span> NUBE CONECTADA';
-    badgeNube.style.backgroundColor = "#059669";
-  } else {
-    badgeNube.className = "badge-nube desconectada";
-    badgeNube.innerHTML =
-      '<span class="punto-estado"></span> DESCONECTADO';
-    badgeNube.style.backgroundColor = "#dc2626";
-  }
-});
+database
+  .ref(".info/connected")
+  .on("value", (snap) => {
 
-// ==========================================================================
-// 4. DESCRIPCIÓN FINAL
-// ==========================================================================
-function actualizarDescripcionFormateada() {
-  if (!inputResultado) return;
+    if (!badgeNube) return;
 
-  const marca = (inputMarca?.value || "").trim().toUpperCase();
-  const modelo = (inputModelo?.value || "").trim().toUpperCase();
-  const tipo = (inputTipoProducto?.value || "").trim().toUpperCase();
-  const color = (inputColor?.value || "").trim().toUpperCase();
 
-  const partes = [marca, modelo, tipo, color].filter(Boolean);
+    if (snap.val() === true) {
 
-  if (partes.length > 0) {
-    inputResultado.value = partes.join(" ");
+      badgeNube.className =
+        "badge-nube conectada";
 
-    if (btnCopiar) {
-      btnCopiar.disabled = false;
+      badgeNube.innerHTML =
+        '<span class="punto-estado"></span> NUBE CONECTADA';
+
+      badgeNube.style.backgroundColor =
+        "#059669";
+
+    } else {
+
+      badgeNube.className =
+        "badge-nube desconectada";
+
+      badgeNube.innerHTML =
+        '<span class="punto-estado"></span> DESCONECTADO';
+
+      badgeNube.style.backgroundColor =
+        "#dc2626";
+
     }
-  } else {
-    inputResultado.value = "[MARCA] [MODELO] [PRODUCTO] [COLOR]";
 
-    if (btnCopiar) {
-      btnCopiar.disabled = true;
-    }
+  });
+
+
+// ==========================================================================
+// 4. DETECTAR TIPO DE CONSULTA
+// ==========================================================================
+
+function detectarTipoConsulta(valor) {
+
+  const consulta =
+    String(valor || "").trim();
+
+
+  if (!consulta) {
+
+    return "VACIO";
+
   }
+
+
+  const soloNumeros =
+    consulta.replace(/\D/g, "");
+
+
+  // EAN / UPC
+
+  if (
+    /^\d+$/.test(consulta) &&
+    [8, 12, 13, 14].includes(consulta.length)
+  ) {
+
+    return "EAN / UPC";
+
+  }
+
+
+  // MODELO / PART NUMBER
+
+  if (
+    /[A-Za-z]/.test(consulta) &&
+    /[-_]/.test(consulta)
+  ) {
+
+    return "MODELO / REFERENCIA";
+
+  }
+
+
+  // Texto general
+
+  if (
+    /[A-Za-z]/.test(consulta)
+  ) {
+
+    return "MODELO / PRODUCTO";
+
+  }
+
+
+  return "REFERENCIA";
+
 }
 
-[inputMarca, inputModelo, inputTipoProducto, inputColor].forEach((input) => {
-  if (input) {
-    input.addEventListener("input", actualizarDescripcionFormateada);
-  }
-});
 
 // ==========================================================================
-// 5. VALIDACIÓN DEL CÓDIGO EAN / UPC
+// 5. MOSTRAR TIPO DE CONSULTA
 // ==========================================================================
-function normalizarCodigo(codigo) {
-  return String(codigo || "").replace(/\D/g, "");
-}
 
-function codigoValido(codigo) {
-  const limpio = normalizarCodigo(codigo);
+if (inputBusqueda) {
 
-  // EAN-8, UPC-A y EAN-13.
-  return [8, 12, 13].includes(limpio.length);
-}
+  inputBusqueda.addEventListener(
+    "input",
+    () => {
 
-// ==========================================================================
-// 6. BÚSQUEDA PRINCIPAL
-// ==========================================================================
-if (formBusqueda) {
-  formBusqueda.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const codigoEan = normalizarCodigo(inputEan?.value);
-
-    if (!codigoEan) {
-      alert("⚠️ Ingresa un código EAN / UPC.");
-      inputEan?.focus();
-      return;
-    }
-
-    if (!codigoValido(codigoEan)) {
-      alert(
-        "⚠️ El código debe tener 8, 12 o 13 dígitos.\n\n" +
-        "Ejemplos: EAN-8, UPC-A (12) o EAN-13."
-      );
-
-      inputEan?.focus();
-      return;
-    }
-
-    if (inputEan) {
-      inputEan.value = codigoEan;
-    }
-
-    limpiarAtributos();
-
-    if (btnBuscar) {
-      btnBuscar.disabled = true;
-
-      btnBuscar.dataset.textoOriginal = btnBuscar.innerHTML;
-
-      btnBuscar.innerHTML =
-        '<span class="icono-btn">⏳</span> BUSCANDO...';
-    }
-
-    try {
-
-      // ================================================================
-      // PASO A: BUSCAR PRIMERO EN FIREBASE
-      // ================================================================
-      const snapshot = await productosRef
-        .child(codigoEan)
-        .once("value");
-
-      if (snapshot.exists()) {
-
-        const data = snapshot.val();
-
-        completarAtributos(data);
-
-        alert(
-          "✅ Producto cargado desde tu base de datos Firebase.\n\n" +
-          inputResultado.value
+      const tipo =
+        detectarTipoConsulta(
+          inputBusqueda.value
         );
 
-        return;
+
+      if (tipo === "VACIO") {
+
+        tipoBusqueda.textContent =
+          "Escribe un EAN, UPC, modelo o referencia.";
+
+      } else {
+
+        tipoBusqueda.textContent =
+          `Tipo detectado: ${tipo}`;
+
       }
 
-      // ================================================================
-      // PASO B: CONSULTAR GEMINI MEDIANTE VERCEL
-      // ================================================================
-      const exitoProxy = await consultarGeminiEan(codigoEan);
-
-      // ================================================================
-      // PASO C: FALLBACK POR FAMILIA
-      // ================================================================
-      if (!exitoProxy) {
-        await aplicarPrediccionPorFamilia(codigoEan);
-      }
-
-    } catch (error) {
-
-      console.error("Error durante la búsqueda:", error);
-
-      alert(
-        "❌ Ocurrió un error durante la búsqueda.\n\n" +
-        "Abre F12 → Console para ver el detalle."
-      );
-
-    } finally {
-
-      if (btnBuscar) {
-        btnBuscar.disabled = false;
-
-        btnBuscar.innerHTML =
-          btnBuscar.dataset.textoOriginal ||
-          '<span class="icono-btn">🔍</span> BUSCAR';
-      }
     }
-  });
+  );
+
 }
 
-// ==========================================================================
-// 7. LIMPIAR / COMPLETAR ATRIBUTOS
-// ==========================================================================
-function limpiarAtributos() {
-
-  if (inputMarca) {
-    inputMarca.value = "";
-  }
-
-  if (inputModelo) {
-    inputModelo.value = "";
-  }
-
-  if (inputTipoProducto) {
-    inputTipoProducto.value = "";
-  }
-
-  if (inputColor) {
-    inputColor.value = "";
-  }
-
-  actualizarDescripcionFormateada();
-}
-
-function completarAtributos(data) {
-
-  if (inputMarca) {
-    inputMarca.value = (data?.marca || "").toUpperCase();
-  }
-
-  if (inputModelo) {
-    inputModelo.value = (data?.modelo || "").toUpperCase();
-  }
-
-  if (inputTipoProducto) {
-    inputTipoProducto.value =
-      (data?.tipoProducto || "").toUpperCase();
-  }
-
-  if (inputColor) {
-    inputColor.value =
-      (data?.color || "").toUpperCase();
-  }
-
-  actualizarDescripcionFormateada();
-}
 
 // ==========================================================================
-// 8. CONSULTA AL BACKEND DE VERCEL
+// 6. DESCRIPCIÓN FINAL
 // ==========================================================================
-async function consultarGeminiEan(codigoEan) {
 
-  try {
+function actualizarDescripcionFormateada() {
 
-    const url =
-      `/api/buscar-ean?ean=${encodeURIComponent(codigoEan)}`;
+  const marca =
+    (inputMarca.value || "")
+      .trim()
+      .toUpperCase();
 
-    console.log("Consultando API:", url);
+  const modelo =
+    (inputModelo.value || "")
+      .trim()
+      .toUpperCase();
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        Accept: "application/json"
-      },
-      cache: "no-store"
-    });
+  const tipo =
+    (inputTipoProducto.value || "")
+      .trim()
+      .toUpperCase();
 
-    const texto = await response.text();
+  const color =
+    (inputColor.value || "")
+      .trim()
+      .toUpperCase();
 
-    let resultadoJson;
 
-    try {
+  const partes = [
 
-      resultadoJson = JSON.parse(texto);
+    marca,
+    modelo,
+    tipo,
+    color
 
-    } catch {
+  ].filter(
+    (p) => p !== ""
+  );
 
-      console.error(
-        "La API no devolvió JSON válido:",
-        texto
-      );
 
-      return false;
+  if (partes.length > 0) {
+
+    inputResultado.value =
+      partes.join(" ");
+
+    if (btnCopiar) {
+
+      btnCopiar.disabled =
+        false;
+
     }
 
-    console.log(
-      "Respuesta de /api/buscar-ean:",
-      resultadoJson
-    );
+  } else {
 
-    if (!response.ok) {
+    inputResultado.value =
+      "[MARCA] [MODELO] [PRODUCTO] [COLOR]";
 
-      console.error(
-        `Error HTTP ${response.status}:`,
-        resultadoJson
-      );
+    if (btnCopiar) {
 
-      alert(
-        "❌ Error en el servidor de búsqueda.\n\n" +
-        (resultadoJson.error ||
-          `HTTP ${response.status}`) +
-        "\n\nRevisa F12 → Console."
-      );
+      btnCopiar.disabled =
+        true;
 
-      return false;
     }
 
-    if (
-      resultadoJson.encontrado === true &&
-      resultadoJson.marca &&
-      resultadoJson.marca !== "NO_ENCONTRADO"
-    ) {
-
-      completarAtributos(resultadoJson);
-
-      alert(
-        "🤖 Producto identificado mediante búsqueda IA.\n\n" +
-        inputResultado.value +
-        "\n\n" +
-        "⚠️ Verifica los datos antes de guardarlos."
-      );
-
-      return true;
-    }
-
-    console.warn(
-      "No hubo coincidencia exacta:",
-      resultadoJson
-    );
-
-    return false;
-
-  } catch (error) {
-
-    console.error(
-      "Error al consultar /api/buscar-ean:",
-      error
-    );
-
-    alert(
-      "❌ No se pudo contactar con el servidor de IA.\n\n" +
-      "Abre F12 → Console para ver el error."
-    );
-
-    return false;
   }
+
 }
 
+
+[
+  inputMarca,
+  inputModelo,
+  inputTipoProducto,
+  inputColor
+
+].forEach((input) => {
+
+  if (input) {
+
+    input.addEventListener(
+      "input",
+      actualizarDescripcionFormateada
+    );
+
+  }
+
+});
+
+
 // ==========================================================================
-// 9. FALLBACK POR FAMILIA EAN
+// 7. BUSCAR EN FIREBASE
 // ==========================================================================
-async function aplicarPrediccionPorFamilia(codigoNuevo) {
+
+async function buscarEnFirebase(consulta) {
 
   try {
 
     const snapshot =
       await productosRef.once("value");
 
-    const productos = snapshot.val();
 
-    if (productos) {
+    const productos =
+      snapshot.val();
 
-      const lista = Object.values(productos);
 
-      const prefijoNuevo =
-        codigoNuevo.substring(0, 7);
+    if (!productos) {
 
-      const coincidencia = lista.find(
-        (p) =>
-          p &&
-          p.ean &&
-          String(p.ean).startsWith(prefijoNuevo)
-      );
+      return null;
 
-      if (coincidencia) {
-
-        if (inputMarca) {
-          inputMarca.value =
-            coincidencia.marca || "";
-        }
-
-        if (inputModelo) {
-          inputModelo.value =
-            coincidencia.modelo || "";
-        }
-
-        if (inputTipoProducto) {
-          inputTipoProducto.value =
-            coincidencia.tipoProducto || "";
-        }
-
-        if (inputColor) {
-          inputColor.value = "";
-        }
-
-        actualizarDescripcionFormateada();
-
-        alert(
-          `💡 Autocompletado por familia.\n\n` +
-          `${coincidencia.marca || ""} ` +
-          `${coincidencia.modelo || ""}\n\n` +
-          "⚠️ El color debe verificarse/ingresarse manualmente."
-        );
-
-        if (inputColor) {
-          inputColor.focus();
-        }
-
-        return;
-      }
     }
 
-    alert(
-      "ℹ️ No se encontró el código exacto.\n\n" +
-      "Completa los campos manualmente y guarda el producto para que quede registrado."
-    );
 
-    if (inputMarca) {
-      inputMarca.focus();
+    const consultaNormalizada =
+      normalizarTexto(consulta);
+
+
+    const lista =
+      Object.values(productos);
+
+
+    // ------------------------------------------------------
+    // COINCIDENCIA EXACTA POR EAN / UPC
+    // ------------------------------------------------------
+
+    const exactaCodigo =
+      lista.find((producto) => {
+
+        return normalizarTexto(
+          producto.ean || ""
+        ) === consultaNormalizada;
+
+      });
+
+
+    if (exactaCodigo) {
+
+      return {
+
+        ...exactaCodigo,
+
+        fuente: "FIREBASE",
+
+        coincidencia: "EXACTA"
+
+      };
+
     }
+
+
+    // ------------------------------------------------------
+    // COINCIDENCIA EXACTA POR MODELO
+    // ------------------------------------------------------
+
+    const exactaModelo =
+      lista.find((producto) => {
+
+        return normalizarTexto(
+          producto.modelo || ""
+        ) === consultaNormalizada;
+
+      });
+
+
+    if (exactaModelo) {
+
+      return {
+
+        ...exactaModelo,
+
+        fuente: "FIREBASE",
+
+        coincidencia: "MODELO EXACTO"
+
+      };
+
+    }
+
+
+    // ------------------------------------------------------
+    // COINCIDENCIA POR REFERENCIA
+    // ------------------------------------------------------
+
+    const exactaReferencia =
+      lista.find((producto) => {
+
+        return normalizarTexto(
+          producto.referencia || ""
+        ) === consultaNormalizada;
+
+      });
+
+
+    if (exactaReferencia) {
+
+      return {
+
+        ...exactaReferencia,
+
+        fuente: "FIREBASE",
+
+        coincidencia: "REFERENCIA EXACTA"
+
+      };
+
+    }
+
+
+    return null;
+
 
   } catch (error) {
 
     console.error(
-      "Error en fallback por familia:",
+      "Error buscando en Firebase:",
       error
     );
 
-    alert(
-      "⚠️ No fue posible consultar el fallback de Firebase.\n\n" +
-      "Puedes completar el producto manualmente."
-    );
+    return null;
+
   }
+
 }
 
+
 // ==========================================================================
-// 10. GUARDAR EN FIREBASE
+// 8. NORMALIZAR TEXTO
 // ==========================================================================
+
+function normalizarTexto(texto) {
+
+  return String(texto || "")
+
+    .normalize("NFD")
+
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+
+    .toUpperCase()
+
+    .replace(
+      /\s+/g,
+      " "
+    )
+
+    .trim();
+
+}
+
+
+// ==========================================================================
+// 9. LIMPIAR FORMULARIO
+// ==========================================================================
+
+function limpiarFormulario() {
+
+  inputMarca.value = "";
+
+  inputModelo.value = "";
+
+  inputTipoProducto.value = "";
+
+  inputColor.value = "";
+
+  if (fuenteResultado) {
+
+    fuenteResultado.style.display =
+      "none";
+
+    fuenteResultado.innerHTML =
+      "";
+
+  }
+
+  actualizarDescripcionFormateada();
+
+}
+
+
+// ==========================================================================
+// 10. MOSTRAR RESULTADO
+// ==========================================================================
+
+function aplicarResultado(resultado) {
+
+  if (!resultado) {
+
+    return false;
+
+  }
+
+
+  inputMarca.value =
+    resultado.marca || "";
+
+  inputModelo.value =
+    resultado.modelo || "";
+
+  inputTipoProducto.value =
+    resultado.tipoProducto || "";
+
+  inputColor.value =
+    resultado.color || "";
+
+
+  actualizarDescripcionFormateada();
+
+
+  if (fuenteResultado) {
+
+    fuenteResultado.style.display =
+      "block";
+
+
+    const fuente =
+      resultado.fuente ||
+      "FUENTE EXTERNA";
+
+
+    const coincidencia =
+      resultado.coincidencia ||
+      "ENCONTRADO";
+
+
+    fuenteResultado.innerHTML =
+
+      `✅ <strong>PRODUCTO ENCONTRADO</strong><br><br>` +
+
+      `Fuente: <strong>${escapeHtml(fuente)}</strong><br>` +
+
+      `Coincidencia: <strong>${escapeHtml(coincidencia)}</strong>`;
+
+
+    if (resultado.url) {
+
+      fuenteResultado.innerHTML +=
+
+        `<br><br>` +
+
+        `<a href="${escapeAttribute(resultado.url)}" ` +
+
+        `target="_blank" ` +
+
+        `rel="noopener noreferrer">` +
+
+        `Ver producto en la fuente ↗` +
+
+        `</a>`;
+
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+// ==========================================================================
+// 11. BUSCADOR UNIVERSAL
+// ==========================================================================
+
+if (formBusqueda) {
+
+  formBusqueda.addEventListener(
+    "submit",
+    async (event) => {
+
+      event.preventDefault();
+
+
+      const consulta =
+        inputBusqueda.value.trim();
+
+
+      if (!consulta) {
+
+        return;
+
+      }
+
+
+      limpiarFormulario();
+
+
+      btnBuscar.disabled =
+        true;
+
+      btnBuscar.innerHTML =
+        "⏳ BUSCANDO...";
+
+
+      tipoBusqueda.textContent =
+        "Consultando tu base de datos...";
+
+
+      try {
+
+        // ====================================================
+        // PASO 1 - FIREBASE
+        // ====================================================
+
+        const resultadoFirebase =
+          await buscarEnFirebase(
+            consulta
+          );
+
+
+        if (resultadoFirebase) {
+
+          aplicarResultado(
+            resultadoFirebase
+          );
+
+
+          alert(
+            "✅ Producto encontrado en tu base de datos Firebase."
+          );
+
+
+          return;
+
+        }
+
+
+        // ====================================================
+        // PASO 2 - FUENTES EXTERNAS
+        // ====================================================
+
+        tipoBusqueda.textContent =
+          "Buscando en las tiendas y catálogos...";
+
+
+        const url =
+          `/api/buscar-producto?consulta=${encodeURIComponent(consulta)}`;
+
+
+        const response =
+          await fetch(url);
+
+
+        const data =
+          await response.json();
+
+
+        console.log(
+          "Respuesta buscador:",
+          data
+        );
+
+
+        if (
+          response.ok &&
+          data.encontrado
+        ) {
+
+          aplicarResultado(data);
+
+
+          alert(
+            `✅ Producto encontrado en ${data.fuente}.`
+          );
+
+
+          return;
+
+        }
+
+
+        // ====================================================
+        // NO ENCONTRADO
+        // ====================================================
+
+        tipoBusqueda.textContent =
+          "No se encontró una coincidencia exacta.";
+
+
+        alert(
+          "ℹ️ No encontramos el producto automáticamente.\n\n" +
+          "Puedes completar los campos manualmente y guardarlo."
+        );
+
+
+        inputMarca.focus();
+
+
+      } catch (error) {
+
+        console.error(
+          "Error en buscador:",
+          error
+        );
+
+
+        alert(
+          "❌ No fue posible realizar la búsqueda externa."
+        );
+
+
+      } finally {
+
+        btnBuscar.disabled =
+          false;
+
+        btnBuscar.innerHTML =
+          '<span class="icono-btn">🔍</span> BUSCAR';
+
+      }
+
+    }
+  );
+
+}
+
+
+// ==========================================================================
+// 12. GUARDAR PRODUCTO
+// ==========================================================================
+
 if (formProducto) {
 
-  formProducto.addEventListener("submit", async (e) => {
+  formProducto.addEventListener(
+    "submit",
+    async (event) => {
 
-    e.preventDefault();
+      event.preventDefault();
 
-    const codigoEan =
-      normalizarCodigo(inputEan?.value);
 
-    if (!codigoEan) {
+      const consultaOriginal =
+        inputBusqueda.value.trim();
 
-      alert(
-        "⚠️ Ingresa un código de barras en el Paso 1."
-      );
 
-      inputEan?.focus();
+      if (!consultaOriginal) {
 
-      return;
+        alert(
+          "⚠️ Primero debes buscar o ingresar un producto."
+        );
+
+        inputBusqueda.focus();
+
+        return;
+
+      }
+
+
+      const nuevoProducto = {
+
+        ean:
+          /^\d{8,14}$/.test(
+            consultaOriginal
+          )
+            ? consultaOriginal
+            : "",
+
+        referencia:
+          /^\d{8,14}$/.test(
+            consultaOriginal
+          )
+            ? ""
+            : consultaOriginal.toUpperCase(),
+
+        marca:
+          inputMarca.value
+            .trim()
+            .toUpperCase(),
+
+        modelo:
+          inputModelo.value
+            .trim()
+            .toUpperCase(),
+
+        tipoProducto:
+          inputTipoProducto.value
+            .trim()
+            .toUpperCase(),
+
+        color:
+          inputColor.value
+            .trim()
+            .toUpperCase(),
+
+        descripcionFinal:
+          inputResultado.value,
+
+        fuente:
+          obtenerFuenteActual(),
+
+        consultaOriginal:
+          consultaOriginal,
+
+        fechaRegistro:
+          new Date().toISOString()
+
+      };
+
+
+      if (
+        !nuevoProducto.marca ||
+        !nuevoProducto.modelo ||
+        !nuevoProducto.tipoProducto ||
+        !nuevoProducto.color
+      ) {
+
+        alert(
+          "⚠️ Completa todos los atributos antes de guardar."
+        );
+
+        return;
+
+      }
+
+
+      const esCodigo =
+        /^\d{8,14}$/.test(
+          consultaOriginal
+        );
+
+
+      try {
+
+        if (esCodigo) {
+
+          // Para EAN/UPC mantenemos
+          // la estructura actual.
+
+          await productosRef
+            .child(consultaOriginal)
+            .set(nuevoProducto);
+
+        } else {
+
+          // Para modelos/referencias
+          // utilizamos una clave automática.
+
+          await productosRef
+            .push(nuevoProducto);
+
+        }
+
+
+        alert(
+          "🚀 ¡Producto guardado correctamente en Firebase!"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Error al guardar:",
+          error
+        );
+
+
+        alert(
+          "❌ Ocurrió un error al guardar."
+        );
+
+      }
+
     }
+  );
 
-    const nuevoProducto = {
-
-      ean: codigoEan,
-
-      marca:
-        (inputMarca?.value || "")
-          .trim()
-          .toUpperCase(),
-
-      modelo:
-        (inputModelo?.value || "")
-          .trim()
-          .toUpperCase(),
-
-      tipoProducto:
-        (inputTipoProducto?.value || "")
-          .trim()
-          .toUpperCase(),
-
-      color:
-        (inputColor?.value || "")
-          .trim()
-          .toUpperCase(),
-
-      descripcionFinal:
-        inputResultado?.value || "",
-
-      fechaRegistro:
-        new Date().toISOString()
-    };
-
-    if (
-      !nuevoProducto.marca ||
-      !nuevoProducto.modelo ||
-      !nuevoProducto.tipoProducto
-    ) {
-
-      alert(
-        "⚠️ Completa MARCA, MODELO y TIPO DE PRODUCTO antes de guardar."
-      );
-
-      return;
-    }
-
-    try {
-
-      await productosRef
-        .child(codigoEan)
-        .set(nuevoProducto);
-
-      alert(
-        "🚀 ¡Producto guardado correctamente en Firebase!\n\n" +
-        nuevoProducto.descripcionFinal
-      );
-
-    } catch (err) {
-
-      console.error(
-        "Error al guardar en Firebase:",
-        err
-      );
-
-      alert(
-        "❌ Ocurrió un error al guardar en Firebase.\n\n" +
-        "Revisa F12 → Console y las reglas de Firebase."
-      );
-    }
-  });
 }
 
-// ==========================================================================
-// 11. COPIAR DESCRIPCIÓN
-// ==========================================================================
-if (btnCopiar) {
 
-  btnCopiar.addEventListener("click", async () => {
+// ==========================================================================
+// 13. OBTENER FUENTE
+// ==========================================================================
+
+function obtenerFuenteActual() {
+
+  if (
+    fuenteResultado &&
+    fuenteResultado.innerText
+  ) {
 
     const texto =
-      inputResultado?.value || "";
+      fuenteResultado.innerText;
 
-    if (
-      !texto ||
-      texto ===
-        "[MARCA] [MODELO] [PRODUCTO] [COLOR]"
-    ) {
-      return;
-    }
 
-    try {
-
-      await navigator.clipboard.writeText(texto);
-
-      const textoOriginal =
-        btnCopiar.innerHTML;
-
-      btnCopiar.innerHTML =
-        "✅ ¡COPIADO!";
-
-      setTimeout(() => {
-
-        btnCopiar.innerHTML =
-          textoOriginal;
-
-      }, 2000);
-
-    } catch (error) {
-
-      console.error(
-        "Error al copiar:",
-        error
+    const match =
+      texto.match(
+        /Fuente:\s*(.+)/
       );
 
-      alert(
-        "⚠️ No se pudo copiar automáticamente."
-      );
+
+    if (match) {
+
+      return match[1]
+        .split("\n")[0]
+        .trim();
+
     }
-  });
+
+  }
+
+
+  return "MANUAL";
+
 }
 
-// ==========================================================================
-// 12. INICIALIZACIÓN
-// ==========================================================================
-actualizarDescripcionFormateada();
 
-console.log(
-  "✅ cadastro.js cargado correctamente."
-);
+// ==========================================================================
+// 14. COPIAR
+// ==========================================================================
+
+if (btnCopiar) {
+
+  btnCopiar.addEventListener(
+    "click",
+    () => {
+
+      const texto =
+        inputResultado.value;
+
+
+      if (
+        !texto ||
+        texto ===
+          "[MARCA] [MODELO] [PRODUCTO] [COLOR]"
+      ) {
+
+        return;
+
+      }
+
+
+      navigator.clipboard
+        .writeText(texto)
+        .then(() => {
+
+          const original =
+            btnCopiar.innerHTML;
+
+
+          btnCopiar.innerHTML =
+            "✅ ¡COPIADO!";
+
+
+          setTimeout(
+            () => {
+
+              btnCopiar.innerHTML =
+                original;
+
+            },
+            2000
+          );
+
+        });
+
+    }
+  );
+
+}
+
+
+// ==========================================================================
+// 15. SEGURIDAD HTML
+// ==========================================================================
+
+function escapeHtml(texto) {
+
+  return String(texto || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeAttribute(texto) {
+
+  return String(texto || "")
+    .replace(/"/g, "&quot;");
+
+}
+
+
+// ==========================================================================
+// FIN
+// ==========================================================================
