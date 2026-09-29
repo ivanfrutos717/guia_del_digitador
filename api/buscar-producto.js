@@ -17,320 +17,496 @@ export default async function handler(req, res) {
     console.log("====================================");
 
     // =========================================================
-    // 1. BUSCAR EN COMPRAS PARAGUAI
+    // 1. FUENTES
     // =========================================================
 
-    const dominios = [
-      "https://mobile.comprasparaguai.com.br",
-      "https://mobile.comprasparaguai.net.br",
-      "https://mobile.comprasparaguai.com.ar",
-      "https://www.comprasparaguai.com.br"
-    ];
+    const fuentes = [
 
-    let productoUrl = null;
-    let contenidoBusqueda = "";
-    let dominioEncontrado = "";
+      // -------------------------------------------------------
+      // COMPRAS PARAGUAI
+      // -------------------------------------------------------
 
-    for (const dominio of dominios) {
+      {
+        nombre: "Compras Paraguai",
 
-      const urlBusqueda =
-        `${dominio}/busca/?q=${encodeURIComponent(consulta)}`;
+        buscar: async () => {
 
-      console.log("PROBANDO:", urlBusqueda);
+          const urlComprasParaguai =
+            `https://www.comprasparaguai.com.br/busca/?q=${encodeURIComponent(consulta)}`;
 
-      try {
-
-        const respuesta =
-          await obtenerPagina(urlBusqueda);
-
-        console.log(
-          "STATUS:",
-          respuesta.status,
-          "CARACTERES:",
-          respuesta.texto.length
-        );
-
-        if (!respuesta.ok) {
-          console.log(
-            "FUENTE NO DISPONIBLE:",
-            dominio
-          );
-          continue;
-        }
-
-        if (esPaginaSeguridad(respuesta.texto)) {
-          console.log(
-            "PÁGINA BLOQUEADA POR SEGURIDAD:",
-            dominio
-          );
-          continue;
-        }
-
-        contenidoBusqueda =
-          respuesta.texto;
-
-        const urls =
-          extraerUrlsProducto(
-            contenidoBusqueda,
-            dominio
-          );
-
-        console.log(
-          "PRODUCTOS ENCONTRADOS:",
-          urls.length
-        );
-
-        const mejorUrl =
-          seleccionarMejorProducto(
-            urls,
-            consulta
-          );
-
-        if (mejorUrl) {
-
-          productoUrl =
-            mejorUrl;
-
-          dominioEncontrado =
-            dominio;
+          const urlJina =
+            `https://r.jina.ai/${urlComprasParaguai}`;
 
           console.log(
-            "PRODUCTO ENCONTRADO:",
+            "URL JINA COMPRAS PARAGUAI:"
+          );
+
+          console.log(
+            urlJina
+          );
+
+          const respuesta =
+            await fetch(
+              urlJina,
+              {
+                method: "GET",
+
+                headers: {
+                  "Accept": "text/plain",
+                  "User-Agent": "Mozilla/5.0"
+                }
+              }
+            );
+
+          console.log(
+            "STATUS JINA:",
+            respuesta.status
+          );
+
+          if (!respuesta.ok) {
+
+            const textoError =
+              await respuesta.text();
+
+            console.log(
+              "ERROR JINA:",
+              textoError.substring(
+                0,
+                1000
+              )
+            );
+
+            return null;
+          }
+
+          const contenido =
+            await respuesta.text();
+
+          console.log(
+            "CONTENIDO JINA:",
+            contenido.length,
+            "caracteres"
+          );
+
+          console.log(
+            contenido.substring(
+              0,
+              3000
+            )
+          );
+
+          // ---------------------------------------------------
+          // IMPORTANTE:
+          // SI LA BÚSQUEDA MISMA DEVUELVE CAPTCHA,
+          // DESCARTAMOS ESTA FUENTE.
+          // ---------------------------------------------------
+
+          if (
+            esPaginaSeguridad(
+              contenido
+            )
+          ) {
+
+            console.log(
+              "COMPRAS PARAGUAI: CAPTCHA / SEGURIDAD"
+            );
+
+            return null;
+          }
+
+          const urls =
+            extraerUrls(
+              contenido
+            );
+
+          console.log(
+            "URLS ENCONTRADAS:",
+            urls.length
+          );
+
+          const productoUrl =
+            seleccionarProducto(
+              urls,
+              consulta
+            );
+
+          console.log(
+            "PRODUCTO URL:",
             productoUrl
           );
 
-          break;
+          if (
+            !productoUrl
+          ) {
+
+            return null;
+          }
+
+          return {
+            url:
+              productoUrl
+          };
         }
+      },
 
-      } catch (error) {
 
-        console.log(
-          "ERROR EN DOMINIO:",
-          dominio,
-          error.message
-        );
+      // -------------------------------------------------------
+      // NISSEI
+      // -------------------------------------------------------
+
+      {
+        nombre: "Nissei",
+
+        buscar: async () => {
+
+          const urls = [
+
+            `https://nissei.com/py/catalogsearch/result/?q=${encodeURIComponent(consulta)}`,
+
+            `https://nissei.com/py/busca?q=${encodeURIComponent(consulta)}`,
+
+            `https://nissei.com/py/search?q=${encodeURIComponent(consulta)}`
+
+          ];
+
+          return await buscarFuenteGenerica(
+            urls,
+            consulta
+          );
+        }
+      },
+
+
+      // -------------------------------------------------------
+      // INTERSHOP
+      // -------------------------------------------------------
+
+      {
+        nombre: "Intershop",
+
+        buscar: async () => {
+
+          const urls = [
+
+            `https://intershop.com.py/search?search=${encodeURIComponent(consulta)}`,
+
+            `https://intershop.com.py/busca?search=${encodeURIComponent(consulta)}`,
+
+            `https://intershop.com.py/?s=${encodeURIComponent(consulta)}`
+
+          ];
+
+          return await buscarFuenteGenerica(
+            urls,
+            consulta
+          );
+        }
+      },
+
+
+      // -------------------------------------------------------
+      // MEGA ELECTRÓNICOS
+      // -------------------------------------------------------
+
+      {
+        nombre: "Mega Electrónicos",
+
+        buscar: async () => {
+
+          const urls = [
+
+            `https://megaelectronicos.com.py/producto/buscar?search=${encodeURIComponent(consulta)}`,
+
+            `https://megaelectronicos.com.py/producto/buscar?available=yes&search=${encodeURIComponent(consulta)}`,
+
+            `https://megaelectronicos.com.py/?s=${encodeURIComponent(consulta)}`
+
+          ];
+
+          return await buscarFuenteGenerica(
+            urls,
+            consulta
+          );
+        }
+      },
+
+
+      // -------------------------------------------------------
+      // CELLSHOP
+      // -------------------------------------------------------
+
+      {
+        nombre: "Cellshop",
+
+        buscar: async () => {
+
+          const urls = [
+
+            `https://cellshop.com.py/catalogsearch/result/?q=${encodeURIComponent(consulta)}`,
+
+            `https://cellshop.com.py/?s=${encodeURIComponent(consulta)}`,
+
+            `https://cellshop.com.py/buscar?q=${encodeURIComponent(consulta)}`
+
+          ];
+
+          return await buscarFuenteGenerica(
+            urls,
+            consulta
+          );
+        }
+      },
+
+
+      // -------------------------------------------------------
+      // ATACADO CONNECT
+      // -------------------------------------------------------
+
+      {
+        nombre: "Atacado Connect",
+
+        buscar: async () => {
+
+          const urls = [
+
+            `https://atacadoconnect.com/search?q=${encodeURIComponent(consulta)}`,
+
+            `https://atacadoconnect.com/busca?q=${encodeURIComponent(consulta)}`,
+
+            `https://atacadoconnect.com/?s=${encodeURIComponent(consulta)}`
+
+          ];
+
+          return await buscarFuenteGenerica(
+            urls,
+            consulta
+          );
+        }
+      },
+
+
+      // -------------------------------------------------------
+      // NEWZONE
+      // -------------------------------------------------------
+
+      {
+        nombre: "Newzone",
+
+        buscar: async () => {
+
+          const urls = [
+
+            `https://www.newzone.com.py/search?q=${encodeURIComponent(consulta)}`,
+
+            `https://www.newzone.com.py/buscar?q=${encodeURIComponent(consulta)}`,
+
+            `https://www.newzone.com.py/?s=${encodeURIComponent(consulta)}`
+
+          ];
+
+          return await buscarFuenteGenerica(
+            urls,
+            consulta
+          );
+        }
       }
-    }
+
+    ];
+
 
     // =========================================================
-    // 2. SI NO ENCONTRÓ PRODUCTO
+    // 2. PROBAR FUENTES UNA POR UNA
     // =========================================================
 
-    if (!productoUrl) {
-
-      console.log(
-        "NO SE ENCONTRÓ PRODUCTO."
-      );
-
-      return res.status(200).json({
-        encontrado: false,
-        consulta,
-        mensaje:
-          "No encontramos un producto compatible en Compras Paraguai.",
-        diagnostico: {
-          dominiosConsultados: dominios,
-          ultimoContenido:
-            contenidoBusqueda
-              ? contenidoBusqueda.substring(0, 3000)
-              : ""
-        }
-      });
-    }
-
-    // =========================================================
-    // 3. LEER PÁGINA REAL DEL PRODUCTO
-    // =========================================================
-
-    console.log(
-      "===================================="
-    );
-
-    console.log(
-      "LEYENDO PRODUCTO:"
-    );
-
-    console.log(
-      productoUrl
-    );
-
-    const productoPagina =
-      await obtenerPagina(productoUrl);
-
-    console.log(
-      "STATUS PRODUCTO:",
-      productoPagina.status
-    );
-
-    console.log(
-      "CARACTERES PRODUCTO:",
-      productoPagina.texto.length
-    );
-
-    // =========================================================
-    // 4. SI LA PÁGINA DIRECTA ESTÁ BLOQUEADA,
-    //    INTENTAR JINA COMO SEGUNDO MÉTODO
-    // =========================================================
-
-    let productoTexto =
-      productoPagina.texto;
-
-    if (
-      !productoPagina.ok ||
-      esPaginaSeguridad(productoTexto)
+    for (
+      const fuente
+      of fuentes
     ) {
 
       console.log(
-        "PÁGINA DIRECTA BLOQUEADA."
+        "===================================="
       );
 
       console.log(
-        "INTENTANDO JINA COMO FALLBACK..."
+        "PROBANDO FUENTE:",
+        fuente.nombre
       );
-
-      const jinaUrl =
-        `https://r.jina.ai/${productoUrl}`;
 
       try {
 
-        const jinaResponse =
-          await fetch(jinaUrl, {
-            method: "GET",
-            headers: {
-              "Accept": "text/plain",
-              "User-Agent":
-                "Mozilla/5.0"
-            }
-          });
-
-        const jinaTexto =
-          await jinaResponse.text();
-
-        console.log(
-          "STATUS JINA PRODUCTO:",
-          jinaResponse.status
-        );
-
-        console.log(
-          "CARACTERES JINA:",
-          jinaTexto.length
-        );
+        const resultado =
+          await fuente.buscar();
 
         if (
-          jinaResponse.ok &&
-          !esPaginaSeguridad(jinaTexto)
+          !resultado ||
+          !resultado.url
         ) {
 
-          productoTexto =
-            jinaTexto;
+          console.log(
+            "NO HAY PRODUCTO EN:",
+            fuente.nombre
+          );
 
+          continue;
         }
+
+
+        // =====================================================
+        // 3. TENEMOS URL.
+        //    AHORA HAY QUE LEER EL PRODUCTO.
+        // =====================================================
+
+        console.log(
+          "URL ENCONTRADA EN:",
+          fuente.nombre
+        );
+
+        console.log(
+          resultado.url
+        );
+
+        const producto =
+          await leerProducto(
+            resultado.url
+          );
+
+
+        // =====================================================
+        // 4. SI EL PRODUCTO ES CAPTCHA:
+        //    NO DEVOLVER ERROR.
+        //    CONTINUAR CON LA SIGUIENTE FUENTE.
+        // =====================================================
+
+        if (
+          !producto ||
+          !producto.texto
+        ) {
+
+          console.log(
+            "PRODUCTO NO DISPONIBLE:",
+            fuente.nombre
+          );
+
+          console.log(
+            "PASANDO A SIGUIENTE FUENTE..."
+          );
+
+          continue;
+        }
+
+
+        // =====================================================
+        // 5. PRODUCTO REAL ENCONTRADO
+        // =====================================================
+
+        console.log(
+          "PRODUCTO REAL ENCONTRADO EN:",
+          fuente.nombre
+        );
+
+        console.log(
+          "CARACTERES:",
+          producto.texto.length
+        );
+
+
+        // =====================================================
+        // 6. EXTRAER DATOS
+        // =====================================================
+
+        const datos =
+          extraerDatosProducto(
+            producto.texto,
+            consulta
+          );
+
+        console.log(
+          "DATOS:",
+          datos
+        );
+
+
+        // =====================================================
+        // 7. DEVOLVER RESULTADO
+        // =====================================================
+
+        return res.status(200).json({
+
+          encontrado: true,
+
+          nombre:
+            datos.nombre,
+
+          marca:
+            datos.marca,
+
+          modelo:
+            datos.modelo,
+
+          tipoProducto:
+            datos.tipoProducto,
+
+          color:
+            datos.color,
+
+          ean:
+            datos.ean,
+
+          // -------------------------------------------------
+          // ESTA ES LA DESCRIPCIÓN ORIGINAL REAL
+          // -------------------------------------------------
+
+          descripcionOriginal:
+            producto.texto,
+
+          // -------------------------------------------------
+          // FUENTE QUE REALMENTE FUNCIONÓ
+          // -------------------------------------------------
+
+          fuente:
+            fuente.nombre,
+
+          url:
+            resultado.url
+
+        });
 
       } catch (error) {
 
-        console.log(
-          "JINA FALLÓ:",
+        console.error(
+          "ERROR EN FUENTE:",
+          fuente.nombre,
           error.message
         );
+
+        // ===================================================
+        // MUY IMPORTANTE:
+        // UNA FUENTE FALLA → CONTINUAR CON LA SIGUIENTE
+        // ===================================================
+
+        continue;
       }
     }
 
-    // =========================================================
-    // 5. VERIFICAR QUE REALMENTE TENEMOS PRODUCTO
-    // =========================================================
-
-    if (
-      !productoTexto ||
-      productoTexto.length < 100 ||
-      esPaginaSeguridad(productoTexto)
-    ) {
-
-      return res.status(200).json({
-        encontrado: false,
-        consulta,
-        mensaje:
-          "Encontramos el enlace del producto, pero la página está bloqueada por seguridad.",
-        url: productoUrl
-      });
-    }
 
     // =========================================================
-    // 6. LIMPIAR EL TEXTO ORIGINAL
-    // =========================================================
-
-    const descripcionOriginal =
-      limpiarDescripcionOriginal(
-        productoTexto
-      );
-
-    console.log(
-      "DESCRIPCIÓN ORIGINAL:",
-      descripcionOriginal.length,
-      "caracteres"
-    );
-
-    console.log(
-      descripcionOriginal.substring(
-        0,
-        5000
-      )
-    );
-
-    // =========================================================
-    // 7. EXTRAER DATOS
-    // =========================================================
-
-    const datos =
-      extraerDatosProducto(
-        descripcionOriginal,
-        consulta
-      );
-
-    console.log(
-      "DATOS EXTRAÍDOS:",
-      datos
-    );
-
-    // =========================================================
-    // 8. RESPUESTA FINAL
+    // 8. NINGUNA FUENTE FUNCIONÓ
     // =========================================================
 
     return res.status(200).json({
 
-      encontrado: true,
+      encontrado: false,
 
-      nombre:
-        datos.nombre,
+      consulta,
 
-      marca:
-        datos.marca,
+      mensaje:
+        "No encontramos el producto en las fuentes consultadas.",
 
-      modelo:
-        datos.modelo,
-
-      tipoProducto:
-        datos.tipoProducto,
-
-      color:
-        datos.color,
-
-      ean:
-        datos.ean,
-
-      // =====================================================
-      // TEXTO ORIGINAL COMPLETO
-      // =====================================================
-
-      descripcionOriginal:
-        descripcionOriginal,
-
-      fuente:
-        "Compras Paraguai",
-
-      url:
-        productoUrl,
-
-      dominio:
-        dominioEncontrado
+      fuentesConsultadas:
+        fuentes.map(
+          fuente =>
+            fuente.nombre
+        )
 
     });
 
@@ -357,52 +533,326 @@ export default async function handler(req, res) {
 
 
 // ============================================================
-// OBTENER PÁGINA
+// BUSCAR FUENTE GENÉRICA
 // ============================================================
 
-async function obtenerPagina(url) {
+async function buscarFuenteGenerica(
+  urlsBusqueda,
+  consulta
+) {
 
-  const respuesta =
-    await fetch(url, {
-      method: "GET",
+  for (
+    const urlBusqueda
+    of urlsBusqueda
+  ) {
 
-      headers: {
+    try {
 
-        "Accept":
-          "text/html,application/xhtml+xml,text/plain",
+      console.log(
+        "PROBANDO URL:",
+        urlBusqueda
+      );
 
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36",
+      const urlJina =
+        `https://r.jina.ai/${urlBusqueda}`;
 
-        "Accept-Language":
-          "pt-BR,pt;q=0.9,en;q=0.8",
+      const respuesta =
+        await fetch(
+          urlJina,
+          {
+            method: "GET",
 
-        "Cache-Control":
-          "no-cache"
+            headers: {
+              "Accept": "text/plain",
+              "User-Agent": "Mozilla/5.0"
+            }
+          }
+        );
+
+      console.log(
+        "STATUS:",
+        respuesta.status
+      );
+
+      if (
+        !respuesta.ok
+      ) {
+
+        continue;
       }
-    });
 
-  const texto =
-    await respuesta.text();
+      const contenido =
+        await respuesta.text();
 
-  return {
-    ok:
-      respuesta.ok,
+      console.log(
+        "CARACTERES:",
+        contenido.length
+      );
 
-    status:
-      respuesta.status,
+      // ------------------------------------------------------
+      // CAPTCHA = DESCARTAR ESTA URL
+      // ------------------------------------------------------
 
-    texto:
-      texto
-  };
+      if (
+        esPaginaSeguridad(
+          contenido
+        )
+      ) {
+
+        console.log(
+          "CAPTCHA / SEGURIDAD DETECTADO"
+        );
+
+        continue;
+      }
+
+      const urls =
+        extraerUrlsGenericas(
+          contenido
+        );
+
+      console.log(
+        "URLS ENCONTRADAS:",
+        urls.length
+      );
+
+      const productoUrl =
+        seleccionarProducto(
+          urls,
+          consulta
+        );
+
+      if (
+        productoUrl
+      ) {
+
+        return {
+          url:
+            productoUrl
+        };
+      }
+
+    } catch (error) {
+
+      console.log(
+        "ERROR BUSCANDO:",
+        error.message
+      );
+
+      continue;
+    }
+  }
+
+  return null;
 }
 
 
 // ============================================================
-// DETECTAR CLOUDFLARE / CAPTCHA
+// LEER PÁGINA DEL PRODUCTO
 // ============================================================
 
-function esPaginaSeguridad(texto) {
+async function leerProducto(
+  productoUrl
+) {
+
+  console.log(
+    "===================================="
+  );
+
+  console.log(
+    "LEYENDO PRODUCTO:"
+  );
+
+  console.log(
+    productoUrl
+  );
+
+
+  // ==========================================================
+  // PRIMER INTENTO: JINA
+  // ==========================================================
+
+  try {
+
+    const productoJinaUrl =
+      `https://r.jina.ai/${productoUrl}`;
+
+    console.log(
+      "JINA PRODUCTO:"
+    );
+
+    console.log(
+      productoJinaUrl
+    );
+
+    const productoResponse =
+      await fetch(
+        productoJinaUrl,
+        {
+          method: "GET",
+
+          headers: {
+            "Accept": "text/plain",
+            "User-Agent": "Mozilla/5.0"
+          }
+        }
+      );
+
+    console.log(
+      "STATUS PRODUCTO JINA:",
+      productoResponse.status
+    );
+
+    if (
+      productoResponse.ok
+    ) {
+
+      const productoTexto =
+        await productoResponse.text();
+
+      console.log(
+        "PRODUCTO TEXTO:",
+        productoTexto.length,
+        "caracteres"
+      );
+
+      console.log(
+        productoTexto.substring(
+          0,
+          3000
+        )
+      );
+
+
+      // ------------------------------------------------------
+      // SI ES CAPTCHA:
+      // NO USARLO
+      // ------------------------------------------------------
+
+      if (
+        !esPaginaSeguridad(
+          productoTexto
+        ) &&
+        productoTexto.length > 100
+      ) {
+
+        return {
+          texto:
+            productoTexto
+        };
+      }
+
+      console.log(
+        "JINA DEVOLVIÓ CAPTCHA."
+      );
+    }
+
+  } catch (error) {
+
+    console.log(
+      "ERROR JINA PRODUCTO:",
+      error.message
+    );
+  }
+
+
+  // ==========================================================
+  // SEGUNDO INTENTO: DIRECTO
+  // ==========================================================
+
+  try {
+
+    console.log(
+      "INTENTANDO LECTURA DIRECTA..."
+    );
+
+    const respuesta =
+      await fetch(
+        productoUrl,
+        {
+          method: "GET",
+
+          headers: {
+
+            "Accept":
+              "text/html,application/xhtml+xml,text/plain",
+
+            "User-Agent":
+              "Mozilla/5.0"
+          }
+        }
+      );
+
+    console.log(
+      "STATUS DIRECTO:",
+      respuesta.status
+    );
+
+    if (
+      respuesta.ok
+    ) {
+
+      const texto =
+        await respuesta.text();
+
+      console.log(
+        "TEXTO DIRECTO:",
+        texto.length,
+        "caracteres"
+      );
+
+
+      // ------------------------------------------------------
+      // SI ES CAPTCHA:
+      // NO USARLO
+      // ------------------------------------------------------
+
+      if (
+        !esPaginaSeguridad(
+          texto
+        ) &&
+        texto.length > 100
+      ) {
+
+        return {
+          texto:
+            texto
+        };
+      }
+
+      console.log(
+        "LECTURA DIRECTA DEVOLVIÓ CAPTCHA."
+      );
+    }
+
+  } catch (error) {
+
+    console.log(
+      "ERROR LECTURA DIRECTA:",
+      error.message
+    );
+  }
+
+
+  // ==========================================================
+  // NO SIRVIÓ ESTA FUENTE
+  // ==========================================================
+
+  console.log(
+    "NO SE PUDO LEER PRODUCTO REAL."
+  );
+
+  return null;
+}
+
+
+// ============================================================
+// DETECTAR CAPTCHA / CLOUDFLARE / SEGURIDAD
+// ============================================================
+
+function esPaginaSeguridad(
+  texto
+) {
 
   const t =
     String(texto || "")
@@ -424,64 +874,110 @@ function esPaginaSeguridad(texto) {
 
     "verify you are human",
 
-    "captcha"
+    "captcha",
+
+    "security verification",
+
+    "access denied",
+
+    "enable javascript and cookies"
 
   ];
 
   return indicadores.some(
     palabra =>
-      t.includes(palabra)
+      t.includes(
+        palabra
+      )
   );
 }
 
 
 // ============================================================
-// EXTRAER URLS DE PRODUCTOS
+// EXTRAER URLS
 // ============================================================
 
-function extraerUrlsProducto(
-  texto,
-  dominioBase
+function extraerUrls(
+  texto
 ) {
 
-  const resultado =
-    [];
+  const resultado = [];
 
-  const contenido =
-    String(texto || "");
-
-  // ----------------------------------------------------------
-  // URLS ABSOLUTAS
-  // ----------------------------------------------------------
-
-  const regexAbsolutas =
-    /https?:\/\/[^\s"'<>\\]+/gi;
+  const regex =
+    /https?:\/\/[^\s<>"')]+/gi;
 
   let match;
 
   while (
     (match =
-      regexAbsolutas.exec(contenido))
-    !== null
+      regex.exec(texto)) !== null
   ) {
 
     let url =
       match[0];
 
     url =
-      limpiarUrl(url);
+      url.replace(
+        /[.,;]+$/,
+        ""
+      );
 
     if (
-      esUrlProducto(url)
+      url.includes(
+        "comprasparaguai.com.br/"
+      )
     ) {
 
-      resultado.push(url);
-
+      resultado.push(
+        url
+      );
     }
   }
 
+  return [
+    ...new Set(
+      resultado
+    )
+  ];
+}
+
+
+// ============================================================
+// EXTRAER URLS GENERICAS
+// ============================================================
+
+function extraerUrlsGenericas(
+  texto
+) {
+
+  const resultado = [];
+
+  const regex =
+    /https?:\/\/[^\s<>"')]+/gi;
+
+  let match;
+
+  while (
+    (match =
+      regex.exec(texto)) !== null
+  ) {
+
+    let url =
+      match[0];
+
+    url =
+      limpiarUrl(
+        url
+      );
+
+    resultado.push(
+      url
+    );
+  }
+
+
   // ----------------------------------------------------------
-  // HREF="..."
+  // TAMBIÉN BUSCAR HREF
   // ----------------------------------------------------------
 
   const regexHref =
@@ -489,150 +985,38 @@ function extraerUrlsProducto(
 
   while (
     (match =
-      regexHref.exec(contenido))
-    !== null
+      regexHref.exec(texto)) !== null
   ) {
 
-    let href =
+    let url =
       match[1];
 
-    href =
-      href.trim();
-
     if (
-      href.startsWith("/")
-    ) {
-
-      href =
-        dominioBase +
-        href;
-
-    }
-
-    if (
-      href.startsWith("http")
-      &&
-      esUrlProducto(href)
+      url.startsWith("http")
     ) {
 
       resultado.push(
-        limpiarUrl(href)
+        limpiarUrl(
+          url
+        )
       );
-
     }
   }
 
-  // ----------------------------------------------------------
-  // QUITAR DUPLICADOS
-  // ----------------------------------------------------------
 
   return [
-    ...new Set(resultado)
-  ];
-}
-
-
-// ============================================================
-// DETECTAR SI ES PRODUCTO
-// ============================================================
-
-function esUrlProducto(url) {
-
-  const u =
-    String(url || "")
-      .toLowerCase();
-
-  if (
-    !u.includes(
-      "comprasparaguai"
+    ...new Set(
+      resultado
     )
-  ) {
-
-    return false;
-  }
-
-  // Ignorar páginas gerais
-  const ignorar = [
-
-    "/busca/",
-
-    "/busca",
-
-    "/categoria/",
-
-    "/categorias/",
-
-    "/lojas/",
-
-    "/marca/",
-
-    "/marcas/",
-
-    "/login",
-
-    "/favoritos",
-
-    "/sobre",
-
-    "/contato",
-
-    "/termos",
-
-    "/privacidade"
-
   ];
-
-  for (
-    const parte
-    of ignorar
-  ) {
-
-    if (
-      u.includes(parte)
-    ) {
-
-      return false;
-    }
-  }
-
-  // Produto normalmente possui
-  // slug + identificador ou slug extenso
-
-  const path =
-    u.split("?")[0];
-
-  const partes =
-    path.split("/")
-      .filter(Boolean);
-
-  if (
-    partes.length < 2
-  ) {
-
-    return false;
-  }
-
-  const slug =
-    partes[
-      partes.length - 1
-    ];
-
-  if (
-    slug.length < 15
-  ) {
-
-    return false;
-  }
-
-  return true;
 }
 
 
 // ============================================================
-// SELECCIONAR MEJOR PRODUCTO
+// SELECCIONAR PRODUCTO
 // ============================================================
 
-function seleccionarMejorProducto(
+function seleccionarProducto(
   urls,
   consulta
 ) {
@@ -651,36 +1035,41 @@ function seleccionarMejorProducto(
     );
 
   const partes =
-    consultaNormalizada
+    consulta
+      .toLowerCase()
       .split(/[-_\s]+/)
       .filter(
         parte =>
           parte.length >= 2
       );
 
-  let mejor =
+  let productoUrl =
     null;
 
   let mejorPuntaje =
     -1;
+
 
   for (
     const url
     of urls
   ) {
 
-    const normalizada =
-      normalizar(url);
+    const urlNormalizada =
+      normalizar(
+        url
+      );
 
     let puntaje =
       0;
 
+
     // --------------------------------------------------------
-    // COINCIDENCIA COMPLETA
+    // COINCIDENCIA EXACTA
     // --------------------------------------------------------
 
     if (
-      normalizada.includes(
+      urlNormalizada.includes(
         consultaNormalizada
       )
     ) {
@@ -688,8 +1077,9 @@ function seleccionarMejorProducto(
       puntaje += 100;
     }
 
+
     // --------------------------------------------------------
-    // PARTES DE CONSULTA
+    // COINCIDENCIA POR PARTES
     // --------------------------------------------------------
 
     for (
@@ -697,27 +1087,36 @@ function seleccionarMejorProducto(
       of partes
     ) {
 
-      if (
-        normalizada.includes(
+      const parteNormalizada =
+        normalizar(
           parte
+        );
+
+      if (
+        parteNormalizada &&
+        urlNormalizada.includes(
+          parteNormalizada
         )
       ) {
 
         puntaje += 20;
       }
-
     }
 
+
     // --------------------------------------------------------
-    // SI EL URL PARECE PRODUCTO
+    // PRIORIZAR URL DE PRODUCTO
     // --------------------------------------------------------
 
     if (
-      esUrlProducto(url)
+      pareceUrlProducto(
+        url
+      )
     ) {
 
-      puntaje += 5;
+      puntaje += 10;
     }
+
 
     if (
       puntaje >
@@ -727,17 +1126,69 @@ function seleccionarMejorProducto(
       mejorPuntaje =
         puntaje;
 
-      mejor =
-        url;
+      productoUrl =
+        limpiarUrl(
+          url
+        );
     }
   }
 
+
   console.log(
-    "MEJOR PUNTAJE:",
+    "MEJOR PRODUCTO:"
+  );
+
+  console.log(
+    productoUrl
+  );
+
+  console.log(
+    "PUNTAJE:",
     mejorPuntaje
   );
 
-  return mejor;
+
+  return productoUrl;
+}
+
+
+// ============================================================
+// SABER SI URL PARECE PRODUCTO
+// ============================================================
+
+function pareceUrlProducto(
+  url
+) {
+
+  const u =
+    String(url || "")
+      .toLowerCase();
+
+
+  // No seleccionar páginas de búsqueda
+  if (
+    u.includes("/busca") ||
+    u.includes("/search") ||
+    u.includes("catalogsearch") ||
+    u.includes("?s=") ||
+    u.includes("?q=")
+  ) {
+
+    return false;
+  }
+
+
+  // URL larga normalmente corresponde
+  // a una página de producto
+  if (
+    u.length >= 50
+  ) {
+
+    return true;
+  }
+
+
+  return false;
 }
 
 
@@ -745,9 +1196,11 @@ function seleccionarMejorProducto(
 // LIMPIAR URL
 // ============================================================
 
-function limpiarUrl(url) {
+function limpiarUrl(
+  url
+) {
 
-  return String(url || "")
+  return String(url)
 
     .replace(
       /\\u0026/g,
@@ -767,48 +1220,6 @@ function limpiarUrl(url) {
 
 
 // ============================================================
-// LIMPIAR DESCRIPCIÓN ORIGINAL
-// ============================================================
-
-function limpiarDescripcionOriginal(
-  texto
-) {
-
-  let resultado =
-    String(texto || "");
-
-  // Remover caracteres nulos
-  resultado =
-    resultado.replace(
-      /\0/g,
-      ""
-    );
-
-  // Normalizar saltos
-  resultado =
-    resultado.replace(
-      /\r\n/g,
-      "\n"
-    );
-
-  resultado =
-    resultado.replace(
-      /\r/g,
-      "\n"
-    );
-
-  // Reducir exceso de líneas vacías
-  resultado =
-    resultado.replace(
-      /\n{4,}/g,
-      "\n\n\n"
-    );
-
-  return resultado.trim();
-}
-
-
-// ============================================================
 // EXTRAER DATOS DEL PRODUCTO
 // ============================================================
 
@@ -820,28 +1231,20 @@ function extraerDatosProducto(
   const limpio =
     String(texto || "");
 
-  let nombre =
-    "";
+  let nombre = "";
+  let marca = "";
+  let modelo = consulta;
+  let color = "";
+  let ean = "";
 
-  let marca =
-    "";
 
-  let modelo =
-    consulta;
-
-  let color =
-    "";
-
-  let ean =
-    "";
-
-  // ==========================================================
+  // ----------------------------------------------------------
   // NOMBRE
-  // ==========================================================
+  // ----------------------------------------------------------
 
   const tituloMatch =
     limpio.match(
-      /(?:#\s*)?(.{10,250}(?:CFI|PlayStation|PS5|iPhone|Galaxy|Xiaomi|Samsung|A17|SM-A175F).{0,250})/i
+      /(?:#\s*)?(.{10,250}(?:CFI|PlayStation|PS5|iPhone|Galaxy|Xiaomi|Samsung).{0,250})/i
     );
 
   if (
@@ -854,7 +1257,8 @@ function extraerDatosProducto(
       );
   }
 
-  // Buscar líneas de título
+
+  // Buscar primera línea que parezca título
   if (
     !nombre
   ) {
@@ -876,8 +1280,10 @@ function extraerDatosProducto(
     ) {
 
       if (
-        /playstation|sony|cfi-|iphone|samsung|galaxy|xiaomi|motorola|lenovo|asus|acer|dell|logitech|canon|nintendo|microsoft/i
-          .test(linea)
+        /playstation|sony|cfi-|iphone|samsung|xiaomi|motorola|lenovo|asus|acer|dell|logitech|canon|nintendo|microsoft/i
+          .test(
+            linea
+          )
         &&
         linea.length < 300
       ) {
@@ -890,9 +1296,10 @@ function extraerDatosProducto(
     }
   }
 
-  // ==========================================================
+
+  // ----------------------------------------------------------
   // MARCA
-  // ==========================================================
+  // ----------------------------------------------------------
 
   const marcas = [
 
@@ -922,8 +1329,10 @@ function extraerDatosProducto(
 
   ];
 
+
   const textoCompleto =
     `${nombre}\n${limpio}`;
+
 
   for (
     const m
@@ -949,9 +1358,10 @@ function extraerDatosProducto(
     }
   }
 
-  // ==========================================================
+
+  // ----------------------------------------------------------
   // MODELO
-  // ==========================================================
+  // ----------------------------------------------------------
 
   const modeloMatch =
     limpio.match(
@@ -966,9 +1376,10 @@ function extraerDatosProducto(
       modeloMatch[0];
   }
 
-  // ==========================================================
-  // EAN / GTIN
-  // ==========================================================
+
+  // ----------------------------------------------------------
+  // EAN
+  // ----------------------------------------------------------
 
   const eanMatch =
     limpio.match(
@@ -999,9 +1410,10 @@ function extraerDatosProducto(
     }
   }
 
-  // ==========================================================
+
+  // ----------------------------------------------------------
   // COLOR
-  // ==========================================================
+  // ----------------------------------------------------------
 
   const colores = [
 
@@ -1086,6 +1498,7 @@ function extraerDatosProducto(
 
   ];
 
+
   for (
     const colorItem
     of colores
@@ -1096,14 +1509,11 @@ function extraerDatosProducto(
       of colorItem.palabras
     ) {
 
-      const regex =
+      if (
         new RegExp(
           `\\b${escaparRegex(palabra)}\\b`,
           "i"
-        );
-
-      if (
-        regex.test(
+        ).test(
           textoCompleto
         )
       ) {
@@ -1123,15 +1533,17 @@ function extraerDatosProducto(
     }
   }
 
-  // ==========================================================
-  // TIPO DE PRODUCTO
-  // ==========================================================
+
+  // ----------------------------------------------------------
+  // TIPO
+  // ----------------------------------------------------------
 
   const tipoProducto =
     detectarTipoProducto(
       nombre ||
       limpio
     );
+
 
   return {
 
@@ -1163,6 +1575,7 @@ function detectarTipoProducto(
     String(texto || "")
       .toLowerCase();
 
+
   if (
     t.includes("playstation") ||
     t.includes("ps5") ||
@@ -1172,6 +1585,7 @@ function detectarTipoProducto(
 
     return "Consola";
   }
+
 
   if (
     t.includes("iphone") ||
@@ -1183,6 +1597,7 @@ function detectarTipoProducto(
     return "Celular";
   }
 
+
   if (
     t.includes("notebook") ||
     t.includes("laptop") ||
@@ -1192,12 +1607,14 @@ function detectarTipoProducto(
     return "Notebook";
   }
 
+
   if (
     t.includes("monitor")
   ) {
 
     return "Monitor";
   }
+
 
   if (
     t.includes("televisor") ||
@@ -1209,6 +1626,7 @@ function detectarTipoProducto(
     return "Televisor";
   }
 
+
   if (
     t.includes("mouse")
   ) {
@@ -1216,13 +1634,15 @@ function detectarTipoProducto(
     return "Mouse";
   }
 
+
   if (
     t.includes("teclado") ||
-    t.includes("keyboard")
+    t.includes("teclado")
   ) {
 
     return "Teclado";
   }
+
 
   if (
     t.includes("headset") ||
@@ -1232,6 +1652,7 @@ function detectarTipoProducto(
 
     return "Auricular";
   }
+
 
   if (
     t.includes("ssd") ||
@@ -1243,6 +1664,7 @@ function detectarTipoProducto(
     return "Almacenamiento";
   }
 
+
   if (
     t.includes("impresora") ||
     t.includes("impressora")
@@ -1250,6 +1672,7 @@ function detectarTipoProducto(
 
     return "Impresora";
   }
+
 
   return "Producto";
 }
