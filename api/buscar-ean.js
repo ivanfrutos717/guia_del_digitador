@@ -1,15 +1,12 @@
 export default async function handler(req, res) {
-    // 1. Configurar encabezados CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Responder a peticiones preflight
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
 
-    // 2. Obtener el EAN desde GET o POST
     const ean = req.method === 'GET'
         ? req.query.ean
         : req.body?.ean;
@@ -20,16 +17,14 @@ export default async function handler(req, res) {
         });
     }
 
-    // Limpiar el código para dejar solamente números
-    const eanLimpio = String(ean).replace(/\D/g, '');
+    const codigo = String(ean).replace(/\D/g, '');
 
-    if (![8, 12, 13].includes(eanLimpio.length)) {
+    if (![8, 12, 13].includes(codigo.length)) {
         return res.status(400).json({
-            error: 'El código EAN/UPC debe tener 8, 12 o 13 dígitos.'
+            error: 'El EAN/UPC debe tener 8, 12 o 13 dígitos.'
         });
     }
 
-    // 3. Obtener API Key desde Vercel
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -39,31 +34,42 @@ export default async function handler(req, res) {
     }
 
     try {
-        // 4. Prompt para identificar exactamente el producto
         const prompt = `
-Analiza el siguiente código de barras EAN/UPC:
+Analiza este código de barras EAN/UPC:
 
-${eanLimpio}
+${codigo}
 
-Tu tarea es identificar el producto comercial EXACTO asociado a ese código.
+Intenta identificar qué producto corresponde al código.
 
 IMPORTANTE:
-- Utiliza Google Search para verificar el código EAN/UPC.
-- Busca específicamente el número ${eanLimpio}.
-- No inventes información.
-- Si encuentras evidencia confiable de que el EAN corresponde a un producto concreto, devuelve encontrado=true.
-- Si no puedes confirmar que el EAN corresponde exactamente a un producto, devuelve encontrado=false.
-- No confundas productos similares, variantes, colores o modelos diferentes.
-- El campo "marca" debe contener la marca comercial.
-- El campo "modelo" debe contener el nombre, modelo o referencia comercial del producto.
-- El campo "tipoProducto" debe describir qué tipo de producto es.
-- El campo "color" debe indicar el color o variante cuando pueda determinarse.
+Esta es una PRUEBA TÉCNICA.
+NO utilices Google Search.
+Utiliza únicamente el conocimiento disponible del modelo.
 
-El EAN consultado es:
-${eanLimpio}
+Devuelve ÚNICAMENTE JSON válido con esta estructura:
+
+{
+  "encontrado": true,
+  "ean": "${codigo}",
+  "marca": "Marca del producto",
+  "modelo": "Nombre o modelo del producto",
+  "tipoProducto": "Categoría o tipo de producto",
+  "color": "Color o variante"
+}
+
+Si no puedes identificarlo con suficiente confianza:
+
+{
+  "encontrado": false,
+  "ean": "${codigo}",
+  "marca": "NO_ENCONTRADO",
+  "modelo": "",
+  "tipoProducto": "",
+  "color": "",
+  "mensaje": "Producto no identificado"
+}
 `;
 
-        // 5. Endpoint actual de Gemini Interactions API
         const url =
             'https://generativelanguage.googleapis.com/v1beta/interactions';
 
@@ -75,81 +81,96 @@ ${eanLimpio}
             },
             body: JSON.stringify({
                 model: 'gemini-3.8-flash',
-
                 input: prompt,
 
-                // Permite a Gemini buscar información actual en Google
-                tools: [
-                    {
-                        type: 'google_search'
-                    }
-                ],
-
-                // Obliga a devolver un JSON con esta estructura
+                // IMPORTANTE:
+                // NO ponemos google_search aquí.
+                // Esta prueba sirve para determinar si el 429
+                // está relacionado con Google Search.
+                
                 response_format: {
-                    type: 'text',
-                    mime_type: 'application/json',
-                    schema: {
-                        type: 'object',
-                        properties: {
-                            encontrado: {
-                                type: 'boolean'
+                    type: 'json_schema',
+                    json_schema: {
+                        name: 'producto_ean',
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                encontrado: {
+                                    type: 'boolean'
+                                },
+                                ean: {
+                                    type: 'string'
+                                },
+                                marca: {
+                                    type: 'string'
+                                },
+                                modelo: {
+                                    type: 'string'
+                                },
+                                tipoProducto: {
+                                    type: 'string'
+                                },
+                                color: {
+                                    type: 'string'
+                                },
+                                mensaje: {
+                                    type: 'string'
+                                }
                             },
-                            ean: {
-                                type: 'string'
-                            },
-                            marca: {
-                                type: 'string'
-                            },
-                            modelo: {
-                                type: 'string'
-                            },
-                            tipoProducto: {
-                                type: 'string'
-                            },
-                            color: {
-                                type: 'string'
-                            },
-                            mensaje: {
-                                type: 'string'
-                            }
-                        },
-                        required: [
-                            'encontrado',
-                            'ean',
-                            'marca'
-                        ]
+                            required: [
+                                'encontrado',
+                                'ean',
+                                'marca',
+                                'modelo',
+                                'tipoProducto',
+                                'color'
+                            ]
+                        }
                     }
                 }
             })
         });
 
-        // 6. Comprobar respuesta de Gemini
-        if (!apiResponse.ok) {
-            const errorText = await apiResponse.text();
+        const responseText = await apiResponse.text();
 
+        console.log(
+            'Respuesta completa de Gemini:',
+            responseText
+        );
+
+        if (!apiResponse.ok) {
             console.error(
                 'Error desde Gemini API:',
-                errorText
+                responseText
             );
 
             return res.status(502).json({
                 error: 'Error al consultar la API de IA.',
-                detalle: errorText
+                detalle: responseText
             });
         }
 
-        // 7. Convertir respuesta
-        const data = await apiResponse.json();
+        let data;
 
-        console.log(
-            'Respuesta de Gemini recibida correctamente.'
-        );
+        try {
+            data = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error(
+                'Gemini no devolvió JSON válido:',
+                responseText
+            );
 
-        // 8. La Interactions API devuelve output_text
+            return res.status(502).json({
+                error: 'Gemini devolvió una respuesta no válida.',
+                respuesta: responseText
+            });
+        }
+
+        // La Interactions API puede devolver el resultado
+        // directamente en output_text.
         let rawText = data.output_text || '';
 
-        // Compatibilidad adicional por si la respuesta viene dentro de steps
+        // Fallback por si output_text no está disponible.
         if (!rawText && Array.isArray(data.steps)) {
             for (const step of data.steps) {
                 if (
@@ -170,65 +191,52 @@ ${eanLimpio}
 
         if (!rawText) {
             console.error(
-                'Gemini no devolvió texto:',
+                'No se encontró texto en la respuesta:',
                 JSON.stringify(data)
             );
 
             return res.status(502).json({
-                error: 'La IA no devolvió información del producto.'
+                error: 'Gemini no devolvió información del producto.',
+                respuesta: data
             });
         }
 
-        // 9. Limpiar posibles bloques Markdown
-        const jsonString = rawText
-            .replace(/```json/gi, '')
-            .replace(/```/g, '')
-            .trim();
-
-        // 10. Convertir el JSON devuelto por Gemini
-        let productoInfo;
+        let producto;
 
         try {
-            productoInfo = JSON.parse(jsonString);
+            producto = JSON.parse(rawText);
         } catch (parseError) {
-            console.error(
-                'No se pudo interpretar el JSON de Gemini:',
-                rawText
-            );
+            const limpio = rawText
+                .replace(/```json/gi, '')
+                .replace(/```/g, '')
+                .trim();
 
-            return res.status(502).json({
-                error: 'La IA devolvió una respuesta que no pudo interpretarse.'
-            });
+            try {
+                producto = JSON.parse(limpio);
+            } catch (secondError) {
+                console.error(
+                    'No se pudo interpretar el JSON:',
+                    rawText
+                );
+
+                return res.status(502).json({
+                    error: 'Gemini devolvió un JSON no válido.',
+                    respuesta: rawText
+                });
+            }
         }
 
-        // 11. Asegurar que el EAN devuelto sea el consultado
-        productoInfo.ean = eanLimpio;
-
-        // 12. Normalizar valores
-        productoInfo.encontrado =
-            productoInfo.encontrado === true;
-
-        productoInfo.marca =
-            productoInfo.marca || 'NO_ENCONTRADO';
-
-        productoInfo.modelo =
-            productoInfo.modelo || '';
-
-        productoInfo.tipoProducto =
-            productoInfo.tipoProducto || '';
-
-        productoInfo.color =
-            productoInfo.color || '';
-
-        // 13. Si no encontró el producto
-        if (!productoInfo.encontrado) {
-            productoInfo.mensaje =
-                productoInfo.mensaje ||
-                'Producto no identificado';
-        }
-
-        // 14. Devolver resultado al frontend
-        return res.status(200).json(productoInfo);
+        return res.status(200).json({
+            encontrado: Boolean(producto.encontrado),
+            ean: codigo,
+            marca: producto.marca || '',
+            modelo: producto.modelo || '',
+            tipoProducto: producto.tipoProducto || '',
+            color: producto.color || '',
+            ...(producto.mensaje
+                ? { mensaje: producto.mensaje }
+                : {})
+        });
 
     } catch (error) {
         console.error(
@@ -237,7 +245,8 @@ ${eanLimpio}
         );
 
         return res.status(500).json({
-            error: 'Error interno al procesar el código EAN.'
+            error: 'Error interno al procesar el código EAN.',
+            detalle: error.message
         });
     }
 }
