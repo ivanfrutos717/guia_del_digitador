@@ -12,200 +12,213 @@ export default async function handler(req, res) {
     }
 
     console.log("====================================");
-    console.log("BUSCANDO EN NISSEI:", consulta);
+    console.log("BUSCANDO:", consulta);
     console.log("====================================");
 
-    const urlBusqueda =
+    // ---------------------------------------------------------
+    // 1. BUSCAR EN NISSEI A TRAVÉS DE JINA
+    // ---------------------------------------------------------
+
+    const urlNissei =
       `https://nissei.com/py/catalogsearch/result/?q=${encodeURIComponent(consulta)}`;
 
-    console.log("URL:", urlBusqueda);
+    const urlJina =
+      `https://r.jina.ai/${urlNissei}`;
 
-    const respuesta = await fetch(urlBusqueda, {
+    console.log("URL JINA:");
+    console.log(urlJina);
+
+    const respuesta = await fetch(urlJina, {
       method: "GET",
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136.0.0.0 Safari/537.36",
-        "Accept":
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-        "Referer": "https://nissei.com/py/"
+        "Accept": "text/plain",
+        "User-Agent": "Mozilla/5.0"
       }
     });
 
-    console.log("STATUS NISSEI:", respuesta.status);
+    console.log("STATUS JINA:", respuesta.status);
 
     if (!respuesta.ok) {
+      const textoError = await respuesta.text();
+
+      console.log("ERROR JINA:", textoError.substring(0, 1000));
+
       return res.status(200).json({
         encontrado: false,
         consulta,
-        mensaje: "Nissei no respondió correctamente",
+        mensaje: "Jina no pudo consultar Nissei",
         status: respuesta.status
       });
     }
 
-    const html = await respuesta.text();
+    const contenido = await respuesta.text();
 
-    console.log("HTML RECIBIDO:", html.length, "caracteres");
+    console.log(
+      "CONTENIDO JINA:",
+      contenido.length,
+      "caracteres"
+    );
 
-    // ---------------------------------------------------------
-    // BUSCAR LINKS DE PRODUCTOS
-    // ---------------------------------------------------------
-
-    const links = [];
-
-    const regexLinks = /href=["']([^"']+)["']/gi;
-
-    let match;
-
-    while ((match = regexLinks.exec(html)) !== null) {
-      let url = match[1];
-
-      if (!url) continue;
-
-      // Convertir URLs relativas en absolutas
-      if (url.startsWith("/")) {
-        url = "https://nissei.com" + url;
-      }
-
-      // Solo productos de Nissei
-      if (
-        url.includes("nissei.com/py/") &&
-        !url.includes("/catalogsearch/") &&
-        !url.includes("/customer/") &&
-        !url.includes("/checkout/") &&
-        !url.includes("/category/")
-      ) {
-        links.push(url);
-      }
-    }
-
-    console.log("LINKS ENCONTRADOS:", links.length);
-
-    // Eliminar duplicados
-    const linksUnicos = [...new Set(links)];
-
-    console.log("LINKS ÚNICOS:", linksUnicos.length);
+    console.log(
+      contenido.substring(0, 3000)
+    );
 
     // ---------------------------------------------------------
-    // BUSCAR UN LINK QUE CONTENGA LA CONSULTA
+    // 2. BUSCAR URL DEL PRODUCTO
     // ---------------------------------------------------------
+
+    const urls = extraerUrls(contenido);
+
+    console.log("URLS ENCONTRADAS:", urls.length);
 
     const consultaNormalizada = normalizar(consulta);
 
     let productoUrl = null;
 
-    for (const link of linksUnicos) {
-      const linkNormalizado = normalizar(link);
+    // Primero: coincidencia exacta
+    for (const url of urls) {
 
-      if (linkNormalizado.includes(consultaNormalizada)) {
-        productoUrl = link;
+      const urlNormalizada = normalizar(url);
+
+      if (urlNormalizada.includes(consultaNormalizada)) {
+        productoUrl = limpiarUrl(url);
         break;
       }
     }
 
-    // ---------------------------------------------------------
-    // SI NO ENCUENTRA EXACTAMENTE, BUSCAR POR PARTES
-    // ---------------------------------------------------------
-
+    // Segundo: buscar por partes
     if (!productoUrl) {
+
       const partes = consultaNormalizada
         .split(/[-_\s]+/)
         .filter(Boolean);
 
-      console.log("PARTES:", partes);
+      for (const url of urls) {
 
-      for (const link of linksUnicos) {
-        const linkNormalizado = normalizar(link);
+        const urlNormalizada = normalizar(url);
 
         const coincide = partes.every(parte =>
-          linkNormalizado.includes(parte)
+          urlNormalizada.includes(parte)
         );
 
         if (coincide) {
-          productoUrl = link;
+          productoUrl = limpiarUrl(url);
           break;
         }
       }
     }
 
-    console.log("PRODUCTO ENCONTRADO:", productoUrl);
+    console.log("PRODUCTO URL:", productoUrl);
 
     // ---------------------------------------------------------
-    // SI NO ENCONTRÓ LINK
+    // 3. SI NO ENCONTRÓ URL
     // ---------------------------------------------------------
 
     if (!productoUrl) {
+
       return res.status(200).json({
         encontrado: false,
         consulta,
-        mensaje: "No se encontró el producto en Nissei.",
+        mensaje: "Nissei respondió, pero no encontramos el enlace del producto.",
         diagnostico: {
-          status: respuesta.status,
-          htmlCaracteres: html.length,
-          linksEncontrados: linksUnicos.length
+          contenidoCaracteres: contenido.length,
+          urlsEncontradas: urls.length
         }
       });
     }
 
     // ---------------------------------------------------------
-    // ABRIR PÁGINA DEL PRODUCTO
+    // 4. LEER PÁGINA DEL PRODUCTO CON JINA
     // ---------------------------------------------------------
 
-    console.log("ABRIENDO PRODUCTO:", productoUrl);
+    const productoJinaUrl =
+      `https://r.jina.ai/${productoUrl}`;
 
-    const productoResponse = await fetch(productoUrl, {
+    console.log(
+      "LEYENDO PRODUCTO:",
+      productoJinaUrl
+    );
+
+    const productoResponse = await fetch(productoJinaUrl, {
       method: "GET",
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136.0.0.0 Safari/537.36",
-        "Accept":
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-        "Referer": urlBusqueda
+        "Accept": "text/plain",
+        "User-Agent": "Mozilla/5.0"
       }
     });
 
-    console.log("STATUS PRODUCTO:", productoResponse.status);
+    console.log(
+      "STATUS PRODUCTO JINA:",
+      productoResponse.status
+    );
 
     if (!productoResponse.ok) {
+
       return res.status(200).json({
         encontrado: false,
         consulta,
-        mensaje: "Se encontró el producto pero no se pudo abrir la página",
+        mensaje: "Encontramos el producto pero no pudimos leer sus datos.",
         url: productoUrl
       });
     }
 
-    const productoHtml = await productoResponse.text();
+    const productoTexto =
+      await productoResponse.text();
 
     console.log(
-      "HTML PRODUCTO:",
-      productoHtml.length,
+      "PRODUCTO TEXTO:",
+      productoTexto.length,
       "caracteres"
     );
 
+    console.log(
+      productoTexto.substring(0, 5000)
+    );
+
     // ---------------------------------------------------------
-    // EXTRAER INFORMACIÓN
+    // 5. EXTRAER DATOS
     // ---------------------------------------------------------
 
-    const datos = extraerProducto(productoHtml, consulta);
+    const datos =
+      extraerDatosProducto(
+        productoTexto,
+        consulta
+      );
 
-    console.log("DATOS EXTRAÍDOS:", datos);
+    console.log("DATOS:", datos);
+
+    // ---------------------------------------------------------
+    // 6. RESPUESTA
+    // ---------------------------------------------------------
 
     return res.status(200).json({
+
       encontrado: true,
+
       nombre: datos.nombre,
+
       marca: datos.marca,
+
       modelo: datos.modelo,
+
       tipoProducto: datos.tipoProducto,
+
       color: datos.color,
+
       ean: datos.ean,
+
       fuente: "Nissei",
+
       url: productoUrl
+
     });
 
   } catch (error) {
-    console.error("ERROR API:", error);
+
+    console.error(
+      "ERROR GENERAL:",
+      error
+    );
 
     return res.status(500).json({
       encontrado: false,
@@ -217,23 +230,63 @@ export default async function handler(req, res) {
 
 
 // ============================================================
-// FUNCIONES
+// EXTRAER URLS
 // ============================================================
 
-function normalizar(texto) {
-  return String(texto || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "");
+function extraerUrls(texto) {
+
+  const resultado = [];
+
+  const regex =
+    /https?:\/\/[^\s<>"')]+/gi;
+
+  let match;
+
+  while ((match = regex.exec(texto)) !== null) {
+
+    let url = match[0];
+
+    url = url.replace(
+      /[.,;]+$/,
+      ""
+    );
+
+    if (
+      url.includes("nissei.com/py/")
+    ) {
+      resultado.push(url);
+    }
+  }
+
+  return [
+    ...new Set(resultado)
+  ];
 }
 
 
 // ============================================================
-// EXTRAER PRODUCTO
+// LIMPIAR URL
 // ============================================================
 
-function extraerProducto(html, consulta) {
+function limpiarUrl(url) {
+
+  return String(url)
+    .replace(/\\u0026/g, "&")
+    .replace(/&amp;/g, "&")
+    .replace(/[.,;]+$/, "");
+}
+
+
+// ============================================================
+// EXTRAER DATOS DEL PRODUCTO
+// ============================================================
+
+function extraerDatosProducto(
+  texto,
+  consulta
+) {
+
+  const limpio = String(texto || "");
 
   let nombre = "";
   let marca = "";
@@ -242,95 +295,38 @@ function extraerProducto(html, consulta) {
   let ean = "";
 
   // ----------------------------------------------------------
-  // JSON-LD
+  // NOMBRE
   // ----------------------------------------------------------
 
-  const jsonLdRegex =
-    /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  const tituloMatch =
+    limpio.match(
+      /(?:#\s*)?(.{10,200}(?:CFI|PlayStation|PS5).{0,200})/i
+    );
 
-  let jsonMatch;
+  if (tituloMatch) {
+    nombre = limpiarTexto(
+      tituloMatch[1]
+    );
+  }
 
-  while ((jsonMatch = jsonLdRegex.exec(html)) !== null) {
+  // Buscar primera línea que parezca título
+  if (!nombre) {
 
-    try {
+    const lineas =
+      limpio
+        .split("\n")
+        .map(x => x.trim())
+        .filter(Boolean);
 
-      const json = JSON.parse(jsonMatch[1].trim());
+    for (const linea of lineas) {
 
-      const objetos = Array.isArray(json)
-        ? json
-        : [json];
-
-      for (const obj of objetos) {
-
-        if (!obj || typeof obj !== "object") continue;
-
-        if (obj["@type"] === "Product" || obj.name) {
-
-          if (!nombre && obj.name) {
-            nombre = limpiarTexto(obj.name);
-          }
-
-          if (!marca && obj.brand) {
-
-            if (typeof obj.brand === "string") {
-              marca = obj.brand;
-            } else if (obj.brand.name) {
-              marca = obj.brand.name;
-            }
-          }
-
-          if (!ean && obj.gtin) {
-            ean = String(obj.gtin);
-          }
-
-          if (!ean && obj.gtin12) {
-            ean = String(obj.gtin12);
-          }
-
-          if (!ean && obj.gtin13) {
-            ean = String(obj.gtin13);
-          }
-
-          if (!ean && obj.gtin14) {
-            ean = String(obj.gtin14);
-          }
-        }
+      if (
+        /playstation|sony|cfi-/i.test(linea) &&
+        linea.length < 300
+      ) {
+        nombre = linea;
+        break;
       }
-
-    } catch (error) {
-      // Ignorar JSON-LD inválido
-    }
-  }
-
-
-  // ----------------------------------------------------------
-  // TITLE
-  // ----------------------------------------------------------
-
-  if (!nombre) {
-
-    const titleMatch =
-      html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-
-    if (titleMatch) {
-      nombre = limpiarTexto(titleMatch[1]);
-    }
-  }
-
-
-  // ----------------------------------------------------------
-  // META OG TITLE
-  // ----------------------------------------------------------
-
-  if (!nombre) {
-
-    const ogTitle =
-      html.match(
-        /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i
-      );
-
-    if (ogTitle) {
-      nombre = limpiarTexto(ogTitle[1]);
     }
   }
 
@@ -339,51 +335,46 @@ function extraerProducto(html, consulta) {
   // MARCA
   // ----------------------------------------------------------
 
-  if (!marca) {
+  const marcas = [
+    "Sony",
+    "Apple",
+    "Samsung",
+    "Xiaomi",
+    "Motorola",
+    "Huawei",
+    "Lenovo",
+    "Asus",
+    "Acer",
+    "Dell",
+    "HP",
+    "JBL",
+    "Logitech",
+    "Canon",
+    "Nikon",
+    "Nintendo",
+    "Microsoft",
+    "Kingston",
+    "SanDisk",
+    "LG",
+    "Philips",
+    "Epson",
+    "Brother"
+  ];
 
-    const marcas = [
-      "Sony",
-      "Apple",
-      "Samsung",
-      "Xiaomi",
-      "Motorola",
-      "Huawei",
-      "Lenovo",
-      "Asus",
-      "Acer",
-      "Dell",
-      "HP",
-      "JBL",
-      "Logitech",
-      "Canon",
-      "Nikon",
-      "Nintendo",
-      "Microsoft",
-      "Kingston",
-      "Sandisk",
-      "Western Digital",
-      "Intel",
-      "AMD",
-      "Philips",
-      "LG",
-      "Hisense",
-      "Epson",
-      "Brother"
-    ];
+  const textoCompleto =
+    `${nombre}\n${limpio}`;
 
-    const texto = `${nombre} ${html}`;
+  for (const m of marcas) {
 
-    for (const marcaDetectada of marcas) {
-
-      const regex = new RegExp(
-        `\\b${escaparRegex(marcaDetectada)}\\b`,
+    const regex =
+      new RegExp(
+        `\\b${escaparRegex(m)}\\b`,
         "i"
       );
 
-      if (regex.test(texto)) {
-        marca = marcaDetectada;
-        break;
-      }
+    if (regex.test(textoCompleto)) {
+      marca = m;
+      break;
     }
   }
 
@@ -392,17 +383,13 @@ function extraerProducto(html, consulta) {
   // MODELO
   // ----------------------------------------------------------
 
-  if (!modelo || modelo === consulta) {
-
-    const texto = nombre;
-
-    const modelos = texto.match(
-      /\b[A-Z0-9]{2,}(?:[-_][A-Z0-9]+)+\b/i
+  const modeloMatch =
+    limpio.match(
+      /\b[A-Z]{2,}[0-9]+[A-Z0-9-]*\b/i
     );
 
-    if (modelos) {
-      modelo = modelos[0];
-    }
+  if (modeloMatch) {
+    modelo = modeloMatch[0];
   }
 
 
@@ -410,13 +397,25 @@ function extraerProducto(html, consulta) {
   // EAN
   // ----------------------------------------------------------
 
-  if (!ean) {
+  const eanMatch =
+    limpio.match(
+      /(?:EAN(?:-12|-13|-14)?|GTIN)[^\d]{0,20}(\d{12,14})/i
+    );
 
-    const eanMatch =
-      html.match(/\b\d{12,14}\b/);
+  if (eanMatch) {
 
-    if (eanMatch) {
-      ean = eanMatch[0];
+    ean = eanMatch[1];
+
+  } else {
+
+    // Fallback
+    const numeros =
+      limpio.match(
+        /\b\d{12,14}\b/g
+      );
+
+    if (numeros && numeros.length) {
+      ean = numeros[0];
     }
   }
 
@@ -426,34 +425,55 @@ function extraerProducto(html, consulta) {
   // ----------------------------------------------------------
 
   const colores = [
-    ["Blanco", ["blanco", "white"]],
-    ["Negro", ["negro", "black"]],
-    ["Azul", ["azul", "blue"]],
-    ["Rojo", ["rojo", "red"]],
-    ["Verde", ["verde", "green"]],
-    ["Gris", ["gris", "gray", "grey"]],
-    ["Plata", ["plata", "silver"]],
-    ["Dorado", ["dorado", "gold"]],
-    ["Rosa", ["rosa", "pink"]],
-    ["Morado", ["morado", "purple"]],
-    ["Violeta", ["violeta"]],
-    ["Amarillo", ["amarillo", "yellow"]],
-    ["Naranja", ["naranja", "orange"]]
+    {
+      nombre: "Blanco",
+      palabras: ["white", "blanco"]
+    },
+    {
+      nombre: "Negro",
+      palabras: ["black", "negro"]
+    },
+    {
+      nombre: "Azul",
+      palabras: ["blue", "azul"]
+    },
+    {
+      nombre: "Rojo",
+      palabras: ["red", "rojo"]
+    },
+    {
+      nombre: "Verde",
+      palabras: ["green", "verde"]
+    },
+    {
+      nombre: "Gris",
+      palabras: ["gray", "grey", "gris"]
+    },
+    {
+      nombre: "Plata",
+      palabras: ["silver", "plata"]
+    },
+    {
+      nombre: "Dorado",
+      palabras: ["gold", "dorado"]
+    },
+    {
+      nombre: "Rosa",
+      palabras: ["pink", "rosa"]
+    }
   ];
 
-  const textoColor = `${nombre} ${html}`.toLowerCase();
+  for (const colorItem of colores) {
 
-  for (const [nombreColor, palabras] of colores) {
-
-    for (const palabra of palabras) {
+    for (const palabra of colorItem.palabras) {
 
       if (
         new RegExp(
           `\\b${escaparRegex(palabra)}\\b`,
           "i"
-        ).test(textoColor)
+        ).test(textoCompleto)
       ) {
-        color = nombreColor;
+        color = colorItem.nombre;
         break;
       }
     }
@@ -463,10 +483,13 @@ function extraerProducto(html, consulta) {
 
 
   // ----------------------------------------------------------
-  // TIPO DE PRODUCTO
+  // TIPO
   // ----------------------------------------------------------
 
-  const tipoProducto = detectarTipoProducto(nombre);
+  const tipoProducto =
+    detectarTipoProducto(
+      nombre || limpio
+    );
 
 
   return {
@@ -481,91 +504,78 @@ function extraerProducto(html, consulta) {
 
 
 // ============================================================
-// DETECTAR TIPO
+// TIPO DE PRODUCTO
 // ============================================================
 
-function detectarTipoProducto(nombre) {
+function detectarTipoProducto(texto) {
 
-  const texto = String(nombre || "").toLowerCase();
+  const t =
+    String(texto || "")
+      .toLowerCase();
 
   if (
-    texto.includes("playstation") ||
-    texto.includes("ps5") ||
-    texto.includes("xbox") ||
-    texto.includes("nintendo")
+    t.includes("playstation") ||
+    t.includes("ps5") ||
+    t.includes("xbox") ||
+    t.includes("nintendo")
   ) {
     return "Consola";
   }
 
   if (
-    texto.includes("iphone") ||
-    texto.includes("smartphone") ||
-    texto.includes("celular") ||
-    texto.includes("galaxy")
+    t.includes("iphone") ||
+    t.includes("smartphone") ||
+    t.includes("celular") ||
+    t.includes("galaxy")
   ) {
     return "Celular";
   }
 
   if (
-    texto.includes("notebook") ||
-    texto.includes("laptop") ||
-    texto.includes("macbook")
+    t.includes("notebook") ||
+    t.includes("laptop") ||
+    t.includes("macbook")
   ) {
     return "Notebook";
   }
 
-  if (
-    texto.includes("monitor")
-  ) {
+  if (t.includes("monitor")) {
     return "Monitor";
   }
 
   if (
-    texto.includes("televisor") ||
-    texto.includes("smart tv") ||
-    texto.includes("tv ")
+    t.includes("televisor") ||
+    t.includes("smart tv") ||
+    t.includes("television")
   ) {
     return "Televisor";
   }
 
-  if (
-    texto.includes("mouse")
-  ) {
+  if (t.includes("mouse")) {
     return "Mouse";
   }
 
-  if (
-    texto.includes("teclado")
-  ) {
+  if (t.includes("teclado")) {
     return "Teclado";
   }
 
   if (
-    texto.includes("headset") ||
-    texto.includes("fone") ||
-    texto.includes("auricular")
+    t.includes("headset") ||
+    t.includes("auricular") ||
+    t.includes("fone")
   ) {
     return "Auricular";
   }
 
   if (
-    texto.includes("ssd") ||
-    texto.includes("hd externo") ||
-    texto.includes("disco rigido")
+    t.includes("ssd") ||
+    t.includes("disco externo") ||
+    t.includes("disco rigido")
   ) {
     return "Almacenamiento";
   }
 
-  if (
-    texto.includes("memoria ram") ||
-    texto.includes("ram ")
-  ) {
-    return "Memoria RAM";
-  }
-
-  if (
-    texto.includes("impresora")
-  ) {
+  if (t.includes("impresora")) {
     return "Impresora";
   }
 
@@ -574,23 +584,46 @@ function detectarTipoProducto(nombre) {
 
 
 // ============================================================
-// UTILIDADES
+// NORMALIZAR
+// ============================================================
+
+function normalizar(texto) {
+
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .replace(
+      /[^a-z0-9]+/g,
+      ""
+    );
+}
+
+
+// ============================================================
+// LIMPIAR TEXTO
 // ============================================================
 
 function limpiarTexto(texto) {
 
   return String(texto || "")
-    .replace(/<[^>]*>/g, "")
     .replace(/\s+/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
     .trim();
 }
 
 
+// ============================================================
+// ESCAPAR REGEX
+// ============================================================
+
 function escaparRegex(texto) {
 
   return String(texto)
-    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    .replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
 }
