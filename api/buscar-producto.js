@@ -1,1665 +1,636 @@
-// ==========================================================================
-// BUSCADOR UNIVERSAL DE PRODUCTOS
-// Ruta: /api/buscar-producto
-//
-// Busca por:
-// - EAN / UPC
-// - Modelo
-// - Referencia
-// - Nombre de producto
-//
-// Orden de búsqueda:
-// 1. Compras Paraguai
-// 2. Nissei
-// 3. Mega Eletrônicos
-// 4. Atacado Connect
-// 5. GenZ
-// ==========================================================================
-
-
 export default async function handler(req, res) {
-
-  // ==========================================================================
-  // 1. CORS
-  // ==========================================================================
-
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    "*"
-  );
-
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, OPTIONS"
-  );
-
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
-
+  // ================================
+  // CONFIGURACIÓN BÁSICA
+  // ================================
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-
   if (req.method !== "GET") {
-
     return res.status(405).json({
       encontrado: false,
-      error: "Método no permitido. Usa GET."
+      mensaje: "Método no permitido"
     });
-
   }
 
-
-  // ==========================================================================
-  // 2. OBTENER CONSULTA
-  // ==========================================================================
-
-  const consulta =
-    String(req.query?.consulta || "")
-      .trim();
-
+  const consulta = String(req.query.consulta || "").trim();
 
   if (!consulta) {
-
     return res.status(400).json({
       encontrado: false,
-      error: "La consulta es obligatoria."
+      mensaje: "No se recibió ninguna consulta"
     });
-
   }
 
+  console.log("=================================");
+  console.log("BUSCANDO PRODUCTO:", consulta);
+  console.log("=================================");
 
-  console.log(
-    "======================================"
-  );
+  // =====================================================
+  // 1. BUSCAR DIRECTAMENTE EN NISSEI
+  // =====================================================
+  try {
+    const resultadoNissei = await buscarNissei(consulta);
 
-  console.log(
-    "BUSCADOR UNIVERSAL:",
-    consulta
-  );
+    if (resultadoNissei) {
+      console.log("ENCONTRADO EN NISSEI");
 
-  console.log(
-    "======================================"
-  );
-
-
-  // ==========================================================================
-  // 3. FUENTES
-  // ==========================================================================
-
-  const fuentes = [
-
-    {
-      nombre: "COMPRAS PARAGUAI",
-      dominio: "comprasparaguai.com.br"
-    },
-
-    {
-      nombre: "NISSEI",
-      dominio: "nissei.com"
-    },
-
-    {
-      nombre: "MEGA ELETRÔNICOS",
-      dominio: "megaelectronicos.com"
-    },
-
-    {
-      nombre: "ATACADO CONNECT",
-      dominio: "atacadoconnect.com"
-    },
-
-    {
-      nombre: "GENZ",
-      dominio: "genz.com.py"
+      return res.status(200).json({
+        encontrado: true,
+        ...resultadoNissei,
+        fuente: "Nissei",
+        url: resultadoNissei.url || "https://nissei.com/py/"
+      });
     }
 
-  ];
+    console.log("No encontrado en Nissei");
 
-
-  // ==========================================================================
-  // 4. BUSCAR FUENTE POR FUENTE
-  // ==========================================================================
-
-  for (const fuente of fuentes) {
-
-    try {
-
-      console.log(
-        `Buscando en ${fuente.nombre}...`
-      );
-
-
-      const resultado =
-        await buscarEnFuente(
-          consulta,
-          fuente
-        );
-
-
-      if (
-        resultado &&
-        resultado.encontrado === true
-      ) {
-
-        console.log(
-          `PRODUCTO ENCONTRADO EN ${fuente.nombre}`
-        );
-
-        return res.status(200).json(
-          resultado
-        );
-
-      }
-
-
-      console.log(
-        `No encontrado en ${fuente.nombre}`
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        `Error en ${fuente.nombre}:`,
-        error?.message || error
-      );
-
-      // Si una página falla,
-      // seguimos con la siguiente fuente.
-
-      continue;
-
-    }
-
+  } catch (error) {
+    console.error("Error buscando en Nissei:", error.message);
   }
 
-
-  // ==========================================================================
-  // 5. NINGUNA FUENTE ENCONTRÓ EL PRODUCTO
-  // ==========================================================================
-
+  // =====================================================
+  // SI TODAVÍA NO ENCUENTRA
+  // =====================================================
   return res.status(200).json({
-
     encontrado: false,
-
     consulta,
+    mensaje: "No se encontró el producto en Nissei."
+  });
+}
 
-    mensaje:
-      "No se encontró el producto en las fuentes consultadas."
 
+// =====================================================
+// BUSCADOR NISSEI
+// =====================================================
+
+async function buscarNissei(consulta) {
+
+  const urlBusqueda =
+    `https://nissei.com/py/catalogsearch/result/?q=${encodeURIComponent(consulta)}`;
+
+  console.log("URL NISSEI:", urlBusqueda);
+
+  const response = await fetch(urlBusqueda, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136 Safari/537.36",
+      "Accept":
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "es-PY,es;q=0.9,en;q=0.8"
+    }
   });
 
-}
-
-
-// ==========================================================================
-// BUSCAR EN UNA FUENTE
-// ==========================================================================
-
-async function buscarEnFuente(
-  consulta,
-  fuente
-) {
-
-  const consultaCodificada =
-    encodeURIComponent(
-      `"${consulta}" site:${fuente.dominio}`
-    );
-
-
-  const url =
-    `https://html.duckduckgo.com/html/?q=${consultaCodificada}`;
-
-
-  console.log(
-    `Buscando: ${url}`
-  );
-
-
-  const response =
-    await fetch(
-      url,
-      {
-
-        method: "GET",
-
-        headers: {
-
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136.0 Safari/537.36",
-
-          "Accept":
-            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-
-          "Accept-Language":
-            "es-ES,es;q=0.9,en;q=0.8"
-
-        }
-
-      }
-    );
-
-
   if (!response.ok) {
-
-    throw new Error(
-      `DuckDuckGo respondió ${response.status}`
+    console.log(
+      "NISSEI respondió:",
+      response.status,
+      response.statusText
     );
 
+    return null;
   }
 
+  const html = await response.text();
 
-  const html =
-    await response.text();
+  console.log("HTML NISSEI recibido:", html.length, "caracteres");
 
-
-  const resultados =
-    extraerResultados(html);
-
-
-  console.log(
-    `${fuente.nombre}: ${resultados.length} resultados`
-  );
-
-
-  if (
-    resultados.length === 0
-  ) {
-
-    return {
-      encontrado: false
-    };
-
+  if (!html || html.length < 500) {
+    return null;
   }
 
+  // =====================================================
+  // BUSCAR LINKS DE PRODUCTOS
+  // =====================================================
 
-  // ==========================================================================
-  // ANALIZAR HASTA 5 RESULTADOS
-  // ==========================================================================
+  const enlaces = extraerEnlaces(html);
 
-  for (
-    const resultado
-    of resultados.slice(0, 5)
-  ) {
+  console.log("Enlaces encontrados:", enlaces.length);
+
+  // Primero intentamos encontrar enlaces que contengan
+  // directamente la consulta.
+  const consultaNormalizada = normalizar(consulta);
+
+  let candidatos = enlaces.filter(enlace => {
+    const texto = normalizar(enlace.texto);
+    const href = normalizar(enlace.url);
+
+    return (
+      texto.includes(consultaNormalizada) ||
+      href.includes(consultaNormalizada)
+    );
+  });
+
+  // Si no encontramos coincidencia exacta,
+  // usamos los primeros enlaces de productos.
+  if (candidatos.length === 0) {
+    candidatos = enlaces.slice(0, 10);
+  }
+
+  console.log("Candidatos Nissei:", candidatos.length);
+
+  // =====================================================
+  // ABRIR PÁGINAS DE PRODUCTOS
+  // =====================================================
+
+  for (const candidato of candidatos.slice(0, 5)) {
 
     try {
 
-      console.log(
-        "Analizando:",
-        resultado.url
+      const producto = await analizarProductoNissei(
+        candidato.url,
+        consulta
       );
 
-
-      const pagina =
-        await descargarPagina(
-          resultado.url
-        );
-
-
-      if (!pagina) {
-        continue;
-      }
-
-
-      const producto =
-        analizarProducto(
-          pagina,
-          resultado.titulo,
-          consulta,
-          fuente.nombre,
-          resultado.url
-        );
-
-
-      if (
-        producto &&
-        producto.encontrado === true
-      ) {
-
+      if (producto) {
         return producto;
-
       }
 
     } catch (error) {
-
       console.log(
-        "Error analizando resultado:",
-        error?.message || error
+        "Error analizando producto:",
+        candidato.url,
+        error.message
       );
-
-      continue;
-
     }
-
   }
 
-
-  return {
-    encontrado: false
-  };
-
+  return null;
 }
 
 
-// ==========================================================================
-// EXTRAER RESULTADOS DE DUCKDUCKGO
-// ==========================================================================
+// =====================================================
+// EXTRAER ENLACES DEL HTML
+// =====================================================
 
-function extraerResultados(html) {
+function extraerEnlaces(html) {
 
   const resultados = [];
 
-
-  const regex =
-    /<a[^>]+class=["']result__a["'][^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-
+  const regex = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
 
   let match;
 
+  while ((match = regex.exec(html)) !== null) {
 
-  while (
-    (match = regex.exec(html)) !== null
-  ) {
+    let url = match[1];
 
-    let url =
-      match[1];
+    let texto = limpiarHTML(match[2]);
 
+    if (!url) continue;
 
-    const titulo =
-      limpiarHTML(
-        match[2]
-      );
-
-
-    // ------------------------------------------------------------------------
-    // Resolver URL de DuckDuckGo
-    // ------------------------------------------------------------------------
-
+    // Ignorar enlaces que no son productos
     if (
-      url.includes("uddg=")
+      url.includes("/customer/") ||
+      url.includes("/checkout/") ||
+      url.includes("/cart/") ||
+      url.includes("/search/") ||
+      url.includes("/catalogsearch/")
     ) {
-
-      try {
-
-        const parsed =
-          new URL(
-            url,
-            "https://html.duckduckgo.com"
-          );
-
-
-        const destino =
-          parsed.searchParams.get(
-            "uddg"
-          );
-
-
-        if (destino) {
-          url = destino;
-        }
-
-      } catch (error) {
-        // Ignorar URL inválida
-      }
-
+      continue;
     }
 
+    // Convertir URLs relativas en absolutas
+    if (url.startsWith("/")) {
+      url = "https://nissei.com" + url;
+    }
 
-    if (
-      url.startsWith("http://") ||
-      url.startsWith("https://")
-    ) {
+    if (!url.startsWith("http")) {
+      continue;
+    }
 
+    if (!resultados.some(x => x.url === url)) {
       resultados.push({
-
-        titulo,
-
-        url
-
+        url,
+        texto
       });
-
     }
-
   }
-
 
   return resultados;
-
 }
 
 
-// ==========================================================================
-// DESCARGAR PÁGINA DEL PRODUCTO
-// ==========================================================================
+// =====================================================
+// ANALIZAR PÁGINA INDIVIDUAL DE PRODUCTO
+// =====================================================
 
-async function descargarPagina(url) {
+async function analizarProductoNissei(url, consulta) {
 
-  const response =
-    await fetch(
-      url,
-      {
+  console.log("Analizando:", url);
 
-        method: "GET",
-
-        redirect: "follow",
-
-        headers: {
-
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136.0 Safari/537.36",
-
-          "Accept":
-            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-
-          "Accept-Language":
-            "es-ES,es;q=0.9,en;q=0.8"
-
-        }
-
-      }
-    );
-
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136 Safari/537.36",
+      "Accept":
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "es-PY,es;q=0.9,en;q=0.8"
+    }
+  });
 
   if (!response.ok) {
-
     return null;
-
   }
 
+  const html = await response.text();
 
-  return await response.text();
-
-}
-
-
-// ==========================================================================
-// ANALIZAR PRODUCTO
-// ==========================================================================
-
-function analizarProducto(
-  html,
-  titulo,
-  consulta,
-  fuente,
-  url
-) {
-
-  const texto =
-    limpiarHTML(html);
-
-
-  const consultaNormalizada =
-    normalizar(
-      consulta
-    );
-
-
-  const textoNormalizado =
-    normalizar(
-      texto
-    );
-
-
-  const tituloNormalizado =
-    normalizar(
-      titulo
-    );
-
-
-  // ==========================================================================
-  // VERIFICAR QUE LA CONSULTA APAREZCA
-  // ==========================================================================
-
-  const coincide =
-    textoNormalizado.includes(
-      consultaNormalizada
-    ) ||
-    tituloNormalizado.includes(
-      consultaNormalizada
-    );
-
-
-  if (!coincide) {
-
-    return {
-      encontrado: false
-    };
-
+  if (!html || html.length < 500) {
+    return null;
   }
 
+  const texto = limpiarHTML(html);
 
-  // ==========================================================================
-  // EXTRAER INFORMACIÓN
-  // ==========================================================================
+  const consultaNormalizada = normalizar(consulta);
+  const textoNormalizado = normalizar(texto);
 
-  const marca =
-    extraerCampo(
-      html,
-      [
-        "Marca",
-        "Brand",
-        "Fabricante",
-        "Manufacturer"
-      ]
-    ) ||
-    detectarMarca(
-      texto
-    );
+  // =====================================================
+  // VERIFICAR QUE REALMENTE SEA EL PRODUCTO BUSCADO
+  // =====================================================
 
-
-  const modelo =
-    extraerCampo(
-      html,
-      [
-        "Modelo",
-        "Model",
-        "Part Number",
-        "Part Number",
-        "Número de modelo",
-        "Referencia",
-        "Reference"
-      ]
-    ) ||
-    detectarModelo(
-      texto,
-      consulta
-    );
-
-
-  const color =
-    extraerCampo(
-      html,
-      [
-        "Color",
-        "Colour",
-        "Cor"
-      ]
-    ) ||
-    detectarColor(
-      texto
-    );
-
-
-  const ean =
-    extraerCampo(
-      html,
-      [
-        "EAN",
-        "GTIN",
-        "UPC",
-        "Código EAN",
-        "Código UPC"
-      ]
-    ) ||
-    detectarEAN(
-      texto
-    );
-
-
-  const tipoProducto =
-    detectarTipoProducto(
-      texto,
-      titulo
-    );
-
-
-  // ==========================================================================
-  // VERIFICAR SI TENEMOS INFORMACIÓN ÚTIL
-  // ==========================================================================
-
-  if (
-    !marca &&
-    !modelo &&
-    !tipoProducto &&
-    !color
-  ) {
-
-    return {
-      encontrado: false
-    };
-
+  if (!textoNormalizado.includes(consultaNormalizada)) {
+    return null;
   }
 
+  // =====================================================
+  // EXTRAER DATOS
+  // =====================================================
 
-  // ==========================================================================
-  // CREAR DESCRIPCIÓN
-  // ==========================================================================
+  const titulo = extraerTitulo(html);
 
-  const descripcionFinal =
-    construirDescripcion({
+  const marca = extraerCampo(
+    html,
+    [
+      "Marca",
+      "Brand",
+      "Fabricante"
+    ]
+  );
 
-      marca,
+  const modelo = extraerCampo(
+    html,
+    [
+      "Part Number",
+      "Modelo",
+      "Model",
+      "Código"
+    ]
+  );
 
-      modelo,
+  const color = extraerCampo(
+    html,
+    [
+      "Color",
+      "Cor"
+    ]
+  );
 
-      tipoProducto,
+  const ean = extraerCampo(
+    html,
+    [
+      "EAN-13",
+      "EAN-12",
+      "EAN",
+      "UPC"
+    ]
+  );
 
-      color
-
-    });
-
-
-  // ==========================================================================
-  // RESULTADO
-  // ==========================================================================
+  const tipoProducto = detectarTipoProducto(
+    titulo + " " + texto
+  );
 
   return {
-
-    encontrado: true,
-
-    consulta,
-
-    ean: ean || "",
-
-    marca: marca || "",
+    marca:
+      marca ||
+      detectarMarca(titulo + " " + texto),
 
     modelo:
-      modelo || consulta,
+      modelo ||
+      consulta,
 
     tipoProducto:
-      tipoProducto || "",
+      tipoProducto || "Producto",
 
     color:
       color || "",
 
-    descripcionFinal,
+    ean:
+      limpiarEAN(ean),
 
-    fuente,
-
-    coincidencia:
-      "COINCIDENCIA ENCONTRADA",
+    nombre:
+      titulo || "",
 
     url
-
   };
-
 }
 
 
-// ==========================================================================
-// EXTRAER CAMPO DEL HTML
-// ==========================================================================
+// =====================================================
+// EXTRAER TÍTULO
+// =====================================================
 
-function extraerCampo(
-  html,
-  nombres
-) {
+function extraerTitulo(html) {
 
-  for (
-    const nombre
-    of nombres
-  ) {
+  let match = html.match(
+    /<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i
+  );
 
-    const escaped =
-      escaparRegex(
-        nombre
-      );
-
-
-    // ------------------------------------------------------------------------
-    // Buscar:
-    // <strong>Marca</strong>: Sony
-    // ------------------------------------------------------------------------
-
-    let regex =
-      new RegExp(
-        `<[^>]*>${escaped}<\\/[^>]*>\\s*[:\\-]?\\s*([^<]{1,100})`,
-        "i"
-      );
-
-
-    let match =
-      html.match(
-        regex
-      );
-
-
-    if (match) {
-
-      const valor =
-        limpiarTexto(
-          match[1]
-        );
-
-
-      if (valor) {
-        return valor;
-      }
-
-    }
-
-
-    // ------------------------------------------------------------------------
-    // Buscar:
-    // "Marca":"Sony"
-    // ------------------------------------------------------------------------
-
-    regex =
-      new RegExp(
-        `["']?${escaped}["']?\\s*[:=]\\s*["']([^"']{1,100})["']`,
-        "i"
-      );
-
-
-    match =
-      html.match(
-        regex
-      );
-
-
-    if (match) {
-
-      const valor =
-        limpiarTexto(
-          match[1]
-        );
-
-
-      if (valor) {
-        return valor;
-      }
-
-    }
-
+  if (match) {
+    return limpiarHTML(match[1]);
   }
 
+  match = html.match(
+    /<title[^>]*>([\s\S]*?)<\/title>/i
+  );
+
+  if (match) {
+    return limpiarHTML(match[1]);
+  }
 
   return "";
-
 }
 
 
-// ==========================================================================
+// =====================================================
+// EXTRAER CAMPOS
+// =====================================================
+
+function extraerCampo(html, nombres) {
+
+  for (const nombre of nombres) {
+
+    const patrones = [
+
+      new RegExp(
+        `<[^>]*>\\s*${escaparRegex(nombre)}\\s*<\\/[^>]+>\\s*<[^>]*>([\\s\\S]*?)<\\/[^>]+>`,
+        "i"
+      ),
+
+      new RegExp(
+        `${escaparRegex(nombre)}\\s*[:\\-]?\\s*([^<\\n]{1,100})`,
+        "i"
+      )
+    ];
+
+    for (const regex of patrones) {
+
+      const match = html.match(regex);
+
+      if (match && match[1]) {
+
+        const valor = limpiarHTML(match[1]).trim();
+
+        if (
+          valor &&
+          valor.length < 150 &&
+          normalizar(valor) !== normalizar(nombre)
+        ) {
+          return valor;
+        }
+      }
+    }
+  }
+
+  return "";
+}
+
+
+// =====================================================
 // DETECTAR MARCA
-// ==========================================================================
+// =====================================================
 
 function detectarMarca(texto) {
 
   const marcas = [
-
     "Apple",
     "Samsung",
     "Sony",
-    "Nintendo",
-    "Microsoft",
     "Xiaomi",
     "Motorola",
     "Huawei",
     "Lenovo",
     "Asus",
     "Acer",
-    "HP",
     "Dell",
+    "HP",
     "LG",
     "Philips",
     "JBL",
     "Logitech",
-    "Razer",
-    "Corsair",
     "Kingston",
-    "Seagate",
-    "Western Digital",
-    "WD",
+    "Corsair",
+    "Nintendo",
+    "Microsoft",
     "Intel",
     "AMD",
-    "NVIDIA",
     "Canon",
-    "Epson",
-    "Brother",
-    "TP-Link",
-    "DJI",
+    "Nikon",
     "GoPro",
     "Garmin",
-    "OnePlus",
-    "Realme",
-    "Oppo",
-    "Vivo"
-
+    "Western Digital",
+    "SanDisk",
+    "TP-Link",
+    "Epson",
+    "Brother"
   ];
 
+  const textoNormalizado = normalizar(texto);
 
-  for (
-    const marca
-    of marcas
-  ) {
-
-    const regex =
-      new RegExp(
-        `\\b${escaparRegex(marca)}\\b`,
-        "i"
-      );
-
+  for (const marca of marcas) {
 
     if (
-      regex.test(texto)
+      textoNormalizado.includes(
+        normalizar(marca)
+      )
     ) {
-
       return marca;
-
     }
-
   }
 
-
   return "";
-
 }
 
 
-// ==========================================================================
-// DETECTAR MODELO
-// ==========================================================================
-
-function detectarModelo(
-  texto,
-  consulta
-) {
-
-  // Si la consulta parece un modelo,
-  // la usamos como referencia.
-
-  if (
-    /[A-Za-z]/.test(consulta) &&
-    /[0-9]/.test(consulta)
-  ) {
-
-    return consulta
-      .toUpperCase();
-
-  }
-
-
-  const patrones = [
-
-    /\bCFI-\d{4,5}[A-Z]?\b/i,
-
-    /\b[A-Z]{1,5}-[A-Z0-9]{2,15}\b/i,
-
-    /\b[A-Z]{2,8}\d{2,8}[A-Z0-9-]*\b/i,
-
-    /\b[A-Z0-9]{2,}-[A-Z0-9-]{2,}\b/i
-
-  ];
-
-
-  for (
-    const patron
-    of patrones
-  ) {
-
-    const match =
-      texto.match(
-        patron
-      );
-
-
-    if (match) {
-
-      return match[0]
-        .toUpperCase();
-
-    }
-
-  }
-
-
-  return "";
-
-}
-
-
-// ==========================================================================
-// DETECTAR COLOR
-// ==========================================================================
-
-function detectarColor(texto) {
-
-  const colores = [
-
-    "Negro",
-    "Negra",
-    "Black",
-
-    "Blanco",
-    "Blanca",
-    "White",
-
-    "Plata",
-    "Silver",
-
-    "Gris",
-    "Gray",
-    "Grey",
-
-    "Azul",
-    "Blue",
-
-    "Rojo",
-    "Red",
-
-    "Verde",
-    "Green",
-
-    "Amarillo",
-    "Yellow",
-
-    "Rosa",
-    "Pink",
-
-    "Morado",
-    "Purple",
-
-    "Naranja",
-    "Orange",
-
-    "Dorado",
-    "Gold",
-
-    "Titanio",
-    "Titanium",
-
-    "Natural Titanium",
-
-    "Cosmic Orange",
-
-    "Deep Blue"
-
-  ];
-
-
-  const equivalencias = {
-
-    Black: "Negro",
-
-    White: "Blanco",
-
-    Silver: "Plata",
-
-    Gray: "Gris",
-
-    Grey: "Gris",
-
-    Blue: "Azul",
-
-    Red: "Rojo",
-
-    Green: "Verde",
-
-    Yellow: "Amarillo",
-
-    Pink: "Rosa",
-
-    Purple: "Morado",
-
-    Orange: "Naranja",
-
-    Gold: "Dorado",
-
-    Titanium: "Titanio"
-
-  };
-
-
-  for (
-    const color
-    of colores
-  ) {
-
-    const regex =
-      new RegExp(
-        `\\b${escaparRegex(color)}\\b`,
-        "i"
-      );
-
-
-    if (
-      regex.test(texto)
-    ) {
-
-      return (
-        equivalencias[color] ||
-        color
-      );
-
-    }
-
-  }
-
-
-  return "";
-
-}
-
-
-// ==========================================================================
-// DETECTAR EAN
-// ==========================================================================
-
-function detectarEAN(texto) {
-
-  const numeros =
-    texto.match(
-      /\b\d{12,14}\b/g
-    );
-
-
-  if (!numeros) {
-    return "";
-  }
-
-
-  for (
-    const numero
-    of numeros
-  ) {
-
-    if (
-      numero.length === 12 ||
-      numero.length === 13 ||
-      numero.length === 14
-    ) {
-
-      return numero;
-
-    }
-
-  }
-
-
-  return "";
-
-}
-
-
-// ==========================================================================
+// =====================================================
 // DETECTAR TIPO DE PRODUCTO
-// ==========================================================================
+// =====================================================
 
-function detectarTipoProducto(
-  texto,
-  titulo
-) {
+function detectarTipoProducto(texto) {
 
-  const contenido =
-    `${titulo} ${texto}`
-      .toLowerCase();
-
-
-  // ------------------------------------------------------------------------
-  // CONSOLAS
-  // ------------------------------------------------------------------------
+  const t = normalizar(texto);
 
   if (
-    contenido.includes(
-      "playstation 5"
-    ) ||
-    contenido.includes(
-      "ps5"
-    )
+    t.includes("playstation") ||
+    t.includes("ps5") ||
+    t.includes("xbox") ||
+    t.includes("nintendo switch")
   ) {
-
-    return "CONSOLÃO PLAYSTATION 5";
-
+    return "Consola";
   }
 
-
   if (
-    contenido.includes(
-      "playstation 4"
-    ) ||
-    contenido.includes(
-      "ps4"
-    )
+    t.includes("iphone") ||
+    t.includes("smartphone") ||
+    t.includes("celular") ||
+    t.includes("telefono")
   ) {
-
-    return "CONSOLA PLAYSTATION 4";
-
+    return "Celular";
   }
 
-
   if (
-    contenido.includes(
-      "xbox series x"
-    )
+    t.includes("notebook") ||
+    t.includes("laptop")
   ) {
-
-    return "CONSOLA XBOX SERIES X";
-
+    return "Notebook";
   }
 
-
   if (
-    contenido.includes(
-      "xbox series s"
-    )
+    t.includes("tablet") ||
+    t.includes("ipad")
   ) {
-
-    return "CONSOLA XBOX SERIES S";
-
+    return "Tablet";
   }
 
-
   if (
-    contenido.includes(
-      "nintendo switch"
-    )
+    t.includes("televisor") ||
+    t.includes("television") ||
+    t.includes("smart tv")
   ) {
-
-    return "CONSOLA NINTENDO SWITCH";
-
+    return "Televisor";
   }
 
-
-  // ------------------------------------------------------------------------
-  // IPHONE
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "iphone"
-    )
+    t.includes("monitor")
   ) {
-
-    return "CELULAR IPHONE";
-
+    return "Monitor";
   }
 
-
-  // ------------------------------------------------------------------------
-  // SAMSUNG
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "galaxy s"
-    ) ||
-    contenido.includes(
-      "galaxy a"
-    ) ||
-    contenido.includes(
-      "galaxy z"
-    )
+    t.includes("mouse")
   ) {
-
-    return "CELULAR SAMSUNG GALAXY";
-
+    return "Mouse";
   }
 
-
-  // ------------------------------------------------------------------------
-  // CELULARES
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "smartphone"
-    ) ||
-    contenido.includes(
-      "celular"
-    ) ||
-    contenido.includes(
-      "telefone"
-    )
+    t.includes("teclado")
   ) {
-
-    return "CELULAR";
-
+    return "Teclado";
   }
 
-
-  // ------------------------------------------------------------------------
-  // NOTEBOOK
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "notebook"
-    ) ||
-    contenido.includes(
-      "laptop"
-    ) ||
-    contenido.includes(
-      "computadora portátil"
-    )
+    t.includes("auricular") ||
+    t.includes("headset") ||
+    t.includes("headphone")
   ) {
-
-    return "NOTEBOOK";
-
+    return "Auricular";
   }
 
-
-  // ------------------------------------------------------------------------
-  // MONITOR
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "monitor"
-    )
+    t.includes("impresora")
   ) {
-
-    return "MONITOR";
-
+    return "Impresora";
   }
 
-
-  // ------------------------------------------------------------------------
-  // TELEVISOR
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "smart tv"
-    ) ||
-    contenido.includes(
-      "televisor"
-    ) ||
-    contenido.includes(
-      "televisão"
-    ) ||
-    contenido.includes(
-      "tv led"
-    )
+    t.includes("procesador") ||
+    t.includes("cpu")
   ) {
-
-    return "SMART TV";
-
+    return "Procesador";
   }
 
-
-  // ------------------------------------------------------------------------
-  // AURICULARES
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "headphone"
-    ) ||
-    contenido.includes(
-      "headset"
-    ) ||
-    contenido.includes(
-      "auricular"
-    ) ||
-    contenido.includes(
-      "fone de ouvido"
-    )
+    t.includes("placa de video") ||
+    t.includes("tarjeta grafica") ||
+    t.includes("gpu")
   ) {
-
-    return "AURICULARES";
-
+    return "Placa de Video";
   }
 
-
-  // ------------------------------------------------------------------------
-  // MOUSE
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "mouse"
-    )
+    t.includes("memoria ram") ||
+    t.includes("memoria ddr")
   ) {
-
-    return "MOUSE";
-
+    return "Memoria RAM";
   }
 
-
-  // ------------------------------------------------------------------------
-  // TECLADO
-  // ------------------------------------------------------------------------
-
   if (
-    contenido.includes(
-      "keyboard"
-    ) ||
-    contenido.includes(
-      "teclado"
-    ) ||
-    contenido.includes(
-      "teclado mecânico"
-    )
+    t.includes("ssd") ||
+    t.includes("disco solido")
   ) {
-
-    return "TECLADO";
-
-  }
-
-
-  // ------------------------------------------------------------------------
-  // IMPRESORA
-  // ------------------------------------------------------------------------
-
-  if (
-    contenido.includes(
-      "printer"
-    ) ||
-    contenido.includes(
-      "impresora"
-    ) ||
-    contenido.includes(
-      "impressora"
-    )
-  ) {
-
-    return "IMPRESORA";
-
-  }
-
-
-  // ------------------------------------------------------------------------
-  // CÁMARA
-  // ------------------------------------------------------------------------
-
-  if (
-    contenido.includes(
-      "camera"
-    ) ||
-    contenido.includes(
-      "cámara"
-    ) ||
-    contenido.includes(
-      "câmera"
-    )
-  ) {
-
-    return "CÁMARA";
-
-  }
-
-
-  // ------------------------------------------------------------------------
-  // TARJETA GRÁFICA
-  // ------------------------------------------------------------------------
-
-  if (
-    contenido.includes(
-      "geforce rtx"
-    ) ||
-    contenido.includes(
-      "radeon rx"
-    ) ||
-    contenido.includes(
-      "graphics card"
-    ) ||
-    contenido.includes(
-      "placa de vídeo"
-    ) ||
-    contenido.includes(
-      "tarjeta gráfica"
-    )
-  ) {
-
-    return "TARJETA GRÁFICA";
-
-  }
-
-
-  // ------------------------------------------------------------------------
-  // RAM
-  // ------------------------------------------------------------------------
-
-  if (
-    contenido.includes(
-      "memoria ram"
-    ) ||
-    contenido.includes(
-      "memory ram"
-    ) ||
-    contenido.includes(
-      "memória ram"
-    )
-  ) {
-
-    return "MEMORIA RAM";
-
-  }
-
-
-  // ------------------------------------------------------------------------
-  // SSD
-  // ------------------------------------------------------------------------
-
-  if (
-    contenido.includes(
-      "ssd"
-    ) ||
-    contenido.includes(
-      "solid state drive"
-    )
-  ) {
-
     return "SSD";
-
   }
-
-
-  // ------------------------------------------------------------------------
-  // ROUTER
-  // ------------------------------------------------------------------------
 
   if (
-    contenido.includes(
-      "router"
-    ) ||
-    contenido.includes(
-      "roteador"
-    )
+    t.includes("disco duro") ||
+    t.includes("hard disk") ||
+    t.includes("hdd")
   ) {
-
-    return "ROUTER";
-
+    return "Disco Duro";
   }
-
-
-  // ------------------------------------------------------------------------
-  // PARLANTE
-  // ------------------------------------------------------------------------
-
-  if (
-    contenido.includes(
-      "speaker"
-    ) ||
-    contenido.includes(
-      "parlante"
-    ) ||
-    contenido.includes(
-      "alto-falante"
-    )
-  ) {
-
-    return "PARLANTE";
-
-  }
-
 
   return "";
-
 }
 
 
-// ==========================================================================
-// CONSTRUIR DESCRIPCIÓN
-// ==========================================================================
+// =====================================================
+// LIMPIEZA EAN
+// =====================================================
 
-function construirDescripcion(
-  datos
-) {
+function limpiarEAN(valor) {
 
-  const partes = [];
+  if (!valor) return "";
 
+  const numeros = String(valor)
+    .replace(/\D/g, "");
 
-  if (datos.marca) {
-    partes.push(
-      datos.marca
-    );
+  if (
+    numeros.length === 8 ||
+    numeros.length === 12 ||
+    numeros.length === 13 ||
+    numeros.length === 14
+  ) {
+    return numeros;
   }
 
-
-  if (datos.modelo) {
-    partes.push(
-      datos.modelo
-    );
-  }
-
-
-  if (datos.tipoProducto) {
-    partes.push(
-      datos.tipoProducto
-    );
-  }
-
-
-  if (datos.color) {
-
-    partes.push(
-      `COLOR ${datos.color}`
-    );
-
-  }
-
-
-  return partes.join(
-    " "
-  );
-
+  return "";
 }
 
 
-// ==========================================================================
-// LIMPIAR HTML
-// ==========================================================================
+// =====================================================
+// UTILIDADES
+// =====================================================
 
-function limpiarHTML(html) {
-
-  return String(html || "")
-
-    .replace(
-      /<script[\s\S]*?<\/script>/gi,
-      " "
-    )
-
-    .replace(
-      /<style[\s\S]*?<\/style>/gi,
-      " "
-    )
-
-    .replace(
-      /<noscript[\s\S]*?<\/noscript>/gi,
-      " "
-    )
-
-    .replace(
-      /<[^>]+>/g,
-      " "
-    )
-
-    .replace(
-      /&nbsp;/gi,
-      " "
-    )
-
-    .replace(
-      /&amp;/gi,
-      "&"
-    )
-
-    .replace(
-      /&quot;/gi,
-      '"'
-    )
-
-    .replace(
-      /&#39;/gi,
-      "'"
-    )
-
-    .replace(
-      /\s+/g,
-      " "
-    )
-
-    .trim();
-
-}
-
-
-// ==========================================================================
-// LIMPIAR TEXTO
-// ==========================================================================
-
-function limpiarTexto(texto) {
+function limpiarHTML(texto) {
 
   return String(texto || "")
-
-    .replace(
-      /&nbsp;/gi,
-      " "
-    )
-
-    .replace(
-      /&amp;/gi,
-      "&"
-    )
-
-    .replace(
-      /&quot;/gi,
-      '"'
-    )
-
-    .replace(
-      /&#39;/gi,
-      "'"
-    )
-
-    .replace(
-      /\s+/g,
-      " "
-    )
-
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
     .trim();
-
 }
 
-
-// ==========================================================================
-// NORMALIZAR TEXTO
-// ==========================================================================
 
 function normalizar(texto) {
 
   return String(texto || "")
-
     .normalize("NFD")
-
-    .replace(
-      /[\u0300-\u036f]/g,
-      ""
-    )
-
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-
-    .trim();
-
+    .replace(/[^a-z0-9]/g, "");
 }
 
 
-// ==========================================================================
-// ESCAPAR REGEX
-// ==========================================================================
-
 function escaparRegex(texto) {
 
-  return String(texto || "")
-    .replace(
-      /[.*+?^${}()|[\]\\]/g,
-      "\\$&"
-    );
-
+  return String(texto)
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
