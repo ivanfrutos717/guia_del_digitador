@@ -88,6 +88,19 @@ const fuenteResultado =
   document.getElementById("fuenteResultado");
 
 
+// NUEVO: DESCRIPCIÓN ORIGINAL
+
+const bloqueDescripcionOriginal =
+  document.getElementById(
+    "bloqueDescripcionOriginal"
+  );
+
+const inputDescripcionOriginal =
+  document.getElementById(
+    "descripcionOriginal"
+  );
+
+
 // ==========================================================================
 // 3. ESTADO FIREBASE
 // ==========================================================================
@@ -143,10 +156,6 @@ function detectarTipoConsulta(valor) {
   }
 
 
-  const soloNumeros =
-    consulta.replace(/\D/g, "");
-
-
   // EAN / UPC
 
   if (
@@ -171,7 +180,7 @@ function detectarTipoConsulta(valor) {
   }
 
 
-  // Texto general
+  // TEXTO GENERAL
 
   if (
     /[A-Za-z]/.test(consulta)
@@ -222,7 +231,7 @@ if (inputBusqueda) {
 
 
 // ==========================================================================
-// 6. DESCRIPCIÓN FINAL
+// 6. DESCRIPCIÓN FINAL FILTRADA
 // ==========================================================================
 
 function actualizarDescripcionFormateada() {
@@ -485,6 +494,30 @@ function limpiarFormulario() {
 
   inputColor.value = "";
 
+
+  // ----------------------------------------------------------
+  // LIMPIAR DESCRIPCIÓN ORIGINAL
+  // ----------------------------------------------------------
+
+  if (inputDescripcionOriginal) {
+
+    inputDescripcionOriginal.value = "";
+
+  }
+
+
+  if (bloqueDescripcionOriginal) {
+
+    bloqueDescripcionOriginal.style.display =
+      "none";
+
+  }
+
+
+  // ----------------------------------------------------------
+  // LIMPIAR FUENTE
+  // ----------------------------------------------------------
+
   if (fuenteResultado) {
 
     fuenteResultado.style.display =
@@ -494,6 +527,7 @@ function limpiarFormulario() {
       "";
 
   }
+
 
   actualizarDescripcionFormateada();
 
@@ -513,6 +547,10 @@ function aplicarResultado(resultado) {
   }
 
 
+  // ----------------------------------------------------------
+  // ATRIBUTOS
+  // ----------------------------------------------------------
+
   inputMarca.value =
     resultado.marca || "";
 
@@ -526,8 +564,55 @@ function aplicarResultado(resultado) {
     resultado.color || "";
 
 
+  // ----------------------------------------------------------
+  // DESCRIPCIÓN ORIGINAL
+  // ----------------------------------------------------------
+
+  if (
+    inputDescripcionOriginal &&
+    resultado.descripcionOriginal
+  ) {
+
+    inputDescripcionOriginal.value =
+      resultado.descripcionOriginal;
+
+
+    if (bloqueDescripcionOriginal) {
+
+      bloqueDescripcionOriginal.style.display =
+        "block";
+
+    }
+
+  } else {
+
+    if (inputDescripcionOriginal) {
+
+      inputDescripcionOriginal.value =
+        "";
+
+    }
+
+    if (bloqueDescripcionOriginal) {
+
+      bloqueDescripcionOriginal.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  // ----------------------------------------------------------
+  // DESCRIPCIÓN FINAL FILTRADA
+  // ----------------------------------------------------------
+
   actualizarDescripcionFormateada();
 
+
+  // ----------------------------------------------------------
+  // INFORMACIÓN DE FUENTE
+  // ----------------------------------------------------------
 
   if (fuenteResultado) {
 
@@ -806,6 +891,13 @@ if (formProducto) {
         descripcionFinal:
           inputResultado.value,
 
+        // NUEVO:
+        // Guardamos también la descripción original
+        descripcionOriginal:
+          inputDescripcionOriginal
+            ? inputDescripcionOriginal.value
+            : "",
+
         fuente:
           obtenerFuenteActual(),
 
@@ -844,17 +936,11 @@ if (formProducto) {
 
         if (esCodigo) {
 
-          // Para EAN/UPC mantenemos
-          // la estructura actual.
-
           await productosRef
             .child(consultaOriginal)
             .set(nuevoProducto);
 
         } else {
-
-          // Para modelos/referencias
-          // utilizamos una clave automática.
 
           await productosRef
             .push(nuevoProducto);
@@ -998,7 +1084,10 @@ function escapeHtml(texto) {
 function escapeAttribute(texto) {
 
   return String(texto || "")
-    .replace(/"/g, "&quot;");
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
 }
 
