@@ -3,136 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Asistente de Cadastro - Guía del Digitador</title>
-    <link rel="stylesheet" href="style.css?v=2">
+
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
+
 <body>
 
-    <div class="menu-container cadastro-container">
-        
-        <!-- Header superior -->
-        <header class="header-herramienta">
-            <a href="menu.html" class="btn-volver" aria-label="Volver al menú principal">
-                &larr; VOLVER AL MENÚ
-            </a>
-            <div id="badgeNube" class="badge-nube conectando" role="status" aria-live="polite">
-                <span class="punto-estado"></span> CONECTANDO A LA NUBE...
-            </div>
-        </header>
+<div class="menu-container cadastro-container">
 
-        <div class="titulo-seccion">
-            <h1>ASISTENTE DE CADASTRO</h1>
-            <p class="subtitulo">REGISTRO INTELIGENTE Y ESTANDARIZACIÓN COLABORATIVA DE PRODUCTOS</p>
+    <!-- HEADER -->
+    <header class="header-herramienta">
+
+        <a
+            href="menu.html"
+            class="btn-volver"
+            aria-label="Volver al menú principal"
+        >
+            &larr; VOLVER AL MENÚ
+        </a>
+
+        <div
+            id="badgeNube"
+            class="badge-nube conectando"
+            role="status"
+            aria-live="polite"
+        >
+            <span class="punto-estado"></span>
+            CONECTANDO A LA NUBE...
         </div>
 
-        <!-- PASO 1: Búsqueda / Escaneo -->
-        <section class="bloque-paso">
-            <div class="encabezado-paso">
-                <span class="num-paso">1</span>
-                <h2>INGRESO DE CÓDIGO DE BARRAS</h2>
-            </div>
+    </header>
 
-            <form id="formBusqueda" class="form-busqueda" autocomplete="off">
-                <label for="inputEan" class="label-accesible">ESCANEA O INGRESA EL CÓDIGO EAN / UPC:</label>
-                <div class="input-escaneo-group">
-                    <input 
-                        type="text" 
-                        id="inputEan" 
-                        placeholder="Ej: 6925281978258" 
-                        autofocus 
-                        required
-                    >
-                    <button type="submit" class="btn-primario btn-buscar" id="btnBuscar">
-                        <span class="icono-btn">🔍</span> BUSCAR
-                    </button>
-                </div>
-            </form>
-        </section>
 
-        <!-- Panel de Alertas / Avisos -->
-        <div id="panelAviso" class="panel-aviso oculto" role="alert" aria-live="assertive">
-            <span id="textoAviso"></span>
-        </div>
+    <!-- TITULO -->
 
-        <!-- PASO 2: Desglose de Atributos Estandarizados (Horizontal) -->
-        <section class="bloque-paso">
-            <div class="encabezado-paso">
-                <span class="num-paso">2</span>
-                <h2>ATRIBUTOS DEL PRODUCTO</h2>
-            </div>
+    <div class="titulo-seccion">
 
-            <form id="formProducto" autocomplete="off">
-                <div class="grid-atributos">
-                    <div class="campo-atributo">
-                        <label for="marca">MARCA</label>
-                        <input type="text" id="marca" placeholder="Ej: JBL" required>
-                    </div>
+        <h1>ASISTENTE DE CADASTRO</h1>
 
-                    <div class="campo-atributo">
-                        <label for="modelo">MODELO</label>
-                        <input type="text" id="modelo" placeholder="Ej: BOOMBOX 4" required>
-                    </div>
-
-                    <div class="campo-atributo">
-                        <label for="tipoProducto">TIPO DE PRODUCTO</label>
-                        <input type="text" id="tipoProducto" placeholder="Ej: SPEAKER" required>
-                    </div>
-
-                    <div class="campo-atributo">
-                        <label for="color">COLOR / VARIANTE</label>
-                        <input type="text" id="color" placeholder="Ej: BLACK" required>
-                    </div>
-                </div>
-
-                <div class="acciones-form">
-                    <button type="submit" class="btn-exito btn-guardar" id="btnGuardar">
-                        🖫 GUARDAR EN LA NUBE
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        <!-- PASO 3: Descripción Final Estandarizada -->
-        <section class="bloque-paso bloque-resultado">
-            <div class="encabezado-paso">
-                <span class="num-paso">3</span>
-                <h2>DESCRIPCIÓN FORMATEADA FINAL</h2>
-            </div>
-
-            <div class="resultado-group">
-                <input 
-                    type="text" 
-                    id="resultadoDescripcion" 
-                    placeholder="[MARCA] [MODELO] [PRODUCTO] [COLOR]" 
-                    readonly
-                >
-                <button type="button" id="btnCopiar" class="btn-copiar" disabled>
-                    📋 COPIAR
-                </button>
-            </div>
-        </section>
+        <p class="subtitulo">
+            REGISTRO INTELIGENTE Y ESTANDARIZACIÓN COLABORATIVA DE PRODUCTOS
+        </p>
 
     </div>
 
-    <footer>
-        <div class="desarrollado-by">Desarrollado by: Ivan Frutos</div>
-        
-        <div class="panel-colores">
-            <div class="control-color">
-                <label for="pickerFondo">Fondo:</label>
-                <input type="color" id="pickerFondo" value="#0b0b0d">
-            </div>
-            <div class="control-color">
-                <label for="pickerPrincipal">Acento:</label>
-                <input type="color" id="pickerPrincipal" value="#dc2626">
-            </div>
-        </div>
-    </footer>
 
-    <!-- SDKs de Firebase y Scripts de la App -->
-    <script src="temas.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="cadastro.js"></script>
+    <!-- ==========================================================
+         PASO 1 - BUSCADOR UNIVERSAL
+         ========================================================== -->
+
+    <section class="bloque-paso">
+
+        <div class="encabezado-paso">
+
+            <span class="num-paso">1</span>
+
+            <h2>BUSCAR PRODUCTO</h2>
+
+        </div>
+
+
+        <form
+            id="formBusqueda"
+            class="form-busqueda"
+            autocomplete="off"
+        >
+
+            <label
+                for="inputBusqueda"
+                class="label-accesible"
+            >
+                CÓDIGO DE BARRAS, MODELO O REFERENCIA:
+            </label>
+
+
+            <div class="input-escaneo-group">
+
+                <input
+                    type="text"
+                    id="inputBusqueda"
+                    name="busqueda"
+                    placeholder="Ej: 0195950639414 / CFI-1215A / WH-1000XM5"
+                    autofocus
+                    autocomplete="off"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    class="btn-primario btn-buscar"
+                    id="btnBuscar"
+                >
+
+                    <span class="icono-btn">🔍</span>
+
+                    BUSCAR
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="tipoBusqueda"
+                style="
+                    margin-top:10px;
+                    font-size:13px;
+                    opacity:.75;
+                "
+            >
+                El sistema detectará automáticamente si es EAN, UPC,
+                modelo o referencia.
+            </div>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- ==========================================================
+         RESULTADO DE BÚSQUEDA
+         ========================================================== -->
+
+    <div
+        id="panelAviso"
+        class="panel-aviso oculto"
+        role="alert"
+        aria-live="assertive"
+    >
+
+        <span id="textoAviso"></span>
+
+    </div>
+
+
+
+    <!-- ==========================================================
+         PASO 2 - ATRIBUTOS
+         ========================================================== -->
+
+    <section class="bloque-paso">
+
+        <div class="encabezado-paso">
+
+            <span class="num-paso">2</span>
+
+            <h2>ATRIBUTOS DEL PRODUCTO</h2>
+
+        </div>
+
+
+        <form
+            id="formProducto"
+            autocomplete="off"
+        >
+
+            <div class="grid-atributos">
+
+
+                <!-- MARCA -->
+
+                <div class="campo-atributo">
+
+                    <label for="marca">
+                        MARCA
+                    </label>
+
+                    <input
+                        type="text"
+                        id="marca"
+                        placeholder="Ej: SONY"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- MODELO -->
+
+                <div class="campo-atributo">
+
+                    <label for="modelo">
+                        MODELO
+                    </label>
+
+                    <input
+                        type="text"
+                        id="modelo"
+                        placeholder="Ej: CFI-1215A"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- TIPO -->
+
+                <div class="campo-atributo">
+
+                    <label for="tipoProducto">
+                        TIPO DE PRODUCTO
+                    </label>
+
+                    <input
+                        type="text"
+                        id="tipoProducto"
+                        placeholder="Ej: PLAYSTATION 5"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- COLOR -->
+
+                <div class="campo-atributo">
+
+                    <label for="color">
+                        COLOR / VARIANTE
+                    </label>
+
+                    <input
+                        type="text"
+                        id="color"
+                        placeholder="Ej: BLANCO"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INFORMACIÓN DE LA FUENTE -->
+
+            <div
+                id="fuenteResultado"
+                style="
+                    margin-top:18px;
+                    padding:12px;
+                    border-radius:8px;
+                    background:rgba(255,255,255,.04);
+                    display:none;
+                    font-size:13px;
+                "
+            ></div>
+
+
+
+            <!-- BOTÓN GUARDAR -->
+
+            <div class="acciones-form">
+
+                <button
+                    type="submit"
+                    class="btn-exito btn-guardar"
+                    id="btnGuardar"
+                >
+
+                    🖫 GUARDAR EN LA NUBE
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- ==========================================================
+         PASO 3 - DESCRIPCIÓN
+         ========================================================== -->
+
+    <section
+        class="bloque-paso bloque-resultado"
+    >
+
+        <div class="encabezado-paso">
+
+            <span class="num-paso">3</span>
+
+            <h2>
+                DESCRIPCIÓN FORMATEADA FINAL
+            </h2>
+
+        </div>
+
+
+        <div class="resultado-group">
+
+            <input
+                type="text"
+                id="resultadoDescripcion"
+                placeholder="[MARCA] [MODELO] [PRODUCTO] [COLOR]"
+                readonly
+            >
+
+
+            <button
+                type="button"
+                id="btnCopiar"
+                class="btn-copiar"
+                disabled
+            >
+
+                📋 COPIAR
+
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="desarrollado-by">
+        Desarrollado by: Ivan Frutos
+    </div>
+
+
+    <div class="panel-colores">
+
+        <div class="control-color">
+
+            <label for="pickerFondo">
+                Fondo:
+            </label>
+
+            <input
+                type="color"
+                id="pickerFondo"
+                value="#0b0b0d"
+            >
+
+        </div>
+
+
+        <div class="control-color">
+
+            <label for="pickerPrincipal">
+                Acento:
+            </label>
+
+            <input
+                type="color"
+                id="pickerPrincipal"
+                value="#dc2626"
+            >
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<!-- ==========================================================
+     FIREBASE
+     ========================================================== -->
+
+<script src="temas.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+
+<!-- APP -->
+
+<script src="cadastro.js"></script>
+
 </body>
 </html>
