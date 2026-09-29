@@ -98,10 +98,10 @@ if (formBusqueda) {
         actualizarDescripcionFormateada();
         alert('✅ Producto cargado desde tu base de datos Firebase.');
       } else {
-        // Paso B: Consultar a tu API Serverless en Vercel
+        // Paso B: Consultar a tu API Serverless en Vercel (Gemini AI)
         const exitoProxy = await consultarGeminiEan(codigoEan);
 
-        // Paso C: Si no se encuentra en el proxy, intentar por prefijo/familia
+        // Paso C: Si la IA no encuentra nada, intentar por prefijo/familia
         if (!exitoProxy) {
           aplicarPrediccionPorFamilia(codigoEan);
         }
@@ -110,13 +110,18 @@ if (formBusqueda) {
   });
 }
 
-// BÚSQUEDA MEDIANTE SERVIDOR PROXY SEGURO
+// BÚSQUEDA MEDIANTE SERVIDOR PROXY SEGURO (CON DIAGNÓSTICO EN CONSOLA)
 async function consultarGeminiEan(codigoEan) {
   try {
     const response = await fetch(`/api/buscar-ean?ean=${codigoEan}`);
-    if (!response.ok) return false;
+    
+    if (!response.ok) {
+      console.error(`Error HTTP desde /api/buscar-ean: Estado ${response.status}`);
+      return false;
+    }
 
     const resultadoJson = await response.json();
+    console.log("Respuesta recibida de la API Gemini:", resultadoJson);
 
     if (resultadoJson.marca && resultadoJson.marca !== "NO_ENCONTRADO" && !resultadoJson.error) {
       inputMarca.value = (resultadoJson.marca || '').toUpperCase();
@@ -127,6 +132,8 @@ async function consultarGeminiEan(codigoEan) {
       actualizarDescripcionFormateada();
       alert(`🤖 ¡Producto identificado exitosamente!\n\n${inputResultado.value}`);
       return true;
+    } else {
+      console.warn("La IA no devolvió datos válidos para este EAN:", resultadoJson);
     }
   } catch (err) {
     console.error("Error al consultar el servidor proxy:", err);
