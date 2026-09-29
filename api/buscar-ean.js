@@ -1,62 +1,74 @@
 export default async function handler(req, res) {
-  // Configurar encabezados CORS para permitir peticiones desde tu frontend
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // 1. Configurar encabezados CORS para permitir llamadas desde tu frontend
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  const { ean } = req.query;
-
-  if (!ean) {
-    return res.status(400).json({ error: 'Se requiere un código EAN.' });
-  }
-
-  const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: 'La clave de API de Gemini no está configurada en Vercel.' });
-  }
-
-  const prompt = `Analiza el siguiente código de barras (EAN/UPC): ${ean}. 
-Identifica el producto correspondiente y responde ÚNICAMENTE con un objeto JSON estrictamente válido sin bloques de código Markdown ni texto adicional. 
-El objeto debe tener las siguientes claves exactas:
-- "marca": Nombre de la marca o "NO_ENCONTRADO" si no existe.
-- "modelo": Modelo o especificación del producto.
-- "tipoProducto": Categoría o tipo de producto (ej: TELEVISOR, CHAMPÚ, ZAPATILLA).
-- "color": Color o variante del producto.`;
-
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }]
-      })
-    });
-
-    if (!response.ok) {
-      const errData = await response.text();
-      console.error('Error desde la API de Gemini:', errData);
-      return res.status(response.status).json({ error: 'Error al comunicarse con la API de Gemini.' });
+    // Responder inmediatamente a las peticiones preflight (OPTIONS)
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
     }
 
-    const data = await response.json();
-    const textoRespuesta = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    // 2. Obtener el EAN tanto si viene por GET (?ean=...) como por POST ({ ean: ... })
+    const ean = req.method === 'GET' ? req.query.ean : req.body?.ean;
 
-    // Limpiar posibles etiquetas markdown si la IA las incluye
-    const jsonLimpio = textoRespuesta.replace(/```json/g, '').replace(/```/g, '').trim();
-    const resultado = JSON.parse(jsonLimpio);
+    if (!ean) {
+        return res.status(400).json({ error: 'El código EAN es obligatorio.' });
+    }
 
-    return res.status(200).json(resultado);
-  } catch (error) {
-    console.error('Error en la función serverless:', error);
-    return res.status(500).json({ error: 'Error interno al procesar el código EAN.' });
-  }
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+        return res.status(500).json({ error: 'La API Key de Gemini no está configurada en Vercel.' });
+    }
+
+    try {
+        const prompt = `Analiza el siguiente código de barras EAN/UPC: ${ean}.
+Busca en tu base de conocimientos el producto comercial correspondiente.
+Devuelve ÚNICAMENTE un objeto JSON estrictamente válido con la siguiente estructura (sin formato Markdown, sin comillas cuadradas de código, sin texto adicional):
+{
+  "encontrado": true,
+  "ean": "${ean}",
+  "marca": "Marca del producto",
+  "modelo": "Nombre o modelo del producto",
+  "tipoProducto": "Categoría o tipo",
+  "color": "Color o variante"
+}
+Si no encuentras el producto exacto con ese EAN, responde ÚNICAMENTE:
+{
+  "encontrado": false,
+  "ean": "${ean}",
+  "marca": "NO_ENCONTRADO",
+  "mensaje": "Producto no identificado"
+}`;
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        const apiResponse = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
+        });
+
+        if (!apiResponse.ok) {
+            const errorText = await apiResponse.text();
+            console.error("Error desde Gemini API:", errorText);
+            return res.status(502).json({ error: 'Error al consultar la API de IA.' });
+        }
+
+        const data = await apiResponse.json();
+        const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        
+        // Limpieza de formato Markdown de bloques ```json ... ```
+        const jsonString = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        const productoInfo = JSON.parse(jsonString);
+
+        return res.status(200).json(productoInfo);
+
+    } catch (error) {
+        console.error("Error en la función buscar-ean:", error);
+        return res.status(500).json({ error: 'Error interno al procesar el código EAN.' });
+    }
 }
