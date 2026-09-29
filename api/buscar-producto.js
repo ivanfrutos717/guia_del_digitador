@@ -248,6 +248,11 @@ export default async function handler(req, res) {
 
       ean: datos.ean,
 
+      // NUEVO:
+      // Texto original obtenido de la página del producto
+      descripcionOriginal:
+        productoTexto,
+
       fuente: "Compras Paraguai",
 
       url: productoUrl
