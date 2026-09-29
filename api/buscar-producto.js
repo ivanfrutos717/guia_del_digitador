@@ -453,7 +453,7 @@ export default async function handler(req, res) {
             datos.ean,
 
           // -------------------------------------------------
-          // ESTA ES LA DESCRIPCIÓN ORIGINAL REAL
+          // DESCRIPCIÓN ORIGINAL FILTRADA
           // -------------------------------------------------
 
           descripcionOriginal:
@@ -480,7 +480,6 @@ export default async function handler(req, res) {
         );
 
         // ===================================================
-        // MUY IMPORTANTE:
         // UNA FUENTE FALLA → CONTINUAR CON LA SIGUIENTE
         // ===================================================
 
@@ -736,14 +735,41 @@ async function leerProducto(
         productoTexto.length > 100
       ) {
 
-        return {
-          texto:
+        const contenidoProducto =
+          extraerContenidoProducto(
             productoTexto
-        };
+          );
+
+        console.log(
+          "CONTENIDO PRODUCTO FILTRADO:",
+          contenidoProducto.length,
+          "caracteres"
+        );
+
+        console.log(
+          contenidoProducto.substring(
+            0,
+            5000
+          )
+        );
+
+        if (
+          contenidoProducto.length > 100
+        ) {
+
+          return {
+            texto:
+              contenidoProducto
+          };
+        }
+
+        console.log(
+          "EL FILTRO NO ENCONTRÓ CONTENIDO SUFICIENTE."
+        );
       }
 
       console.log(
-        "JINA DEVOLVIÓ CAPTCHA."
+        "JINA DEVOLVIÓ CAPTCHA O CONTENIDO INSUFICIENTE."
       );
     }
 
@@ -814,14 +840,41 @@ async function leerProducto(
         texto.length > 100
       ) {
 
-        return {
-          texto:
+        const contenidoProducto =
+          extraerContenidoProducto(
             texto
-        };
+          );
+
+        console.log(
+          "CONTENIDO PRODUCTO FILTRADO:",
+          contenidoProducto.length,
+          "caracteres"
+        );
+
+        console.log(
+          contenidoProducto.substring(
+            0,
+            5000
+          )
+        );
+
+        if (
+          contenidoProducto.length > 100
+        ) {
+
+          return {
+            texto:
+              contenidoProducto
+          };
+        }
+
+        console.log(
+          "EL FILTRO NO ENCONTRÓ CONTENIDO SUFICIENTE."
+        );
       }
 
       console.log(
-        "LECTURA DIRECTA DEVOLVIÓ CAPTCHA."
+        "LECTURA DIRECTA DEVOLVIÓ CAPTCHA O CONTENIDO INSUFICIENTE."
       );
     }
 
@@ -843,6 +896,1540 @@ async function leerProducto(
   );
 
   return null;
+}
+
+
+// ============================================================
+// EXTRAER SOLAMENTE EL CONTENIDO DEL PRODUCTO
+// ============================================================
+
+function extraerContenidoProducto(
+  texto
+) {
+
+  if (!texto) {
+    return "";
+  }
+
+  let contenido =
+    String(texto);
+
+
+  // ==========================================================
+  // 1. SI ES HTML, LIMPIAR HTML
+  // ==========================================================
+
+  if (
+    /<html|<body|<div|<section|<article|<main|<script/i
+      .test(contenido)
+  ) {
+
+    contenido =
+      limpiarHTML(
+        contenido
+      );
+  }
+
+
+  // ==========================================================
+  // 2. NORMALIZAR SALTOS DE LÍNEA
+  // ==========================================================
+
+  contenido =
+    contenido
+      .replace(/\r/g, "\n")
+      .replace(/\n{3,}/g, "\n\n");
+
+
+  // ==========================================================
+  // 3. ELIMINAR BASURA DE PÁGINA
+  // ==========================================================
+
+  contenido =
+    eliminarBasuraPagina(
+      contenido
+    );
+
+
+  // ==========================================================
+  // 4. BUSCAR SECCIÓN ESPECÍFICA
+  // ==========================================================
+
+  const seccion =
+    extraerSeccionProducto(
+      contenido
+    );
+
+
+  if (
+    seccion &&
+    seccion.length >= 150
+  ) {
+
+    console.log(
+      "SE ENCONTRÓ SECCIÓN ESPECÍFICA DE PRODUCTO."
+    );
+
+    return limpiarDescripcionFinal(
+      seccion
+    );
+  }
+
+
+  // ==========================================================
+  // 5. EXTRACCIÓN INTELIGENTE
+  // ==========================================================
+
+  console.log(
+    "NO SE ENCONTRÓ SECCIÓN ESPECÍFICA."
+  );
+
+  console.log(
+    "USANDO EXTRACCIÓN INTELIGENTE..."
+  );
+
+
+  const inteligente =
+    extraerContenidoInteligente(
+      contenido
+    );
+
+
+  if (
+    inteligente.length >= 100
+  ) {
+
+    return limpiarDescripcionFinal(
+      inteligente
+    );
+  }
+
+
+  // ==========================================================
+  // 6. ÚLTIMO RECURSO
+  // ==========================================================
+
+  return limpiarDescripcionFinal(
+    contenido
+  );
+}
+
+
+// ============================================================
+// LIMPIAR HTML
+// ============================================================
+
+function limpiarHTML(
+  html
+) {
+
+  let texto =
+    String(html);
+
+
+  texto =
+    texto.replace(
+      /<script[\s\S]*?<\/script>/gi,
+      "\n"
+    );
+
+
+  texto =
+    texto.replace(
+      /<style[\s\S]*?<\/style>/gi,
+      "\n"
+    );
+
+
+  texto =
+    texto.replace(
+      /<svg[\s\S]*?<\/svg>/gi,
+      "\n"
+    );
+
+
+  texto =
+    texto.replace(
+      /<noscript[\s\S]*?<\/noscript>/gi,
+      "\n"
+    );
+
+
+  texto =
+    texto.replace(
+      /<\/(p|div|section|article|main|li|ul|ol|h1|h2|h3|h4|h5|h6|tr|td|br)>/gi,
+      "\n"
+    );
+
+
+  texto =
+    texto.replace(
+      /<[^>]+>/g,
+      " "
+    );
+
+
+  texto =
+    texto
+      .replace(
+        /&nbsp;/gi,
+        " "
+      )
+      .replace(
+        /&amp;/gi,
+        "&"
+      )
+      .replace(
+        /&quot;/gi,
+        '"'
+      )
+      .replace(
+        /&#39;/gi,
+        "'"
+      )
+      .replace(
+        /&lt;/gi,
+        "<"
+      )
+      .replace(
+        /&gt;/gi,
+        ">"
+      );
+
+
+  return texto;
+}
+
+
+// ============================================================
+// ELIMINAR BASURA DE PÁGINA
+// ============================================================
+
+function eliminarBasuraPagina(
+  texto
+) {
+
+  const lineas =
+    String(texto || "")
+      .split("\n");
+
+
+  const resultado = [];
+
+  let ignorandoBloque =
+    false;
+
+
+  for (
+    let i = 0;
+    i < lineas.length;
+    i++
+  ) {
+
+    let linea =
+      lineas[i]
+        .trim();
+
+
+    if (!linea) {
+      continue;
+    }
+
+
+    const normalizada =
+      normalizarTextoBusqueda(
+        linea
+      );
+
+
+    // --------------------------------------------------------
+    // INICIO DE BLOQUE DE BASURA
+    // --------------------------------------------------------
+
+    if (
+      esInicioBloqueBasura(
+        normalizada
+      )
+    ) {
+
+      ignorandoBloque =
+        true;
+
+      continue;
+    }
+
+
+    // --------------------------------------------------------
+    // SALIR DE BLOQUE DE BASURA CUANDO APARECE
+    // UNA SECCIÓN ÚTIL
+    // --------------------------------------------------------
+
+    if (
+      ignorandoBloque
+    ) {
+
+      if (
+        esTituloSeccionProducto(
+          normalizada
+        )
+      ) {
+
+        ignorandoBloque =
+          false;
+
+      } else {
+
+        continue;
+      }
+    }
+
+
+    // --------------------------------------------------------
+    // ELIMINAR LÍNEAS INDIVIDUALES DE BASURA
+    // --------------------------------------------------------
+
+    if (
+      esLineaBasura(
+        normalizada
+      )
+    ) {
+
+      continue;
+    }
+
+
+    resultado.push(
+      linea
+    );
+  }
+
+
+  return resultado.join(
+    "\n"
+  );
+}
+
+
+// ============================================================
+// DETECTAR INICIO DE BLOQUE BASURA
+// ============================================================
+
+function esInicioBloqueBasura(
+  texto
+) {
+
+  const patrones = [
+
+    "productos relacionados",
+
+    "productos recomendados",
+
+    "tambien te puede interesar",
+
+    "también te puede interesar",
+
+    "you may also like",
+
+    "related products",
+
+    "recommended products",
+
+    "customer reviews",
+
+    "customer review",
+
+    "reseñas",
+
+    "resenas",
+
+    "opiniones de clientes",
+
+    "comentarios de clientes",
+
+    "iniciar sesion",
+
+    "iniciar sesión",
+
+    "crear cuenta",
+
+    "mi cuenta",
+
+    "my account",
+
+    "shopping cart",
+
+    "carrito de compras",
+
+    "checkout",
+
+    "formas de pago",
+
+    "metodos de pago",
+
+    "métodos de pago",
+
+    "politica de privacidad",
+
+    "política de privacidad",
+
+    "terms and conditions",
+
+    "privacy policy",
+
+    "politica de cambios",
+
+    "política de cambios",
+
+    "politica de devolucion",
+
+    "política de devolución",
+
+    "suscribete",
+
+    "suscríbete",
+
+    "newsletter",
+
+    "recibe nuestras ofertas",
+
+    "horario de atención",
+
+    "horário de atendimento"
+
+  ];
+
+
+  return patrones.some(
+    patron =>
+      texto.includes(
+        patron
+      )
+  );
+}
+
+
+// ============================================================
+// DETECTAR LÍNEA BASURA
+// ============================================================
+
+function esLineaBasura(
+  texto
+) {
+
+  const patrones = [
+
+    "inicio",
+
+    "home",
+
+    "menu",
+
+    "menú",
+
+    "categorias",
+
+    "categorías",
+
+    "categoria",
+
+    "categoría",
+
+    "buscar",
+
+    "search",
+
+    "login",
+
+    "entrar",
+
+    "registrarse",
+
+    "register",
+
+    "mi cuenta",
+
+    "my account",
+
+    "carrito",
+
+    "cart",
+
+    "checkout",
+
+    "comprar ahora",
+
+    "buy now",
+
+    "add to cart",
+
+    "agregar al carrito",
+
+    "añadir al carrito",
+
+    "whatsapp",
+
+    "facebook",
+
+    "instagram",
+
+    "youtube",
+
+    "twitter",
+
+    "tiktok",
+
+    "compartir",
+
+    "share",
+
+    "cookies",
+
+    "aceptar cookies",
+
+    "accept cookies",
+
+    "politica de privacidad",
+
+    "política de privacidad",
+
+    "privacy policy",
+
+    "terminos",
+
+    "términos",
+
+    "terms",
+
+    "footer",
+
+    "copyright"
+
+  ];
+
+
+  if (
+    patrones.includes(
+      texto
+    )
+  ) {
+
+    return true;
+  }
+
+
+  if (
+    /^https?:\/\//i.test(
+      texto
+    )
+  ) {
+
+    return true;
+  }
+
+
+  if (
+    texto.includes("](") &&
+    texto.length < 180
+  ) {
+
+    return true;
+  }
+
+
+  return false;
+}
+
+
+// ============================================================
+// EXTRAER SECCIÓN DE PRODUCTO
+// ============================================================
+
+function extraerSeccionProducto(
+  texto
+) {
+
+  const lineas =
+    String(texto || "")
+      .split("\n")
+      .map(
+        linea =>
+          linea.trim()
+      )
+      .filter(
+        Boolean
+      );
+
+
+  const resultados = [];
+
+  let capturando =
+    false;
+
+  let cantidadCaracteres =
+    0;
+
+
+  for (
+    let i = 0;
+    i < lineas.length;
+    i++
+  ) {
+
+    const linea =
+      lineas[i];
+
+
+    const normalizada =
+      normalizarTextoBusqueda(
+        linea
+      );
+
+
+    // --------------------------------------------------------
+    // ENCONTRAMOS UNA SECCIÓN ÚTIL
+    // --------------------------------------------------------
+
+    if (
+      esTituloSeccionProducto(
+        normalizada
+      )
+    ) {
+
+      capturando =
+        true;
+
+      resultados.push(
+        linea
+      );
+
+      cantidadCaracteres +=
+        linea.length;
+
+      continue;
+    }
+
+
+    // --------------------------------------------------------
+    // SI ESTAMOS CAPTURANDO
+    // --------------------------------------------------------
+
+    if (
+      capturando
+    ) {
+
+      // ----------------------------------------------
+      // DETENER ANTE BLOQUES DE BASURA
+      // ----------------------------------------------
+
+      if (
+        esInicioBloqueBasura(
+          normalizada
+        )
+      ) {
+
+        break;
+      }
+
+
+      resultados.push(
+        linea
+      );
+
+      cantidadCaracteres +=
+        linea.length;
+
+
+      // ----------------------------------------------
+      // LÍMITE DE SEGURIDAD
+      // ----------------------------------------------
+
+      if (
+        cantidadCaracteres >
+        12000
+      ) {
+
+        break;
+      }
+    }
+  }
+
+
+  return resultados.join(
+    "\n"
+  );
+}
+
+
+// ============================================================
+// TÍTULOS DE SECCIONES ÚTILES
+// ============================================================
+
+function esTituloSeccionProducto(
+  texto
+) {
+
+  const patrones = [
+
+    // --------------------------------------------------------
+    // ESPAÑOL
+    // --------------------------------------------------------
+
+    "descripcion",
+
+    "descripcion del producto",
+
+    "descripcion de producto",
+
+    "caracteristicas",
+
+    "caracteristicas del producto",
+
+    "especificaciones",
+
+    "especificaciones tecnicas",
+
+    "ficha tecnica",
+
+    "detalles",
+
+    "detalles del producto",
+
+    "informacion del producto",
+
+    "informacion tecnica",
+
+
+    // --------------------------------------------------------
+    // PORTUGUÉS
+    // --------------------------------------------------------
+
+    "descricao",
+
+    "descricao do produto",
+
+    "descricao de produto",
+
+    "caracteristicas do produto",
+
+    "especificacoes",
+
+    "especificacoes tecnicas",
+
+    "ficha tecnica",
+
+    "detalhes",
+
+    "detalhes do produto",
+
+    "informacoes do produto",
+
+    "informacoes tecnicas",
+
+
+    // --------------------------------------------------------
+    // INGLÉS
+    // --------------------------------------------------------
+
+    "description",
+
+    "product description",
+
+    "product details",
+
+    "features",
+
+    "product features",
+
+    "specifications",
+
+    "technical specifications",
+
+    "technical details",
+
+    "details",
+
+    "product information"
+
+  ];
+
+
+  const limpio =
+    texto
+      .replace(
+        /^#+/,
+        ""
+      )
+      .replace(
+        /[*_:#]/g,
+        ""
+      )
+      .trim();
+
+
+  return patrones.includes(
+    limpio
+  );
+}
+
+
+// ============================================================
+// EXTRACCIÓN INTELIGENTE
+// ============================================================
+
+function extraerContenidoInteligente(
+  texto
+) {
+
+  const lineas =
+    String(texto || "")
+      .split("\n")
+      .map(
+        linea =>
+          linea.trim()
+      )
+      .filter(
+        Boolean
+      );
+
+
+  const resultado = [];
+
+
+  // ==========================================================
+  // BUSCAR POSIBLE TÍTULO
+  // ==========================================================
+
+  for (
+    const linea
+    of lineas
+  ) {
+
+    if (
+      pareceTituloProducto(
+        linea
+      )
+    ) {
+
+      resultado.push(
+        linea
+      );
+
+      break;
+    }
+  }
+
+
+  // ==========================================================
+  // BUSCAR ESPECIFICACIONES
+  // ==========================================================
+
+  let cantidad =
+    0;
+
+
+  for (
+    const linea
+    of lineas
+  ) {
+
+    const normalizada =
+      normalizarTextoBusqueda(
+        linea
+      );
+
+
+    if (
+      esLineaBasura(
+        normalizada
+      )
+    ) {
+
+      continue;
+    }
+
+
+    if (
+      pareceEspecificacion(
+        linea
+      )
+    ) {
+
+      if (
+        !resultado.includes(
+          linea
+        )
+      ) {
+
+        resultado.push(
+          linea
+        );
+      }
+
+      cantidad++;
+
+
+      if (
+        cantidad >= 80
+      ) {
+
+        break;
+      }
+    }
+  }
+
+
+  // ==========================================================
+  // SI ENCONTRAMOS MUY POCO,
+  // BUSCAR LÍNEAS RELACIONADAS AL PRODUCTO
+  // ==========================================================
+
+  if (
+    resultado.length < 4
+  ) {
+
+    for (
+      const linea
+      of lineas
+    ) {
+
+      const normalizada =
+        normalizarTextoBusqueda(
+          linea
+        );
+
+
+      if (
+        esLineaBasura(
+          normalizada
+        )
+      ) {
+
+        continue;
+      }
+
+
+      if (
+        pareceLineaProducto(
+          linea
+        )
+      ) {
+
+        if (
+          !resultado.includes(
+            linea
+          )
+        ) {
+
+          resultado.push(
+            linea
+          );
+        }
+      }
+
+
+      if (
+        resultado.length >= 60
+      ) {
+
+        break;
+      }
+    }
+  }
+
+
+  return resultado.join(
+    "\n"
+  );
+}
+
+
+// ============================================================
+// PARECE TÍTULO DE PRODUCTO
+// ============================================================
+
+function pareceTituloProducto(
+  linea
+) {
+
+  const texto =
+    String(linea || "")
+      .trim();
+
+
+  if (
+    texto.length < 10 ||
+    texto.length > 300
+  ) {
+
+    return false;
+  }
+
+
+  const palabrasProducto = [
+
+    "iphone",
+
+    "samsung",
+
+    "galaxy",
+
+    "xiaomi",
+
+    "motorola",
+
+    "sony",
+
+    "playstation",
+
+    "ps5",
+
+    "xbox",
+
+    "nintendo",
+
+    "lenovo",
+
+    "asus",
+
+    "acer",
+
+    "dell",
+
+    "hp",
+
+    "logitech",
+
+    "canon",
+
+    "nikon",
+
+    "jbl",
+
+    "monitor",
+
+    "notebook",
+
+    "laptop",
+
+    "televisor",
+
+    "television",
+
+    "smart tv",
+
+    "smartphone",
+
+    "celular",
+
+    "mouse",
+
+    "teclado",
+
+    "headset",
+
+    "ssd",
+
+    "disco",
+
+    "impresora"
+
+  ];
+
+
+  const normalizada =
+    normalizarTextoBusqueda(
+      texto
+    );
+
+
+  return palabrasProducto.some(
+    palabra =>
+      normalizada.includes(
+        normalizarTextoBusqueda(
+          palabra
+        )
+      )
+  );
+}
+
+
+// ============================================================
+// PARECE ESPECIFICACIÓN
+// ============================================================
+
+function pareceEspecificacion(
+  linea
+) {
+
+  const texto =
+    String(linea || "")
+      .trim();
+
+
+  if (
+    texto.length < 3 ||
+    texto.length > 500
+  ) {
+
+    return false;
+  }
+
+
+  // ----------------------------------------------------------
+  // FORMATO:
+  // "Marca: Samsung"
+  // "Modelo: SM-A175F"
+  // ----------------------------------------------------------
+
+  if (
+    /^[A-Za-zÁÉÍÓÚáéíóúÃÕãõÇç0-9 ._-]{2,50}\s*:\s*.+/.test(
+      texto
+    )
+  ) {
+
+    return true;
+  }
+
+
+  // ----------------------------------------------------------
+  // FORMATO DE LISTA
+  // ----------------------------------------------------------
+
+  if (
+    /^[-*•]\s+/.test(
+      texto
+    )
+  ) {
+
+    return true;
+  }
+
+
+  // ----------------------------------------------------------
+  // CARACTERÍSTICAS TÉCNICAS
+  // ----------------------------------------------------------
+
+  const patrones = [
+
+    "modelo",
+
+    "model",
+
+    "marca",
+
+    "brand",
+
+    "ean",
+
+    "gtin",
+
+    "codigo",
+
+    "código",
+
+    "sku",
+
+    "cor",
+
+    "color",
+
+    "tamanho",
+
+    "tamaño",
+
+    "size",
+
+    "memoria",
+
+    "memória",
+
+    "memory",
+
+    "ram",
+
+    "storage",
+
+    "armazenamento",
+
+    "almacenamiento",
+
+    "capacidad",
+
+    "capacidade",
+
+    "pantalla",
+
+    "tela",
+
+    "display",
+
+    "screen",
+
+    "procesador",
+
+    "processador",
+
+    "processor",
+
+    "bateria",
+
+    "batería",
+
+    "battery",
+
+    "camara",
+
+    "cámara",
+
+    "camera",
+
+    "resolucion",
+
+    "resolución",
+
+    "resolution",
+
+    "conectividad",
+
+    "conectividade",
+
+    "wifi",
+
+    "bluetooth",
+
+    "usb",
+
+    "hdmi",
+
+    "peso",
+
+    "weight",
+
+    "voltage",
+
+    "voltagem",
+
+    "potencia",
+
+    "power",
+
+    "dimensiones",
+
+    "dimensoes",
+
+    "dimensões",
+
+    "dimensions",
+
+    "pulgadas",
+
+    "polegadas",
+
+    "inches",
+
+    "hz",
+
+    "ghz",
+
+    "mah",
+
+    "wh",
+
+    "tb",
+
+    "gb",
+
+    "mb"
+
+  ];
+
+
+  const normalizada =
+    normalizarTextoBusqueda(
+      texto
+    );
+
+
+  return patrones.some(
+    patron =>
+      normalizada.includes(
+        normalizarTextoBusqueda(
+          patron
+        )
+      )
+  );
+}
+
+
+// ============================================================
+// PARECE LÍNEA DE PRODUCTO
+// ============================================================
+
+function pareceLineaProducto(
+  linea
+) {
+
+  const texto =
+    String(linea || "")
+      .trim();
+
+
+  if (
+    texto.length < 5 ||
+    texto.length > 500
+  ) {
+
+    return false;
+  }
+
+
+  const patrones = [
+
+    "samsung",
+
+    "galaxy",
+
+    "iphone",
+
+    "xiaomi",
+
+    "motorola",
+
+    "sony",
+
+    "playstation",
+
+    "ps5",
+
+    "xbox",
+
+    "nintendo",
+
+    "lenovo",
+
+    "asus",
+
+    "acer",
+
+    "dell",
+
+    "hp",
+
+    "logitech",
+
+    "canon",
+
+    "nikon",
+
+    "jbl",
+
+    "smartphone",
+
+    "celular",
+
+    "notebook",
+
+    "laptop",
+
+    "monitor",
+
+    "televisor",
+
+    "television",
+
+    "smart tv",
+
+    "mouse",
+
+    "teclado",
+
+    "headset",
+
+    "ssd",
+
+    "impresora"
+
+  ];
+
+
+  const normalizada =
+    normalizarTextoBusqueda(
+      texto
+    );
+
+
+  return patrones.some(
+    patron =>
+      normalizada.includes(
+        normalizarTextoBusqueda(
+          patron
+        )
+      )
+  );
+}
+
+
+// ============================================================
+// NORMALIZAR TEXTO PARA BÚSQUEDA
+// ============================================================
+
+function normalizarTextoBusqueda(
+  texto
+) {
+
+  return String(
+    texto || ""
+  )
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+}
+
+
+// ============================================================
+// LIMPIEZA FINAL DE DESCRIPCIÓN
+// ============================================================
+
+function limpiarDescripcionFinal(
+  texto
+) {
+
+  let lineas =
+    String(texto || "")
+      .split("\n");
+
+
+  const resultado = [];
+
+
+  for (
+    const lineaOriginal
+    of lineas
+  ) {
+
+    let linea =
+      lineaOriginal
+        .trim();
+
+
+    if (!linea) {
+      continue;
+    }
+
+
+    // --------------------------------------------------------
+    // QUITAR MARKDOWN DE ENCABEZADOS
+    // --------------------------------------------------------
+
+    linea =
+      linea.replace(
+        /^#{1,6}\s*/,
+        ""
+      );
+
+
+    // --------------------------------------------------------
+    // LIMPIAR IMÁGENES MARKDOWN
+    // --------------------------------------------------------
+
+    linea =
+      linea.replace(
+        /!\[[^\]]*\]\([^)]+\)/g,
+        ""
+      );
+
+
+    // --------------------------------------------------------
+    // LIMPIAR LINKS MARKDOWN
+    // --------------------------------------------------------
+
+    linea =
+      linea.replace(
+        /\[([^\]]+)\]\([^)]+\)/g,
+        "$1"
+      );
+
+
+    // --------------------------------------------------------
+    // ELIMINAR URLS
+    // --------------------------------------------------------
+
+    linea =
+      linea.replace(
+        /https?:\/\/\S+/gi,
+        ""
+      );
+
+
+    // --------------------------------------------------------
+    // LIMPIAR ESPACIOS
+    // --------------------------------------------------------
+
+    linea =
+      linea
+        .replace(
+          /[ \t]+/g,
+          " "
+        )
+        .trim();
+
+
+    if (!linea) {
+      continue;
+    }
+
+
+    // --------------------------------------------------------
+    // EVITAR DUPLICADOS
+    // --------------------------------------------------------
+
+    if (
+      resultado.includes(
+        linea
+      )
+    ) {
+
+      continue;
+    }
+
+
+    resultado.push(
+      linea
+    );
+  }
+
+
+  let final =
+    resultado.join(
+      "\n"
+    );
+
+
+  // ----------------------------------------------------------
+  // LIMITE DE SEGURIDAD
+  // ----------------------------------------------------------
+
+  if (
+    final.length > 15000
+  ) {
+
+    final =
+      final.substring(
+        0,
+        15000
+      );
+  }
+
+
+  return final.trim();
 }
 
 
@@ -1165,7 +2752,10 @@ function pareceUrlProducto(
       .toLowerCase();
 
 
-  // No seleccionar páginas de búsqueda
+  // ----------------------------------------------------------
+  // NO SELECCIONAR PÁGINAS DE BÚSQUEDA
+  // ----------------------------------------------------------
+
   if (
     u.includes("/busca") ||
     u.includes("/search") ||
@@ -1178,8 +2768,11 @@ function pareceUrlProducto(
   }
 
 
-  // URL larga normalmente corresponde
-  // a una página de producto
+  // ----------------------------------------------------------
+  // URL LARGA NORMALMENTE CORRESPONDE
+  // A UNA PÁGINA DE PRODUCTO
+  // ----------------------------------------------------------
+
   if (
     u.length >= 50
   ) {
@@ -1258,7 +2851,10 @@ function extraerDatosProducto(
   }
 
 
-  // Buscar primera línea que parezca título
+  // ----------------------------------------------------------
+  // BUSCAR PRIMERA LÍNEA QUE PAREZCA TÍTULO
+  // ----------------------------------------------------------
+
   if (
     !nombre
   ) {
@@ -1636,7 +3232,6 @@ function detectarTipoProducto(
 
 
   if (
-    t.includes("teclado") ||
     t.includes("teclado")
   ) {
 
