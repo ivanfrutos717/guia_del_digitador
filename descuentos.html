@@ -128,12 +128,15 @@
       font: inherit;
     }
 
-    input:focus, select:focus, textarea:focus {
+    input:focus,
+    select:focus,
+    textarea:focus {
       outline: 2px solid var(--rojo);
       outline-offset: 1px;
     }
 
     input:disabled { opacity: .7; }
+
     .campo { min-width: 0; }
 
     .boton {
@@ -187,7 +190,13 @@
     }
 
     .verde { color: #4ade80; }
-    .nota { font-size: 13px; color: var(--suave); margin: 10px 0; }
+
+    .nota {
+      font-size: 13px;
+      color: var(--suave);
+      margin: 10px 0;
+    }
+
     .alerta { color: #fbbf24; }
     .error { color: #f87171; }
 
@@ -216,7 +225,11 @@
       background: #222228;
     }
 
-    td input { padding: 8px; min-width: 75px; }
+    td input {
+      padding: 8px;
+      min-width: 75px;
+    }
+
     td .desc { min-width: 180px; }
     td .dato { white-space: nowrap; }
     td button { padding: 7px 10px; }
@@ -275,6 +288,7 @@
       <h1>Calculadora de Descuentos</h1>
       <p class="subtitulo">GUÍA DEL DIGITADOR</p>
     </div>
+
     <a href="menu.html" class="volver">← Menú</a>
   </header>
 
@@ -298,6 +312,7 @@
   </nav>
 
   <!-- CALCULADORA MANUAL -->
+
   <section id="manual" class="panel">
     <h2>Descuento rápido</h2>
 
@@ -356,17 +371,20 @@
     </div>
 
     <p class="nota">
-      Sin símbolos de moneda. Admite importes enteros y con decimales.
+      Sin símbolos de moneda. Admite importes enteros
+      y con decimales.
     </p>
   </section>
 
   <!-- CALCULADORA AUTOMÁTICA -->
+
   <div id="automatico" class="oculto">
 
     <section class="panel">
       <h2>1. Cargar factura</h2>
 
       <label for="archivo">Imagen de la factura</label>
+
       <input
         id="archivo"
         class="archivo"
@@ -389,17 +407,21 @@
 
       <p class="nota">
         Formatos: JPG, PNG y WebP.
-        La lectura OCR se hace en tu navegador;
-        revisá los datos reconocidos.
+        El reconocimiento se realiza en tu navegador.
       </p>
 
-      <p id="estadoOCR" class="nota" role="status" aria-live="polite"></p>
+      <p
+        id="estadoOCR"
+        class="nota"
+        role="status"
+        aria-live="polite"></p>
     </section>
 
     <section class="panel">
       <h2>2. Datos reconocidos</h2>
 
       <div class="rejilla">
+
         <div>
           <label for="proveedor">Proveedor</label>
           <input id="proveedor">
@@ -447,6 +469,7 @@
             inputmode="decimal"
             placeholder="Ej.: 12.791,40">
         </div>
+
       </div>
     </section>
 
@@ -456,10 +479,12 @@
       <div class="rejilla">
         <div>
           <label for="modoDescuento">Modalidad</label>
+
           <select id="modoDescuento">
             <option value="general">
               General: mismo porcentaje para todos
             </option>
+
             <option value="individual">
               Individual: porcentaje por producto
             </option>
@@ -467,27 +492,32 @@
         </div>
 
         <div id="campoGeneral">
-          <label for="general">Descuento general (%)</label>
-          <input id="general" value="20" inputmode="decimal">
+          <label for="general">
+            Descuento general (%)
+          </label>
+
+          <input
+            id="general"
+            value="20"
+            inputmode="decimal">
         </div>
       </div>
 
       <p class="nota">
-        La columna «Dto. original» se interpreta como un
-        <b>importe por unidad</b>, no como porcentaje.
-        Primero se resta del precio unitario;
-        después se aplica el nuevo porcentaje.
-        Podés corregirla.
+        El descuento original de la factura se interpreta
+        como un importe por unidad. Primero se resta del
+        precio unitario; después se aplica el nuevo
+        porcentaje de descuento.
       </p>
     </section>
 
     <section class="panel">
-      <h2>4. Productos</h2>
+      <h2>4. Productos detectados</h2>
 
       <p class="nota alerta">
-        La detección de filas es preliminar:
-        corregí las cantidades y los precios,
-        especialmente si la fotografía está inclinada.
+        El sistema intentará reconocer automáticamente
+        las columnas de productos. Revisá cantidades,
+        precios y descuentos antes de generar el PDF.
       </p>
 
       <div class="tabla">
@@ -506,6 +536,7 @@
               <th></th>
             </tr>
           </thead>
+
           <tbody id="filas"></tbody>
         </table>
       </div>
@@ -549,6 +580,7 @@
 
       <label class="confirmar">
         <input type="checkbox" id="revisado">
+
         <span>
           Confirmo que revisé los datos y los importes
           antes de generar el informe.
@@ -568,6 +600,7 @@
 
       <details>
         <summary>Ver texto completo reconocido (OCR)</summary>
+
         <textarea
           id="textoOCR"
           readonly
@@ -601,7 +634,10 @@ let identificador = 0;
 let ultimoResultadoManual = null;
 let urlVista = null;
 
-// Conversión de formatos numéricos
+// =======================================
+// NÚMEROS Y FORMATOS
+// =======================================
+
 function numero(valor) {
   let s = String(valor ?? '').trim().replace(/\s/g, '');
 
@@ -615,10 +651,12 @@ function numero(valor) {
     s = coma > punto
       ? s.replace(/\./g, '').replace(',', '.')
       : s.replace(/,/g, '');
+
   } else if (coma >= 0) {
     s = /^\d{1,3}(,\d{3})+$/.test(s)
       ? s.replace(/,/g, '')
       : s.replace(',', '.');
+
   } else if (
     punto >= 0 &&
     /^\d{1,3}(\.\d{3})+$/.test(s)
@@ -627,6 +665,7 @@ function numero(valor) {
   }
 
   const n = Number(s);
+
   return Number.isFinite(n) ? n : NaN;
 }
 
@@ -651,6 +690,7 @@ function porcentaje(valor) {
 
 function mensajeError(texto) {
   $('avisoCalculo').textContent = texto;
+
   $('avisoCalculo').className =
     'nota ' + (texto ? 'alerta' : '');
 }
@@ -659,9 +699,9 @@ function marcarPendiente() {
   $('revisado').checked = false;
 }
 
-// ===============================
-// CALCULADORA MANUAL
-// ===============================
+// =======================================
+// CAMBIAR ENTRE CALCULADORAS
+// =======================================
 
 function mostrarModo(modo) {
   const manual = modo === 'manual';
@@ -675,6 +715,10 @@ function mostrarModo(modo) {
   $('tabManual').setAttribute('aria-selected', manual);
   $('tabAuto').setAttribute('aria-selected', !manual);
 }
+
+// =======================================
+// CALCULADORA MANUAL
+// =======================================
 
 function calcularManual() {
   const monto = numero($('montoManual').value);
@@ -717,13 +761,16 @@ async function copiarResultado() {
   if (ultimoResultadoManual === null) return;
 
   try {
-    await navigator.clipboard.writeText(ultimoResultadoManual);
+    await navigator.clipboard.writeText(
+      ultimoResultadoManual
+    );
 
     $('copiarManual').textContent = '¡Copiado!';
 
     setTimeout(() => {
       $('copiarManual').textContent = 'Copiar resultado';
     }, 1300);
+
   } catch {
     prompt('Copiá el resultado:', ultimoResultadoManual);
   }
@@ -737,9 +784,9 @@ function limpiarManual() {
   $('montoManual').focus();
 }
 
-// ===============================
-// CALCULADORA AUTOMÁTICA
-// ===============================
+// =======================================
+// PRODUCTOS DE LA FACTURA
+// =======================================
 
 function agregarFila(datos = {}) {
   filas.push({
@@ -764,15 +811,16 @@ function borrarFilas() {
   ) return;
 
   filas.length = 0;
+
   dibujarFilas();
   marcarPendiente();
 }
 
-function control(valor, campo, id, tipo = 'text') {
+function control(valor, campo, id) {
   const td = document.createElement('td');
   const inp = document.createElement('input');
 
-  inp.type = tipo;
+  inp.type = 'text';
   inp.value = valor;
 
   inp.dataset.id = id;
@@ -797,6 +845,7 @@ function control(valor, campo, id, tipo = 'text') {
   }
 
   td.append(inp);
+
   return td;
 }
 
@@ -817,7 +866,9 @@ function dibujarFilas() {
       'dtoOriginal',
       'descuento'
     ]) {
-      tr.append(control(f[campo], campo, f.id));
+      tr.append(
+        control(f[campo], campo, f.id)
+      );
     }
 
     for (const clase of ['unitario', 'importe']) {
@@ -837,9 +888,13 @@ function dibujarFilas() {
     btn.textContent = 'Quitar';
 
     btn.addEventListener('click', () => {
-      const i = filas.findIndex(x => x.id === f.id);
+      const i = filas.findIndex(
+        x => x.id === f.id
+      );
 
-      if (i >= 0) filas.splice(i, 1);
+      if (i >= 0) {
+        filas.splice(i, 1);
+      }
 
       dibujarFilas();
       marcarPendiente();
@@ -853,8 +908,13 @@ function dibujarFilas() {
   calcularAutomatico();
 }
 
+// =======================================
+// CÁLCULOS AUTOMÁTICOS
+// =======================================
+
 function datosCalculados() {
   const pctGeneral = porcentaje($('general').value);
+
   const general =
     $('modoDescuento').value === 'general';
 
@@ -881,7 +941,7 @@ function datosCalculados() {
       dto > precio
     ) {
       throw Error(
-        'Revisá cantidades, precios, descuentos y valores vacíos de los productos.'
+        'Revisá cantidades, precios y descuentos de los productos.'
       );
     }
 
@@ -961,11 +1021,12 @@ function calcularAutomatico() {
 
       mensajeError(
         Math.abs(diferencia) > 0.02
-          ? 'Atención: el subtotal neto de las filas difiere del total impreso en ' +
+          ? 'Atención: el subtotal neto difiere del total impreso en ' +
             formato(diferencia, true) +
             '. Revisá OCR, impuestos y descuentos originales.'
           : 'El subtotal neto coincide con el total impreso.'
       );
+
     } else {
       mensajeError('');
     }
@@ -982,65 +1043,41 @@ function calcularAutomatico() {
       .forEach(c => c.textContent = '—');
 
     mensajeError(e.message);
+
     return null;
   }
 }
 
-function tomarLineaOCR(linea) {
-  // Formato orientativo:
-  // CODIGO EAN DESCRIPCIÓN UNI CANT. PRECIO DTO. IMPORTE.
+// =======================================
+// MOTOR OCR MEJORADO
+// =======================================
 
-  const s = linea.replace(/\s+/g, ' ').trim();
-
-  const m = s.match(
-    /^([A-Z0-9-]{4,20})\s+(\d{8,14})\s+(.+?)\s+(?:UNI|UN|UND|PZA|KG|CJ|CAJA|BOT)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)(?:\s+([\d.,]+))?/i
-  );
-
-  if (!m) return null;
-
-  const cantidad = numero(m[4]);
-  const precio = numero(m[5]);
-  const dto = numero(m[6]);
-
-  if (
-    ![cantidad, precio, dto].every(Number.isFinite) ||
-    cantidad <= 0 ||
-    precio < 0 ||
-    dto < 0
-  ) {
-    return null;
-  }
-
-  return {
-    codigo: m[1],
-    ean: m[2],
-    descripcion: m[3].trim(),
-    cantidad: m[4],
-    precio: m[5],
-    dtoOriginal: m[6],
-    descuento: '0'
-  };
+function normalizarTexto(s) {
+  return String(s || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 }
 
 function buscar(texto, re) {
   const m = texto.match(re);
+
   return m ? m[1].trim() : '';
 }
 
-function analizarTexto(texto) {
+function analizarCabecera(texto) {
   const lineas = texto
     .split(/\r?\n/)
-    .map(x => x.trim())
+    .map(s => s.trim())
     .filter(Boolean);
 
-  const cabecera = lineas.slice(0, 18).find(
-    l =>
-      /\bS\.?\s*A\.?\b|\bS\.?\s*R\.?\s*L\.?\b/i.test(l) &&
-      !/cliente|nombre o raz[oó]n/i.test(l)
+  const vendedor = lineas.slice(0, 18).find(s =>
+    /(?:\bS\s*\.?\s*A\s*\.?\b|\bS\s*\.?\s*R\s*\.?\s*L\s*\.?\b)/i.test(s) &&
+    !/cliente|nombre o raz[oó]n|RUC\s*\//i.test(s)
   );
 
-  const datos = {
-    proveedor: cabecera || '',
+  return {
+    proveedor: vendedor || '',
 
     rucProveedor: buscar(
       texto,
@@ -1059,7 +1096,7 @@ function analizarTexto(texto) {
 
     cliente: buscar(
       texto,
-      /(?:Nombre\s*o\s*Raz[oó]n\s*Social)\s*:\s*([^\n]+)/i
+      /Nombre\s*o\s*Raz[oó]n\s*Social\s*:\s*([^\n]+)/i
     ),
 
     rucCliente: buscar(
@@ -1082,17 +1119,433 @@ function analizarTexto(texto) {
       /TOTAL\s+DE\s+LA\s+OPERACI[OÓ]N[^\d\n]*([\d.,]+)/i
     )
   };
-
-  const productos = lineas
-    .map(tomarLineaOCR)
-    .filter(Boolean);
-
-  return { datos, productos };
 }
 
-// ===============================
-// LECTURA AUTOMÁTICA DE FACTURA
-// ===============================
+// Extraer palabras con sus coordenadas.
+// Tesseract devuelve datos TSV con posiciones X/Y.
+
+function palabrasTSV(tsv) {
+  if (typeof tsv !== 'string') return [];
+
+  const lineas = tsv.split(/\r?\n/);
+
+  return lineas.slice(1).map(linea => {
+    const c = linea.split('\t');
+
+    if (
+      c.length < 12 ||
+      Number(c[0]) !== 5
+    ) {
+      return null;
+    }
+
+    const texto = c.slice(11).join(' ').trim();
+
+    const izquierda = Number(c[6]);
+    const arriba = Number(c[7]);
+    const ancho = Number(c[8]);
+    const alto = Number(c[9]);
+    const confianza = Number(c[10]);
+
+    if (
+      !texto ||
+      ![izquierda, arriba, ancho, alto]
+        .every(Number.isFinite) ||
+      ancho <= 0 ||
+      alto <= 0 ||
+      confianza < 0
+    ) {
+      return null;
+    }
+
+    return {
+      texto,
+      x: izquierda,
+      y: arriba,
+      w: ancho,
+      h: alto,
+      cy: arriba + alto / 2,
+      confianza
+    };
+
+  }).filter(Boolean);
+}
+
+// Reconstruir líneas usando la posición vertical.
+
+function gruposVisuales(palabras) {
+  const orden = [...palabras].sort(
+    (a, b) => a.cy - b.cy || a.x - b.x
+  );
+
+  const alturas = orden
+    .map(p => p.h)
+    .sort((a, b) => a - b);
+
+  const altoMedio = alturas.length
+    ? alturas[Math.floor(alturas.length / 2)]
+    : 16;
+
+  const tolerancia = Math.max(
+    8,
+    altoMedio * 0.57
+  );
+
+  const grupos = [];
+
+  for (const palabra of orden) {
+    let mejor = null;
+    let distancia = Infinity;
+
+    for (const g of grupos) {
+      const d = Math.abs(g.y - palabra.cy);
+
+      if (
+        d <= tolerancia &&
+        d < distancia
+      ) {
+        mejor = g;
+        distancia = d;
+      }
+    }
+
+    if (mejor) {
+      mejor.palabras.push(palabra);
+
+      mejor.y = mejor.palabras.reduce(
+        (a, p) => a + p.cy,
+        0
+      ) / mejor.palabras.length;
+
+    } else {
+      grupos.push({
+        y: palabra.cy,
+        palabras: [palabra]
+      });
+    }
+  }
+
+  return grupos
+    .sort((a, b) => a.y - b.y)
+    .map(g => g.palabras.sort(
+      (a, b) => a.x - b.x
+    ));
+}
+
+// Limpiar errores frecuentes de lectura numérica.
+
+function limpiarNumeroOCR(s) {
+  return String(s || '')
+    .replace(/[Oo]/g, '0')
+    .replace(/[Il|]/g, '1')
+    .replace(/[^0-9.,]/g, '')
+    .replace(/([.,]){2,}/g, '$1');
+}
+
+function numeroColumna(palabras) {
+  const partes = palabras
+    .map(p => p.texto)
+    .filter(Boolean);
+
+  if (
+    partes.length > 1 &&
+    !partes.some(p => /[,.]/.test(p))
+  ) {
+    return '';
+  }
+
+  return limpiarNumeroOCR(partes.join(''));
+}
+
+// Interpretar productos según sus columnas KUDE.
+
+function leerFilasPorCoordenadas(tsv, zona) {
+  const grupos = gruposVisuales(
+    palabrasTSV(tsv)
+  );
+
+  const encontrados = [];
+
+  for (const grupo of grupos) {
+    const c = Array.from(
+      { length: 8 },
+      () => []
+    );
+
+    for (const p of grupo) {
+      const x = (
+        zona.x +
+        (p.x + p.w / 2) / zona.escala
+      ) / zona.anchoImagen;
+
+      let indice;
+
+      // Límites basados en la factura de ejemplo.
+      // Código / EAN / Descripción / Unidad /
+      // Cantidad / Precio / Descuento / Importe.
+
+      if (x < .087) indice = 0;
+      else if (x < .182) indice = 1;
+      else if (x < .542) indice = 2;
+      else if (x < .572) indice = 3;
+      else if (x < .611) indice = 4;
+      else if (x < .663) indice = 5;
+      else if (x < .708) indice = 6;
+      else if (x < .765) indice = 7;
+      else continue;
+
+      c[indice].push(p);
+    }
+
+    const texto = i => c[i]
+      .map(p => p.texto)
+      .join(' ')
+      .trim();
+
+    const codigo = texto(0)
+      .replace(/[^A-Z0-9-]/gi, '');
+
+    const ean = texto(1)
+      .replace(/[^0-9]/g, '');
+
+    const descripcion = texto(2)
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const cantidad = numeroColumna(c[4]);
+    const precio = numeroColumna(c[5]);
+    const dto = numeroColumna(c[6]);
+
+    // Acepta filas incompletas para revisión,
+    // pero nunca inventa cantidades o precios.
+
+    if (
+      !(codigo.length >= 5 || ean.length >= 8)
+    ) continue;
+
+    if (
+      !descripcion ||
+      /^(?:subtotal|total|descripcion)$/i.test(
+        normalizarTexto(descripcion)
+      )
+    ) continue;
+
+    if (
+      !(cantidad || precio || ean.length >= 8)
+    ) continue;
+
+    encontrados.push({
+      codigo,
+      ean,
+      descripcion,
+      cantidad: cantidad || '',
+      precio: precio || '',
+      dtoOriginal: dto || '0',
+      descuento: '0'
+    });
+  }
+
+  return encontrados;
+}
+
+// Lectura alternativa de líneas completas.
+
+function leerFilasPorTexto(texto) {
+  const resultado = [];
+
+  for (const linea of texto.split(/\r?\n/)) {
+    const s = linea
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const m = s.match(
+      /^([A-Z0-9-]{5,20})\s+(\d{8,14})\s+(.+?)\s+(?:UNI|UN[I1]|UN|UND|PZA|KG|BOT|CJ)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)/i
+    );
+
+    if (!m) continue;
+
+    resultado.push({
+      codigo: m[1],
+      ean: m[2],
+      descripcion: m[3],
+      cantidad: m[4],
+      precio: m[5],
+      dtoOriginal: m[6],
+      descuento: '0'
+    });
+  }
+
+  return resultado;
+}
+
+// =======================================
+// DETECCIÓN DE LA TABLA
+// =======================================
+
+function detectarZona(palabras, ancho, alto) {
+  const encabezados = palabras.filter(p =>
+    p.y > alto * .26 &&
+    p.y < alto * .7 &&
+    /^(descripcion|descripci[oó]n|cod|codigo|c[oó]d|cantidad|cant|barras|precio)$/i
+      .test(normalizarTexto(p.texto).replace(/[.:]/g, ''))
+  );
+
+  const descripcion = encabezados.find(p =>
+    /^(descripcion|descripci[oó]n)$/.test(
+      normalizarTexto(p.texto).replace(/[.:]/g, '')
+    )
+  );
+
+  const cod = encabezados.find(p =>
+    /^(cod|codigo|c[oó]d)$/.test(
+      normalizarTexto(p.texto).replace(/[.:]/g, '')
+    )
+  );
+
+  const ultimo = palabras.filter(p =>
+    p.y > alto * .47 &&
+    /^(subtotal|sub-total)$/i.test(
+      normalizarTexto(p.texto).replace(/[:.]/g, '')
+    )
+  ).sort((a, b) => a.y - b.y)[0];
+
+  let comienzo = descripcion
+    ? descripcion.y + descripcion.h + 7
+    : cod
+      ? cod.y + cod.h + 8
+      : alto * .428;
+
+  let final = ultimo
+    ? ultimo.y - 3
+    : alto * .68;
+
+  comienzo = Math.max(
+    alto * .23,
+    Math.min(comienzo, alto * .68)
+  );
+
+  final = Math.min(
+    alto * .87,
+    Math.max(final, comienzo + alto * .12)
+  );
+
+  return {
+    x: Math.floor(ancho * .018),
+    y: Math.floor(comienzo),
+    w: Math.floor(ancho * .765),
+    h: Math.floor(final - comienzo),
+    anchoImagen: ancho
+  };
+}
+
+// =======================================
+// MEJORAR LA IMAGEN PARA EL OCR
+// =======================================
+
+function crearImagenTabla(imagen, zona) {
+  const escala = Math.min(
+    3,
+    Math.max(1.5, 2600 / zona.w)
+  );
+
+  const lienzo = document.createElement('canvas');
+
+  lienzo.width = Math.floor(zona.w * escala);
+  lienzo.height = Math.floor(zona.h * escala);
+
+  const ctx = lienzo.getContext('2d', {
+    willReadFrequently: true
+  });
+
+  ctx.fillStyle = 'white';
+
+  ctx.fillRect(
+    0,
+    0,
+    lienzo.width,
+    lienzo.height
+  );
+
+  ctx.drawImage(
+    imagen,
+    zona.x,
+    zona.y,
+    zona.w,
+    zona.h,
+    0,
+    0,
+    lienzo.width,
+    lienzo.height
+  );
+
+  const pix = ctx.getImageData(
+    0,
+    0,
+    lienzo.width,
+    lienzo.height
+  );
+
+  const a = pix.data;
+
+  // Escala de grises y contraste.
+
+  for (let i = 0; i < a.length; i += 4) {
+    const gris =
+      .299 * a[i] +
+      .587 * a[i + 1] +
+      .114 * a[i + 2];
+
+    const color = Math.max(
+      0,
+      Math.min(
+        255,
+        (gris - 128) * 1.42 + 157
+      )
+    );
+
+    a[i] = color;
+    a[i + 1] = color;
+    a[i + 2] = color;
+  }
+
+  ctx.putImageData(pix, 0, 0);
+
+  return { lienzo, escala };
+}
+
+// =======================================
+// ABRIR IMAGEN
+// =======================================
+
+async function abrirImagen(archivo) {
+  if (typeof createImageBitmap === 'function') {
+    return createImageBitmap(archivo);
+  }
+
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(archivo);
+    const img = new Image();
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+
+      reject(
+        Error('No se pudo abrir la imagen.')
+      );
+    };
+
+    img.src = url;
+  });
+}
+
+// =======================================
+// RECONOCIMIENTO AUTOMÁTICO
+// =======================================
 
 async function leerFactura() {
   const archivo = $('archivo').files[0];
@@ -1106,24 +1559,40 @@ async function leerFactura() {
     !['image/png', 'image/jpeg', 'image/webp']
       .includes(archivo.type)
   ) {
-    alert('Solo JPG, PNG y WebP.');
+    alert('Solo JPG, PNG o WebP.');
     return;
   }
 
   if (!window.Tesseract) {
     alert(
-      'No cargó la biblioteca OCR. Revisá tu conexión.'
+      'No cargó Tesseract.js. Revisá la conexión.'
     );
     return;
   }
 
+  if (
+    filas.length &&
+    !confirm(
+      'Se reemplazarán los productos actuales si se detectan nuevos. ¿Continuar?'
+    )
+  ) {
+    return;
+  }
+
   $('leerBtn').disabled = true;
+
   $('estadoOCR').textContent =
-    'Cargando motor de reconocimiento...';
+    'Analizando encabezado y estructura de la factura...';
 
   let worker;
+  let imagen;
 
   try {
+    imagen = await abrirImagen(archivo);
+
+    const ancho = imagen.width;
+    const alto = imagen.height;
+
     worker = await Tesseract.createWorker(
       'spa',
       1,
@@ -1131,7 +1600,7 @@ async function leerFactura() {
         logger: m => {
           if (m.status === 'recognizing text') {
             $('estadoOCR').textContent =
-              'Leyendo imagen: ' +
+              'Reconociendo factura: ' +
               Math.round((m.progress || 0) * 100) +
               ' %';
           }
@@ -1139,50 +1608,204 @@ async function leerFactura() {
       }
     );
 
-    const resultado = await worker.recognize(archivo);
-    const texto = resultado.data.text || '';
+    // Primera lectura del documento completo.
+    // Solicitar TSV con coordenadas.
 
-    $('textoOCR').value = texto;
+    const documento = await worker.recognize(
+      archivo,
+      {},
+      {
+        text: true,
+        tsv: true
+      }
+    );
 
-    const { datos, productos } = analizarTexto(texto);
+    const texto = documento.data.text || '';
 
-    camposFactura.forEach(c => {
-      $(c).value = datos[c] || '';
-    });
+    $('textoOCR').value =
+      '=== FACTURA ===\n' + texto;
 
-    filas.length = 0;
+    const cabecera = analizarCabecera(texto);
 
-    productos.forEach(p => {
-      filas.push({
-        id: ++identificador,
-        ...p
-      });
-    });
+    for (const id of camposFactura) {
+      if (cabecera[id]) {
+        $(id).value = cabecera[id];
+      }
+    }
 
-    dibujarFilas();
-    marcarPendiente();
+    // Detectar la zona de la tabla.
+
+    const zona = detectarZona(
+      palabrasTSV(documento.data.tsv),
+      ancho,
+      alto
+    );
+
+    // Recortar y mejorar resolución.
+
+    const procesada = crearImagenTabla(
+      imagen,
+      zona
+    );
+
+    const cfg = {
+      ...zona,
+      escala: procesada.escala
+    };
 
     $('estadoOCR').textContent =
-      'Lectura finalizada. Filas detectadas: ' +
-      productos.length +
-      '. Revisá y completá las que falten.';
+      'Leyendo las columnas de productos...';
+
+    // Lectura con modo de texto disperso.
+    await worker.setParameters({
+      tessedit_pageseg_mode: '11'
+    });
+
+    const primera = await worker.recognize(
+      procesada.lienzo,
+      {},
+      {
+        text: true,
+        tsv: true
+      }
+    );
+
+    $('textoOCR').value +=
+      '\n\n=== TABLA RECORTADA ===\n' +
+      (primera.data.text || '');
+
+    let productos = leerFilasPorCoordenadas(
+      primera.data.tsv,
+      cfg
+    );
+
+    const porTexto = leerFilasPorTexto(
+      primera.data.text || ''
+    );
+
+    if (porTexto.length > productos.length) {
+      productos = porTexto;
+    }
+
+    // Si reconoce muy pocas filas,
+    // realizar un segundo intento.
+
+    if (productos.length < 3) {
+      $('estadoOCR').textContent =
+        'Probando un segundo método de lectura...';
+
+      await worker.setParameters({
+        tessedit_pageseg_mode: '6'
+      });
+
+      const segunda = await worker.recognize(
+        procesada.lienzo,
+        {},
+        {
+          text: true,
+          tsv: true
+        }
+      );
+
+      $('textoOCR').value +=
+        '\n\n=== SEGUNDO INTENTO ===\n' +
+        (segunda.data.text || '');
+
+      const alternativa = leerFilasPorCoordenadas(
+        segunda.data.tsv,
+        cfg
+      );
+
+      const alternativaTexto = leerFilasPorTexto(
+        segunda.data.text || ''
+      );
+
+      if (alternativa.length > productos.length) {
+        productos = alternativa;
+      }
+
+      if (
+        alternativaTexto.length > productos.length
+      ) {
+        productos = alternativaTexto;
+      }
+    }
+
+    // Comparar con el reconocimiento original.
+
+    const completa = leerFilasPorTexto(texto);
+
+    if (completa.length > productos.length) {
+      productos = completa;
+    }
+
+    // Incorporar productos detectados.
+
+    if (productos.length) {
+      filas.length = 0;
+
+      for (const p of productos) {
+        filas.push({
+          id: ++identificador,
+          ...p
+        });
+      }
+
+      dibujarFilas();
+      marcarPendiente();
+
+      const incompletos = productos.filter(
+        p => !p.cantidad || !p.precio
+      ).length;
+
+      $('estadoOCR').textContent =
+        'Productos detectados: ' +
+        productos.length +
+        (
+          incompletos
+            ? '. ' + incompletos +
+              ' tienen datos incompletos.'
+            : '.'
+        ) +
+        ' Revisá las filas y el subtotal antes de generar el PDF.';
+
+    } else {
+      // No borrar los productos que el usuario
+      // haya introducido manualmente.
+
+      $('estadoOCR').textContent =
+        'No se pudieron reconocer filas completas. ' +
+        'Conservé tus productos existentes. ' +
+        'Probá una foto más frontal y nítida ' +
+        'o agregá las filas manualmente.';
+    }
 
   } catch (e) {
     $('estadoOCR').textContent =
-      'No se pudo leer la factura: ' + e.message;
+      'Error al reconocer la factura: ' +
+      e.message;
 
   } finally {
     if (worker) {
-      await worker.terminate();
+      try {
+        await worker.terminate();
+      } catch {}
+    }
+
+    if (
+      imagen &&
+      typeof imagen.close === 'function'
+    ) {
+      imagen.close();
     }
 
     $('leerBtn').disabled = false;
   }
 }
 
-// ===============================
-// GENERACIÓN DEL INFORME PDF
-// ===============================
+// =======================================
+// GENERAR PDF
+// =======================================
 
 function generarPDF() {
   if (!filas.length) {
@@ -1206,7 +1829,7 @@ function generarPDF() {
 
   if (!window.jspdf?.jsPDF) {
     alert(
-      'No se cargó la biblioteca para PDF. Revisá internet.'
+      'No se cargó la biblioteca para PDF.'
     );
     return;
   }
@@ -1223,13 +1846,18 @@ function generarPDF() {
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(16);
-  pdf.text('GUÍA DEL DIGITADOR', 14, 16);
+
+  pdf.text(
+    'GUIA DEL DIGITADOR',
+    14,
+    16
+  );
 
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(10);
 
   pdf.text(
-    'INFORME DE DESCUENTOS - NO ES UNA FACTURA FISCAL',
+    'INFORME DE DESCUENTOS - NO ES FACTURA FISCAL',
     14,
     23
   );
@@ -1237,12 +1865,12 @@ function generarPDF() {
   const campos = [
     ['Proveedor', 'proveedor'],
     ['RUC proveedor', 'rucProveedor'],
-    ['N.º factura', 'numeroFactura'],
-    ['Fecha de emisión', 'fechaEmision'],
+    ['Numero de factura', 'numeroFactura'],
+    ['Fecha de emision', 'fechaEmision'],
     ['Cliente', 'cliente'],
     ['RUC cliente', 'rucCliente'],
     ['Vencimiento', 'fechaVencimiento'],
-    ['Condición', 'condicion'],
+    ['Condicion', 'condicion'],
     ['Total factura impreso', 'totalFactura']
   ];
 
@@ -1254,7 +1882,8 @@ function generarPDF() {
 
     pdf.text(
       pdf.splitTextToSize(
-        a[0] + ': ' + limpiar($(a[1]).value),
+        a[0] + ': ' +
+        limpiar($(a[1]).value),
         125
       )[0],
       14,
@@ -1264,7 +1893,8 @@ function generarPDF() {
     if (b) {
       pdf.text(
         pdf.splitTextToSize(
-          b[0] + ': ' + limpiar($(b[1]).value),
+          b[0] + ': ' +
+          limpiar($(b[1]).value),
           125
         )[0],
         150,
@@ -1286,21 +1916,25 @@ function generarPDF() {
     y + 2
   );
 
-  const datos = resumen.productos.map((p, i) => [
-    String(i + 1),
-    p.codigo,
-    p.ean,
-    p.descripcion,
-    formato(p.cantidad),
-    formato(p.precio, true),
-    formato(p.dto, true),
-    formato(p.pct) + ' %',
-    formato(p.precioFinal, true),
-    formato(p.final, true)
-  ]);
+  const datos = resumen.productos.map(
+    (p, i) => [
+      String(i + 1),
+      p.codigo,
+      p.ean,
+      p.descripcion,
+      formato(p.cantidad),
+      formato(p.precio, true),
+      formato(p.dto, true),
+      formato(p.pct) + ' %',
+      formato(p.precioFinal, true),
+      formato(p.final, true)
+    ]
+  );
 
   if (typeof pdf.autoTable !== 'function') {
-    alert('No cargó el generador de tablas PDF.');
+    alert(
+      'No cargó el generador de tablas PDF.'
+    );
     return;
   }
 
@@ -1309,9 +1943,9 @@ function generarPDF() {
 
     head: [[
       '#',
-      'Código',
+      'Codigo',
       'EAN',
-      'Descripción',
+      'Descripcion',
       'Cant.',
       'Precio unit.',
       'Dto. orig.',
@@ -1364,7 +1998,9 @@ function generarPDF() {
   pdf.text(
     'Descuento nuevo: ' +
     formato(
-      redondear(resumen.subtotal - resumen.total),
+      redondear(
+        resumen.subtotal - resumen.total
+      ),
       true
     ),
     14,
@@ -1382,7 +2018,7 @@ function generarPDF() {
   pdf.setFontSize(9);
 
   pdf.text(
-    'Cálculo revisado por el usuario. El documento original conserva validez independiente.',
+    'Calculo revisado por el usuario. El documento original conserva validez independiente.',
     14,
     fin + 23
   );
@@ -1391,28 +2027,39 @@ function generarPDF() {
     $('numeroFactura').value || 'sin_numero'
   ).replace(/[^a-zA-Z0-9-]/g, '_');
 
-  pdf.save('descuentos_' + nombre + '.pdf');
+  pdf.save(
+    'descuentos_' + nombre + '.pdf'
+  );
 }
 
-// ===============================
+// =======================================
 // EVENTOS
-// ===============================
+// =======================================
 
-$('archivo').addEventListener('change', function() {
-  if (urlVista) {
-    URL.revokeObjectURL(urlVista);
+$('archivo').addEventListener(
+  'change',
+  function() {
+    if (urlVista) {
+      URL.revokeObjectURL(urlVista);
+    }
+
+    const f = this.files[0];
+
+    if (f) {
+      urlVista = URL.createObjectURL(f);
+      $('vistaFactura').src = urlVista;
+
+      $('vistaFactura').classList.remove(
+        'oculto'
+      );
+
+    } else {
+      $('vistaFactura').classList.add(
+        'oculto'
+      );
+    }
   }
-
-  const f = this.files[0];
-
-  if (f) {
-    urlVista = URL.createObjectURL(f);
-    $('vistaFactura').src = urlVista;
-    $('vistaFactura').classList.remove('oculto');
-  } else {
-    $('vistaFactura').classList.add('oculto');
-  }
-});
+);
 
 $('montoManual').addEventListener(
   'input',
@@ -1433,25 +2080,32 @@ $('filas').addEventListener('input', e => {
 
   if (f && campo) {
     f[campo] = e.target.value;
+
     marcarPendiente();
     calcularAutomatico();
   }
 });
 
-$('modoDescuento').addEventListener('change', () => {
-  $('campoGeneral').classList.toggle(
-    'oculto',
-    $('modoDescuento').value !== 'general'
-  );
+$('modoDescuento').addEventListener(
+  'change',
+  () => {
+    $('campoGeneral').classList.toggle(
+      'oculto',
+      $('modoDescuento').value !== 'general'
+    );
 
-  dibujarFilas();
-  marcarPendiente();
-});
+    dibujarFilas();
+    marcarPendiente();
+  }
+);
 
-$('general').addEventListener('input', () => {
-  calcularAutomatico();
-  marcarPendiente();
-});
+$('general').addEventListener(
+  'input',
+  () => {
+    calcularAutomatico();
+    marcarPendiente();
+  }
+);
 
 camposFactura.forEach(id => {
   $(id).addEventListener('input', () => {
@@ -1463,12 +2117,14 @@ camposFactura.forEach(id => {
   });
 });
 
-// ===============================
+// =======================================
 // PERSONALIZACIÓN
-// ===============================
+// =======================================
 
 try {
-  const fondo = localStorage.getItem('colorFondo');
+  const fondo = localStorage.getItem(
+    'colorFondo'
+  );
 
   const rojo =
     localStorage.getItem('colorAcento') ||
@@ -1487,9 +2143,10 @@ try {
       rojo
     );
   }
+
 } catch {}
 
-// Iniciar siempre en la calculadora manual
+// Iniciar en la calculadora manual.
 calcularManual();
 
 </script>
