@@ -12,590 +12,180 @@
 
   <style>
     :root {
-      --fondo: #0b0b0d;
-      --panel: #17171b;
-      --rojo: #dc2626;
-      --borde: #35353d;
-      --texto: #f5f5f6;
-      --suave: #a1a1aa;
+      --fondo:#0b0b0d;
+      --panel:#17171b;
+      --rojo:#dc2626;
+      --borde:#35353d;
+      --texto:#f5f5f6;
+      --suave:#a1a1aa;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--fondo);
-      color: var(--texto);
-      font: 15px/1.5 Arial, sans-serif;
-    }
-
-    main {
-      max-width: 1180px;
-      margin: auto;
-      padding: 24px 16px 50px;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: clamp(22px, 3vw, 29px);
-      margin: 0;
-    }
-
-    h2 {
-      font-size: 19px;
-      margin: 0 0 14px;
-    }
-
-    p {
-      margin: 10px 0;
-    }
-
-    .subtitulo,
-    .nota {
-      color: var(--suave);
-      font-size: 13px;
-    }
-
-    .advertencia {
-      color: #fbbf24;
-    }
-
-    .error {
-      color: #f87171;
-    }
-
-    .oculto {
-      display: none !important;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--borde);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 17px;
-    }
-
-    .pestanas {
-      display: flex;
-      gap: 8px;
-      padding: 6px;
-      border-radius: 12px;
-      background: var(--panel);
-      border: 1px solid var(--borde);
-      margin-bottom: 20px;
-    }
-
-    .pestanas button {
-      flex: 1;
-      border: 0;
-      border-radius: 8px;
-      padding: 13px 9px;
-      cursor: pointer;
-      background: transparent;
-      color: var(--suave);
-      font: inherit;
-      font-weight: bold;
-    }
-
-    .pestanas button.activa {
-      background: var(--rojo);
-      color: white;
-    }
-
-    .rejilla {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 15px;
-    }
-
-    label {
-      display: block;
-      font-size: 13px;
-      color: #dedee3;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 11px;
-      border-radius: 8px;
-      border: 1px solid #494952;
-      color: var(--texto);
-      background: #09090b;
-      font: inherit;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid var(--rojo);
-      outline-offset: 1px;
-    }
-
-    input:disabled {
-      opacity: .75;
-      background: #26262b;
-    }
-
-    .boton,
-    .volver {
-      display: inline-block;
-      text-decoration: none;
-      background: var(--rojo);
-      border: 1px solid var(--rojo);
-      color: white;
-      border-radius: 9px;
-      padding: 11px 15px;
-      font: inherit;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .boton.secundario,
-    .volver {
-      background: #303038;
-      border-color: #474752;
-    }
-
-    .boton:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .acciones {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .resumen {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .caja {
-      background: #0c0c0f;
-      border: 1px solid var(--borde);
-      border-radius: 10px;
-      padding: 15px;
-    }
-
-    .caja small {
-      display: block;
-      color: var(--suave);
-    }
-
-    .caja strong {
-      display: block;
-      font-size: clamp(18px, 2.5vw, 26px);
-      margin-top: 7px;
-      overflow-wrap: anywhere;
-    }
-
-    .verde {
-      color: #4ade80;
-    }
-
-    .tabla {
-      overflow-x: auto;
-      border: 1px solid var(--borde);
-      border-radius: 10px;
-    }
-
-    table {
-      width: 100%;
-      min-width: 780px;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      text-align: left;
-      padding: 9px;
-      border-bottom: 1px solid var(--borde);
-    }
-
-    th {
-      background: #25252c;
-      color: #ddd;
-      font-size: 13px;
-    }
-
-    td input {
-      padding: 9px;
-      min-width: 80px;
-    }
-
-    .codigo {
-      min-width: 115px;
-    }
-
-    .descripcion {
-      min-width: 290px;
-    }
-
-    .numero {
-      min-width: 95px;
-    }
-
-    .numero.sospechoso {
-      border-color: #fbbf24;
-    }
-
-    .fila-accion {
-      background: #303038;
-      border: 1px solid #474752;
-      color: white;
-      border-radius: 8px;
-      padding: 8px 11px;
-      cursor: pointer;
-    }
-
-    .archivo {
-      border: 1px dashed #777;
-      padding: 15px;
-    }
-
-    .vista {
-      max-width: 100%;
-      max-height: 310px;
-      object-fit: contain;
-      display: block;
-      margin: 15px auto;
-      border-radius: 8px;
-    }
-
-    .confirmacion {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin: 17px 0;
-    }
-
-    .confirmacion input {
-      width: 18px;
-      flex: none;
-      margin-top: 4px;
-    }
-
-    textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
-
-    details {
-      margin-top: 18px;
-    }
-
-    @media (max-width: 700px) {
-      .rejilla,
-      .resumen {
-        grid-template-columns: 1fr;
-      }
-
-      .panel {
-        padding: 15px;
-      }
-
-      header {
-        align-items: flex-start;
-      }
-
-      .pestanas button {
-        font-size: 13px;
-      }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--fondo); color:var(--texto); font:15px/1.5 Arial,sans-serif; }
+    main { max-width:1180px; margin:auto; padding:24px 16px 50px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:20px; }
+    h1 { font-size:clamp(22px,3vw,29px); margin:0; }
+    h2 { font-size:19px; margin:0 0 14px; }
+    p { margin:10px 0; }
+    .subtitulo,.nota { color:var(--suave); font-size:13px; }
+    .advertencia { color:#fbbf24; }
+    .error { color:#f87171; }
+    .oculto { display:none !important; }
+    .panel { background:var(--panel); border:1px solid var(--borde); border-radius:14px; padding:20px; margin-bottom:17px; }
+    .pestanas { display:flex; gap:8px; padding:6px; border-radius:12px; background:var(--panel); border:1px solid var(--borde); margin-bottom:20px; }
+    .pestanas button { flex:1; border:0; border-radius:8px; padding:13px 9px; cursor:pointer; background:transparent; color:var(--suave); font:inherit; font-weight:bold; }
+    .pestanas button.activa { background:var(--rojo); color:white; }
+    .rejilla { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:15px; }
+    label { display:block; font-size:13px; color:#dedee3; font-weight:bold; margin-bottom:6px; }
+    input,select,textarea { width:100%; padding:11px; border-radius:8px; border:1px solid #494952; color:var(--texto); background:#09090b; font:inherit; }
+    input:focus,select:focus,textarea:focus { outline:2px solid var(--rojo); outline-offset:1px; }
+    input:disabled { opacity:.75; background:#26262b; }
+    .boton,.volver { display:inline-block; text-decoration:none; background:var(--rojo); border:1px solid var(--rojo); color:white; border-radius:9px; padding:11px 15px; font:inherit; font-weight:bold; cursor:pointer; }
+    .boton.secundario,.volver { background:#303038; border-color:#474752; }
+    .boton:disabled { opacity:.5; cursor:not-allowed; }
+    .acciones { display:flex; flex-wrap:wrap; gap:10px; margin-top:15px; }
+    .resumen { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .caja { background:#0c0c0f; border:1px solid var(--borde); border-radius:10px; padding:15px; }
+    .caja small { display:block; color:var(--suave); }
+    .caja strong { display:block; font-size:clamp(18px,2.5vw,26px); margin-top:7px; overflow-wrap:anywhere; }
+    .verde { color:#4ade80; }
+    .tabla { overflow-x:auto; border:1px solid var(--borde); border-radius:10px; }
+    table { width:100%; min-width:780px; border-collapse:collapse; }
+    th,td { text-align:left; padding:9px; border-bottom:1px solid var(--borde); }
+    th { background:#25252c; color:#ddd; font-size:13px; }
+    td input { padding:9px; min-width:80px; }
+    .codigo { min-width:115px; }
+    .descripcion { min-width:290px; }
+    .numero { min-width:95px; }
+    .numero.sospechoso { border-color:#fbbf24; }
+    .fila-accion { background:#303038; border:1px solid #474752; color:white; border-radius:8px; padding:8px 11px; cursor:pointer; }
+    .archivo { border:1px dashed #777; padding:15px; }
+    .vista { max-width:100%; max-height:310px; object-fit:contain; display:block; margin:15px auto; border-radius:8px; }
+    .confirmacion { display:flex; align-items:flex-start; gap:10px; margin:17px 0; }
+    .confirmacion input { width:18px; flex:none; margin-top:4px; }
+    textarea { min-height:150px; resize:vertical; }
+    details { margin-top:18px; }
+    @media(max-width:700px) {
+      .rejilla,.resumen { grid-template-columns:1fr; }
+      .panel { padding:15px; }
+      header { align-items:flex-start; }
+      .pestanas button { font-size:13px; }
     }
   </style>
+
+  <!-- APARIENCIA GLOBAL -->
+  <link rel="stylesheet" href="tema-global.css?v=1">
+  <script defer src="tema-global.js?v=1"></script>
 </head>
 
 <body>
 <main>
-
   <header>
     <div>
       <h1>Calculadora de Descuentos</h1>
       <p class="subtitulo">GUÍA DEL DIGITADOR</p>
     </div>
-
     <a class="volver" href="menu.html">← Menú</a>
   </header>
 
-  <!-- MODALIDADES -->
-
   <nav class="pestanas" aria-label="Modo de calculadora">
-    <button
-      type="button"
-      id="tabManual"
-      class="activa"
-      onclick="mostrarModo('manual')">
+    <button type="button" id="tabManual" class="activa" onclick="mostrarModo('manual')">
       Calculadora manual
     </button>
-
-    <button
-      type="button"
-      id="tabAuto"
-      onclick="mostrarModo('auto')">
+    <button type="button" id="tabAuto" onclick="mostrarModo('auto')">
       Calculadora automática
     </button>
   </nav>
 
-  <!-- CALCULADORA MANUAL -->
-
   <section id="manual" class="panel">
-
     <h2>Descuento rápido</h2>
-
     <div class="rejilla">
-
       <div>
         <label for="montoManual">Monto original</label>
-        <input
-          id="montoManual"
-          inputmode="decimal"
-          value="100000"
-          placeholder="100.000">
+        <input id="montoManual" inputmode="decimal" value="100000" placeholder="100.000">
       </div>
-
       <div>
-        <label for="porcentajeManual">
-          Porcentaje de descuento (%)
-        </label>
-        <input
-          id="porcentajeManual"
-          inputmode="decimal"
-          value="20"
-          placeholder="20">
+        <label for="porcentajeManual">Porcentaje de descuento (%)</label>
+        <input id="porcentajeManual" inputmode="decimal" value="20" placeholder="20">
       </div>
-
     </div>
 
     <p id="errorManual" class="nota error"></p>
 
     <div class="resumen">
-
-      <div class="caja">
-        <small>Monto original</small>
-        <strong id="originalManual">—</strong>
-      </div>
-
-      <div class="caja">
-        <small>Descuento aplicado</small>
-        <strong id="rebajaManual">—</strong>
-      </div>
-
-      <div class="caja">
-        <small>Resultado final</small>
-        <strong class="verde" id="finalManual">—</strong>
-      </div>
-
+      <div class="caja"><small>Monto original</small><strong id="originalManual">—</strong></div>
+      <div class="caja"><small>Descuento aplicado</small><strong id="rebajaManual">—</strong></div>
+      <div class="caja"><small>Resultado final</small><strong class="verde" id="finalManual">—</strong></div>
     </div>
 
     <div class="acciones">
-      <button
-        class="boton"
-        id="copiarManual"
-        type="button"
-        onclick="copiarResultado()">
-        Copiar resultado
-      </button>
-
-      <button
-        class="boton secundario"
-        type="button"
-        onclick="limpiarManual()">
-        Limpiar
-      </button>
+      <button class="boton" id="copiarManual" type="button" onclick="copiarResultado()">Copiar resultado</button>
+      <button class="boton secundario" type="button" onclick="limpiarManual()">Limpiar</button>
     </div>
 
-    <p class="nota">
-      Solo números, sin símbolos de moneda.
-    </p>
-
+    <p class="nota">Solo números, sin símbolos de moneda.</p>
   </section>
-
-  <!-- CALCULADORA AUTOMÁTICA -->
 
   <div id="automatico" class="oculto">
 
-    <!-- CARGA DE FACTURA -->
-
     <section class="panel">
       <h2>1. Cargar factura</h2>
-
-      <label for="archivo">
-        Fotografía o imagen de la factura
-      </label>
-
-      <input
-        class="archivo"
-        type="file"
-        id="archivo"
-        accept="image/jpeg,image/png,image/webp">
-
-      <img
-        id="vistaFactura"
-        class="vista oculto"
-        alt="Vista previa de factura">
-
+      <label for="archivo">Fotografía o imagen de la factura</label>
+      <input class="archivo" type="file" id="archivo" accept="image/jpeg,image/png,image/webp">
+      <img id="vistaFactura" class="vista oculto" alt="Vista previa de factura">
       <div class="acciones">
-        <button
-          id="leerBtn"
-          class="boton"
-          type="button"
-          onclick="leerFactura()">
+        <button id="leerBtn" class="boton" type="button" onclick="leerFactura()">
           Leer factura automáticamente
         </button>
       </div>
-
-      <p
-        id="estadoOCR"
-        class="nota"
-        role="status"
-        aria-live="polite"></p>
-
-      <p class="nota">
-        Admite JPG, PNG y WebP. El OCR funciona
-        en el navegador. Revisá los datos:
-        no siempre reconoce correctamente los importes.
-      </p>
+      <p id="estadoOCR" class="nota" role="status" aria-live="polite"></p>
+      <p class="nota">Admite JPG, PNG y WebP. Revisá los importes reconocidos automáticamente.</p>
     </section>
-
-    <!-- DATOS DE FACTURA -->
 
     <section class="panel">
       <h2>2. Datos de la factura (opcionales)</h2>
 
       <div class="rejilla">
-
-        <div>
-          <label for="proveedor">Proveedor</label>
-          <input id="proveedor">
-        </div>
-
-        <div>
-          <label for="rucProveedor">RUC proveedor</label>
-          <input id="rucProveedor">
-        </div>
-
-        <div>
-          <label for="numeroFactura">
-            Número de factura
-          </label>
-          <input id="numeroFactura">
-        </div>
-
-        <div>
-          <label for="fechaEmision">
-            Fecha de emisión
-          </label>
-          <input
-            id="fechaEmision"
-            placeholder="DD/MM/AAAA">
-        </div>
-
-        <div>
-          <label for="cliente">Cliente</label>
-          <input id="cliente">
-        </div>
-
-        <div>
-          <label for="rucCliente">RUC cliente</label>
-          <input id="rucCliente">
-        </div>
-
-        <div>
-          <label for="fechaVencimiento">
-            Fecha de vencimiento
-          </label>
-          <input id="fechaVencimiento">
-        </div>
-
-        <div>
-          <label for="condicion">
-            Condición de venta
-          </label>
-          <input id="condicion">
-        </div>
-
-        <div>
-          <label for="totalFactura">
-            Total impreso en factura
-          </label>
-          <input
-            id="totalFactura"
-            inputmode="decimal">
-        </div>
-
+        <div><label for="proveedor">Proveedor</label><input id="proveedor"></div>
+        <div><label for="rucProveedor">RUC proveedor</label><input id="rucProveedor"></div>
+        <div><label for="numeroFactura">Número de factura</label><input id="numeroFactura"></div>
+        <div><label for="fechaEmision">Fecha de emisión</label><input id="fechaEmision" placeholder="DD/MM/AAAA"></div>
+        <div><label for="cliente">Cliente</label><input id="cliente"></div>
+        <div><label for="rucCliente">RUC cliente</label><input id="rucCliente"></div>
+        <div><label for="fechaVencimiento">Fecha de vencimiento</label><input id="fechaVencimiento"></div>
+        <div><label for="condicion">Condición de venta</label><input id="condicion"></div>
+        <div><label for="totalFactura">Total impreso en factura</label><input id="totalFactura" inputmode="decimal"></div>
       </div>
     </section>
-
-    <!-- DESCUENTOS -->
 
     <section class="panel">
       <h2>3. Modalidad de descuento</h2>
 
       <div class="rejilla">
-
         <div>
-          <label for="modoDescuento">
-            Tipo de descuento
-          </label>
-
+          <label for="modoDescuento">Tipo de descuento</label>
           <select id="modoDescuento">
-            <option value="general">
-              General: el mismo porcentaje para todos
-            </option>
-
-            <option value="individual">
-              Individual: un porcentaje por producto
-            </option>
+            <option value="general">General: el mismo porcentaje para todos</option>
+            <option value="individual">Individual: un porcentaje por producto</option>
           </select>
         </div>
 
         <div id="campoGeneral">
-          <label for="general">
-            Porcentaje general (%)
-          </label>
-
-          <input
-            id="general"
-            inputmode="decimal"
-            value="10">
+          <label for="general">Porcentaje general (%)</label>
+          <input id="general" inputmode="decimal" value="10">
         </div>
-
       </div>
 
       <p class="nota">
-        El porcentaje se aplica al precio unitario
-        de cada producto y luego se multiplica por
-        la cantidad. No se toma la columna «Dto.»
-        impresa como porcentaje.
+        El descuento se aplica al precio unitario y después se multiplica por la cantidad.
       </p>
     </section>
-
-    <!-- PRODUCTOS -->
 
     <section class="panel">
       <h2>4. Productos detectados</h2>
 
       <p class="nota">
-        Solo son obligatorios
-        <b>cantidad, precio unitario y descuento a aplicar</b>.
+        Solo son obligatorios <b>cantidad, precio unitario y descuento a aplicar</b>.
         Código y descripción son opcionales.
       </p>
 
@@ -611,180 +201,96 @@
               <th></th>
             </tr>
           </thead>
-
           <tbody id="filas"></tbody>
         </table>
       </div>
 
       <div class="acciones">
-
-        <button
-          class="boton secundario"
-          type="button"
-          onclick="agregarFila()">
-          + Agregar producto
-        </button>
-
-        <button
-          class="boton secundario"
-          type="button"
-          onclick="borrarFilas()">
-          Vaciar productos
-        </button>
-
+        <button class="boton secundario" type="button" onclick="agregarFila()">+ Agregar producto</button>
+        <button class="boton secundario" type="button" onclick="borrarFilas()">Vaciar productos</button>
       </div>
 
-      <p
-        id="advertenciaOCR"
-        class="nota advertencia"></p>
-
+      <p id="advertenciaOCR" class="nota advertencia"></p>
     </section>
-
-    <!-- TOTALES -->
 
     <section class="panel">
       <h2>5. Totales e informe PDF</h2>
 
       <div class="resumen">
-
-        <div class="caja">
-          <small>Subtotal original</small>
-          <strong id="subtotal">0,00</strong>
-        </div>
-
-        <div class="caja">
-          <small>Descuento aplicado</small>
-          <strong id="descuentoTotal">0,00</strong>
-        </div>
-
-        <div class="caja">
-          <small>Total final</small>
-          <strong class="verde" id="totalFinal">0,00</strong>
-        </div>
-
+        <div class="caja"><small>Subtotal original</small><strong id="subtotal">0,00</strong></div>
+        <div class="caja"><small>Descuento aplicado</small><strong id="descuentoTotal">0,00</strong></div>
+        <div class="caja"><small>Total final</small><strong class="verde" id="totalFinal">0,00</strong></div>
       </div>
 
-      <p
-        id="avisoCalculo"
-        class="nota"
-        role="status"></p>
+      <p id="avisoCalculo" class="nota" role="status"></p>
 
       <label class="confirmacion">
         <input type="checkbox" id="revisado">
-
-        <span>
-          Revisé cantidades, precios y descuentos
-          antes de generar el informe.
-        </span>
+        <span>Revisé cantidades, precios y descuentos antes de generar el informe.</span>
       </label>
 
-      <button
-        class="boton"
-        type="button"
-        onclick="generarPDF()">
-        Generar PDF
-      </button>
+      <button class="boton" type="button" onclick="generarPDF()">Generar PDF</button>
 
-      <p class="nota">
-        El PDF es un informe de cálculo;
-        no modifica ni reemplaza la factura fiscal.
-      </p>
+      <p class="nota">El PDF es un informe de cálculo; no reemplaza la factura fiscal.</p>
 
       <details>
-        <summary>
-          Mostrar texto detectado por OCR
-        </summary>
-
-        <textarea
-          id="textoOCR"
-          readonly
-          aria-label="Texto reconocido"></textarea>
+        <summary>Mostrar texto detectado por OCR</summary>
+        <textarea id="textoOCR" readonly aria-label="Texto reconocido"></textarea>
       </details>
-
     </section>
-  </div>
 
+  </div>
 </main>
 
 <script>
 'use strict';
 
-// =======================================
-// VARIABLES GLOBALES
-// =======================================
-
 const $ = id => document.getElementById(id);
 
 const camposFactura = [
-  'proveedor',
-  'rucProveedor',
-  'numeroFactura',
-  'fechaEmision',
-  'cliente',
-  'rucCliente',
-  'fechaVencimiento',
-  'condicion',
-  'totalFactura'
+  'proveedor','rucProveedor','numeroFactura',
+  'fechaEmision','cliente','rucCliente',
+  'fechaVencimiento','condicion','totalFactura'
 ];
 
 const filas = [];
-
 let nextId = 1;
 let resultadoManual = null;
 let vistaURL = null;
 
-// =======================================
+// =====================================
 // NÚMEROS
-// =======================================
-
-// Admite:
-// 100000
-// 100.000
-// 100,50
-// 1.234,56
-// 1234.56
+// =====================================
 
 function numero(valor) {
-  let s = String(valor ?? '')
-    .trim()
-    .replace(/\s/g, '');
+  let s = String(valor ?? '').trim().replace(/\s/g,'');
 
-  if (!s || !/^[\d.,]+$/.test(s)) {
-    return NaN;
-  }
+  if (!s || !/^[\d.,]+$/.test(s)) return NaN;
 
   const coma = s.lastIndexOf(',');
   const punto = s.lastIndexOf('.');
 
   if (coma >= 0 && punto >= 0) {
     s = coma > punto
-      ? s.replace(/\./g, '').replace(',', '.')
-      : s.replace(/,/g, '');
-
+      ? s.replace(/\./g,'').replace(',','.')
+      : s.replace(/,/g,'');
   } else if (coma >= 0) {
     s = /^\d{1,3}(,\d{3})+$/.test(s)
-      ? s.replace(/,/g, '')
-      : s.replace(',', '.');
-
-  } else if (
-    punto >= 0 &&
-    /^\d{1,3}(\.\d{3})+$/.test(s)
-  ) {
-    s = s.replace(/\./g, '');
+      ? s.replace(/,/g,'')
+      : s.replace(',','.');
+  } else if (punto >= 0 && /^\d{1,3}(\.\d{3})+$/.test(s)) {
+    s = s.replace(/\./g,'');
   }
 
   const n = Number(s);
-
   return Number.isFinite(n) ? n : NaN;
 }
 
 function redondear(n) {
-  return Math.round(
-    (n + Number.EPSILON) * 100
-  ) / 100;
+  return Math.round((n + Number.EPSILON) * 100) / 100;
 }
 
-function formato(n, decimales = false) {
+function formato(n, decimales=false) {
   return new Intl.NumberFormat('es-PY', {
     minimumFractionDigits: decimales ? 2 : 0,
     maximumFractionDigits: 2
@@ -793,68 +299,36 @@ function formato(n, decimales = false) {
 
 function porcentaje(v) {
   const n = numero(v);
-
-  return Number.isFinite(n) &&
-    n >= 0 &&
-    n <= 100
-      ? n
-      : NaN;
+  return Number.isFinite(n) && n >= 0 && n <= 100 ? n : NaN;
 }
 
 function pendiente() {
   $('revisado').checked = false;
 }
 
-// =======================================
-// MODALIDAD MANUAL / AUTOMÁTICA
-// =======================================
+// =====================================
+// CAMBIAR MODALIDAD
+// =====================================
 
 function mostrarModo(modo) {
   const manual = modo === 'manual';
 
-  $('manual').classList.toggle(
-    'oculto',
-    !manual
-  );
+  $('manual').classList.toggle('oculto',!manual);
+  $('automatico').classList.toggle('oculto',manual);
+  $('tabManual').classList.toggle('activa',manual);
+  $('tabAuto').classList.toggle('activa',!manual);
 
-  $('automatico').classList.toggle(
-    'oculto',
-    manual
-  );
-
-  $('tabManual').classList.toggle(
-    'activa',
-    manual
-  );
-
-  $('tabAuto').classList.toggle(
-    'activa',
-    !manual
-  );
-
-  $('tabManual').setAttribute(
-    'aria-selected',
-    String(manual)
-  );
-
-  $('tabAuto').setAttribute(
-    'aria-selected',
-    String(!manual)
-  );
+  $('tabManual').setAttribute('aria-selected',String(manual));
+  $('tabAuto').setAttribute('aria-selected',String(!manual));
 }
 
-// =======================================
-// CALCULADORA MANUAL
-// =======================================
+// =====================================
+// DESCUENTO MANUAL
+// =====================================
 
 function calcularManual() {
-  const monto = numero(
-    $('montoManual').value
-  );
-
-  const pct = porcentaje(
-    $('porcentajeManual').value
-  );
+  const monto = numero($('montoManual').value);
+  const pct = porcentaje($('porcentajeManual').value);
 
   const valido =
     Number.isFinite(monto) &&
@@ -870,73 +344,50 @@ function calcularManual() {
   if (!valido) {
     resultadoManual = null;
 
-    [
-      'originalManual',
-      'rebajaManual',
-      'finalManual'
-    ].forEach(id => {
+    ['originalManual','rebajaManual','finalManual'].forEach(id => {
       $(id).textContent = '—';
     });
 
     return;
   }
 
-  const rebaja = redondear(
-    monto * pct / 100
-  );
+  const rebaja = redondear(monto * pct / 100);
+  const total = redondear(monto - rebaja);
 
-  const total = redondear(
-    monto - rebaja
-  );
-
-  $('originalManual').textContent =
-    formato(monto);
-
-  $('rebajaManual').textContent =
-    formato(rebaja);
-
-  $('finalManual').textContent =
-    resultadoManual = formato(total);
+  $('originalManual').textContent = formato(monto);
+  $('rebajaManual').textContent = formato(rebaja);
+  $('finalManual').textContent = resultadoManual = formato(total);
 }
 
 async function copiarResultado() {
   if (resultadoManual === null) return;
 
   try {
-    await navigator.clipboard.writeText(
-      resultadoManual
-    );
+    await navigator.clipboard.writeText(resultadoManual);
 
-    $('copiarManual').textContent =
-      '¡Copiado!';
+    $('copiarManual').textContent = '¡Copiado!';
 
     setTimeout(() => {
-      $('copiarManual').textContent =
-        'Copiar resultado';
-    }, 1200);
+      $('copiarManual').textContent = 'Copiar resultado';
+    },1200);
 
   } catch {
-    prompt(
-      'Copiá el resultado:',
-      resultadoManual
-    );
+    prompt('Copiá el resultado:', resultadoManual);
   }
 }
 
 function limpiarManual() {
   $('montoManual').value = '';
   $('porcentajeManual').value = '';
-
   calcularManual();
-
   $('montoManual').focus();
 }
 
-// =======================================
-// AGREGAR Y ELIMINAR PRODUCTOS
-// =======================================
+// =====================================
+// PRODUCTOS
+// =====================================
 
-function agregarFila(datos = {}) {
+function agregarFila(datos={}) {
   filas.push({
     id: nextId++,
     codigo: datos.codigo || '',
@@ -955,29 +406,20 @@ function borrarFilas() {
   if (
     filas.length &&
     !confirm('¿Eliminar todos los productos?')
-  ) {
-    return;
-  }
+  ) return;
 
   filas.length = 0;
-
   dibujarFilas();
   pendiente();
-
   $('advertenciaOCR').textContent = '';
 }
 
-// =======================================
-// INPUTS DE LA TABLA
-// =======================================
-
-function crearInput(f, campo) {
+function crearInput(f,campo) {
   const td = document.createElement('td');
   const input = document.createElement('input');
 
   input.type = 'text';
   input.value = f[campo];
-
   input.dataset.id = f.id;
   input.dataset.campo = campo;
 
@@ -988,16 +430,12 @@ function crearInput(f, campo) {
         ? 'codigo'
         : 'numero';
 
-  if (
-    ['cantidad', 'precio', 'descuento']
-      .includes(campo)
-  ) {
+  if (['cantidad','precio','descuento'].includes(campo)) {
     input.inputMode = 'decimal';
   }
 
   if (campo === 'descuento') {
-    input.disabled =
-      $('modoDescuento').value === 'general';
+    input.disabled = $('modoDescuento').value === 'general';
 
     if (input.disabled) {
       input.value = $('general').value;
@@ -1012,32 +450,22 @@ function crearInput(f, campo) {
   }
 
   td.append(input);
-
   return td;
 }
 
-// =======================================
-// MOSTRAR PRODUCTOS
-// =======================================
-
 function dibujarFilas() {
   const cuerpo = $('filas');
-
   cuerpo.replaceChildren();
 
   for (const f of filas) {
     const tr = document.createElement('tr');
-
     tr.dataset.id = f.id;
 
     for (const campo of [
-      'codigo',
-      'descripcion',
-      'cantidad',
-      'precio',
-      'descuento'
+      'codigo','descripcion','cantidad',
+      'precio','descuento'
     ]) {
-      tr.append(crearInput(f, campo));
+      tr.append(crearInput(f,campo));
     }
 
     const td = document.createElement('td');
@@ -1048,14 +476,8 @@ function dibujarFilas() {
     btn.className = 'fila-accion';
 
     btn.addEventListener('click', () => {
-      const i = filas.findIndex(
-        x => x.id === f.id
-      );
-
-      if (i !== -1) {
-        filas.splice(i, 1);
-      }
-
+      const i = filas.findIndex(x => x.id === f.id);
+      if (i !== -1) filas.splice(i,1);
       dibujarFilas();
       pendiente();
     });
@@ -1068,28 +490,19 @@ function dibujarFilas() {
   calcularAutomatico();
 }
 
-// =======================================
-// CÁLCULO DE DESCUENTOS
-// =======================================
+// =====================================
+// CÁLCULO GENERAL E INDIVIDUAL
+// =====================================
 
 function datosCalculados() {
-  const general =
-    $('modoDescuento').value === 'general';
+  const general = $('modoDescuento').value === 'general';
+  const pctGeneral = porcentaje($('general').value);
 
-  const pctGeneral = porcentaje(
-    $('general').value
-  );
-
-  if (
-    general &&
-    !Number.isFinite(pctGeneral)
-  ) {
-    throw Error(
-      'El descuento general debe estar entre 0 y 100.'
-    );
+  if (general && !Number.isFinite(pctGeneral)) {
+    throw Error('El descuento general debe estar entre 0 y 100.');
   }
 
-  return filas.map((f, i) => {
+  return filas.map((f,i) => {
     const cantidad = numero(f.cantidad);
     const precio = numero(f.precio);
 
@@ -1105,27 +518,12 @@ function datosCalculados() {
       !Number.isFinite(pct)
     ) {
       throw Error(
-        'Producto ' + (i + 1) +
-        ': ingresá cantidad mayor a 0, precio unitario y descuento válido (0 a 100).'
+        'Producto ' + (i+1) +
+        ': ingresá cantidad, precio unitario y descuento válido (0 a 100).'
       );
     }
 
-    // Primero se aplica el descuento
-    // sobre el precio unitario.
-
-    const precioFinal = redondear(
-      precio * (1 - pct / 100)
-    );
-
-    // Después se multiplica por la cantidad.
-
-    const bruto = redondear(
-      cantidad * precio
-    );
-
-    const final = redondear(
-      cantidad * precioFinal
-    );
+    const precioFinal = redondear(precio * (1-pct/100));
 
     return {
       ...f,
@@ -1133,8 +531,8 @@ function datosCalculados() {
       precio,
       pct,
       precioFinal,
-      bruto,
-      final
+      bruto: redondear(cantidad*precio),
+      final: redondear(cantidad*precioFinal)
     };
   });
 }
@@ -1144,259 +542,141 @@ function calcularAutomatico() {
     const productos = datosCalculados();
 
     const subtotal = redondear(
-      productos.reduce(
-        (a, p) => a + p.bruto,
-        0
-      )
+      productos.reduce((a,p) => a + p.bruto, 0)
     );
 
     const total = redondear(
-      productos.reduce(
-        (a, p) => a + p.final,
-        0
-      )
+      productos.reduce((a,p) => a + p.final, 0)
     );
 
-    $('subtotal').textContent =
-      formato(subtotal, true);
+    $('subtotal').textContent = formato(subtotal,true);
+    $('descuentoTotal').textContent = formato(
+      redondear(subtotal-total),true
+    );
+    $('totalFinal').textContent = formato(total,true);
 
-    $('descuentoTotal').textContent =
-      formato(
-        redondear(subtotal - total),
-        true
-      );
+    const impreso = $('totalFactura').value.trim();
 
-    $('totalFinal').textContent =
-      formato(total, true);
+    if (impreso && Number.isFinite(numero(impreso))) {
+      const dif = redondear(subtotal-numero(impreso));
 
-    const impreso =
-      $('totalFactura').value.trim();
-
-    if (
-      impreso &&
-      Number.isFinite(numero(impreso))
-    ) {
-      const dif = redondear(
-        subtotal - numero(impreso)
-      );
-
-      $('avisoCalculo').textContent =
-        Math.abs(dif) > 0.02
-          ? 'Aviso: el subtotal de productos difiere del total impreso en ' +
-            formato(dif, true) +
-            '. Puede deberse a errores del OCR, impuestos o descuentos de la factura.'
-          : 'El subtotal coincide con el total original impreso.';
-
+      $('avisoCalculo').textContent = Math.abs(dif)>0.02
+        ? 'Aviso: el subtotal difiere del total impreso en ' +
+          formato(dif,true) +
+          '. Puede deberse a OCR, impuestos o descuentos de la factura.'
+        : 'El subtotal coincide con el total original impreso.';
     } else {
       $('avisoCalculo').textContent = '';
     }
 
-    return {
-      productos,
-      subtotal,
-      total
-    };
+    return {productos,subtotal,total};
 
-  } catch (e) {
+  } catch(e) {
     $('subtotal').textContent = '—';
     $('descuentoTotal').textContent = '—';
     $('totalFinal').textContent = '—';
-
-    $('avisoCalculo').textContent =
-      e.message;
-
+    $('avisoCalculo').textContent = e.message;
     return null;
   }
 }
 
-// =======================================
-// RECONOCIMIENTO DE FACTURA
-// =======================================
+// =====================================
+// LECTURA OCR
+// =====================================
 
 function sinAcentos(s) {
-  return String(s || '')
+  return String(s||'')
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u0300-\u036f]/g,'')
     .toLowerCase();
 }
 
-function buscar(texto, re) {
+function buscar(texto,re) {
   const m = texto.match(re);
-
   return m ? m[1].trim() : '';
 }
 
 function analizarCabecera(texto) {
   const lineas = texto
     .split(/\r?\n/)
-    .map(s => s.trim())
+    .map(s=>s.trim())
     .filter(Boolean);
 
-  const prov = lineas.slice(0, 16).find(s =>
+  const prov = lineas.slice(0,16).find(s =>
     /\bS\.?\s*A\.?\b|\bS\.?\s*R\.?\s*L\.?\b/i.test(s) &&
-    !/cliente|nombre o razon/i.test(
-      sinAcentos(s)
-    )
+    !/cliente|nombre o razon/i.test(sinAcentos(s))
   );
 
   return {
-    proveedor: prov || '',
-
-    rucProveedor: buscar(
-      texto,
-      /\bRUC\s*:\s*(\d{6,9}\s*-\s*\d)/i
-    ),
-
-    numeroFactura: buscar(
-      texto,
-      /\b(\d{3}-\d{3}-\d{7})\b/
-    ),
-
-    fechaEmision: buscar(
-      texto,
-      /Fecha\s*(?:y\s*hora\s*)?de\s*emisi[oó]n\s*:\s*(\d{2}[-/]\d{2}[-/]\d{4})/i
-    ),
-
-    cliente: buscar(
-      texto,
-      /Nombre\s*o\s*Raz[oó]n\s*Social\s*:\s*([^\n]+)/i
-    ),
-
-    rucCliente: buscar(
-      texto,
-      /RUC\s*\/\s*Documento\s*de\s*Identidad\s*N?[°ºo.]?\s*:\s*(\d{6,9}\s*-\s*\d)/i
-    ),
-
-    fechaVencimiento: buscar(
-      texto,
-      /Vencimiento\s*de\s*Factura\s*:\s*(\d{2}[-/]\d{2}[-/]\d{4})/i
-    ),
-
-    condicion: buscar(
-      texto,
-      /Condici[oó]n\s*de\s*Venta\s*[:\-]?\s*(Contado|Cr[eé]dito)/i
-    ),
-
-    totalFactura: buscar(
-      texto,
-      /TOTAL\s+DE\s+LA\s+OPERACI[OÓ]N[^\d\n]*([\d.,]+)/i
-    )
+    proveedor:prov||'',
+    rucProveedor:buscar(texto,/\bRUC\s*:\s*(\d{6,9}\s*-\s*\d)/i),
+    numeroFactura:buscar(texto,/\b(\d{3}-\d{3}-\d{7})\b/),
+    fechaEmision:buscar(texto,/Fecha\s*(?:y\s*hora\s*)?de\s*emisi[oó]n\s*:\s*(\d{2}[-/]\d{2}[-/]\d{4})/i),
+    cliente:buscar(texto,/Nombre\s*o\s*Raz[oó]n\s*Social\s*:\s*([^\n]+)/i),
+    rucCliente:buscar(texto,/RUC\s*\/\s*Documento\s*de\s*Identidad\s*N?[°ºo.]?\s*:\s*(\d{6,9}\s*-\s*\d)/i),
+    fechaVencimiento:buscar(texto,/Vencimiento\s*de\s*Factura\s*:\s*(\d{2}[-/]\d{2}[-/]\d{4})/i),
+    condicion:buscar(texto,/Condici[oó]n\s*de\s*Venta\s*[:\-]?\s*(Contado|Cr[eé]dito)/i),
+    totalFactura:buscar(texto,/TOTAL\s+DE\s+LA\s+OPERACI[OÓ]N[^\d\n]*([\d.,]+)/i)
   };
 }
 
-// =======================================
-// EXTRAER PALABRAS DEL OCR
-// =======================================
-
 function palabrasTSV(tsv) {
-  if (typeof tsv !== 'string') {
-    return [];
-  }
+  if (typeof tsv !== 'string') return [];
 
-  return tsv
-    .split(/\r?\n/)
-    .slice(1)
-    .map(l => {
-      const p = l.split('\t');
+  return tsv.split(/\r?\n/).slice(1).map(l => {
+    const p = l.split('\t');
+    if (p.length<12 || p[0]!=='5') return null;
 
-      if (
-        p.length < 12 ||
-        p[0] !== '5'
-      ) {
-        return null;
-      }
+    const texto = p.slice(11).join(' ').trim();
+    const x=Number(p[6]), y=Number(p[7]);
+    const w=Number(p[8]), h=Number(p[9]);
 
-      const texto = p.slice(11)
-        .join(' ')
-        .trim();
+    return texto &&
+      [x,y,w,h].every(Number.isFinite) &&
+      w>0 && h>0
+      ? {texto,x,y,w,h,cy:y+h/2}
+      : null;
 
-      const x = Number(p[6]);
-      const y = Number(p[7]);
-      const w = Number(p[8]);
-      const h = Number(p[9]);
-
-      if (
-        !texto ||
-        ![x, y, w, h].every(Number.isFinite) ||
-        w <= 0 ||
-        h <= 0
-      ) {
-        return null;
-      }
-
-      return {
-        texto,
-        x,
-        y,
-        w,
-        h,
-        cy: y + h / 2
-      };
-    })
-    .filter(Boolean);
+  }).filter(Boolean);
 }
-
-// =======================================
-// AGRUPAR PALABRAS POR FILAS
-// =======================================
 
 function agruparPalabras(palabras) {
   const orden = [...palabras].sort(
-    (a, b) => a.cy - b.cy || a.x - b.x
+    (a,b)=>a.cy-b.cy || a.x-b.x
   );
 
-  const hs = orden
-    .map(x => x.h)
-    .sort((a, b) => a - b);
+  const hs = orden.map(x=>x.h).sort((a,b)=>a-b);
 
   const tol = Math.max(
     6,
-    (hs[Math.floor(hs.length / 2)] || 14) * 0.53
+    (hs[Math.floor(hs.length/2)]||14)*0.53
   );
 
   const grupos = [];
 
   for (const p of orden) {
-    let g = grupos.find(
-      g => Math.abs(g.cy - p.cy) <= tol
-    );
+    let g = grupos.find(g=>Math.abs(g.cy-p.cy)<=tol);
 
     if (!g) {
-      g = {
-        cy: p.cy,
-        palabras: []
-      };
-
+      g={cy:p.cy,palabras:[]};
       grupos.push(g);
     }
 
     g.palabras.push(p);
-
-    g.cy = g.palabras.reduce(
-      (a, b) => a + b.cy,
-      0
-    ) / g.palabras.length;
+    g.cy=g.palabras.reduce((a,b)=>a+b.cy,0)/g.palabras.length;
   }
 
   return grupos
-    .sort((a, b) => a.cy - b.cy)
-    .map(g =>
-      g.palabras.sort(
-        (a, b) => a.x - b.x
-      )
-    );
+    .sort((a,b)=>a.cy-b.cy)
+    .map(g=>g.palabras.sort((a,b)=>a.x-b.x));
 }
 
-// =======================================
-// LIMPIAR NÚMEROS OCR
-// =======================================
-
 function limpiarOCRNumero(s) {
-  s = String(s || '')
-    .replace(/[Oo]/g, '0')
-    .replace(/[Il|]/g, '1')
-    .replace(/\s/g, '')
-    .replace(/[^\d.,]/g, '');
+  s=String(s||'')
+    .replace(/[Oo]/g,'0')
+    .replace(/[Il|]/g,'1')
+    .replace(/\s/g,'')
+    .replace(/[^\d.,]/g,'');
 
   if (
     !s ||
@@ -1404,188 +684,105 @@ function limpiarOCRNumero(s) {
       !/^\d{1,8}(?:[,.]\d{1,3})?$/.test(s) &&
       !/^\d{1,3}(?:[.,]\d{3})+(?:,\d{1,2})?$/.test(s)
     )
-  ) {
-    return '';
-  }
+  ) return '';
 
   return s;
 }
 
 function leerColumna(grupo) {
-  const partes = grupo
-    .map(p => p.texto)
-    .filter(t => /[0-9OoIl]/.test(t));
+  const partes=grupo
+    .map(p=>p.texto)
+    .filter(t=>/[0-9OoIl]/.test(t));
 
-  if (
-    !partes.length ||
-    partes.length > 2
-  ) {
-    return '';
-  }
+  if (!partes.length || partes.length>2) return '';
 
-  return limpiarOCRNumero(
-    partes.join('')
-  );
+  return limpiarOCRNumero(partes.join(''));
 }
 
-// =======================================
-// LECTURA DE COLUMNAS KUDE
-// =======================================
-
-function extraerFilasCoordenadas(
-  tsv,
-  zona,
-  escala
-) {
-  const grupos = agruparPalabras(
-    palabrasTSV(tsv)
-  );
-
-  const salida = [];
+function extraerFilasCoordenadas(tsv,zona,escala) {
+  const grupos=agruparPalabras(palabrasTSV(tsv));
+  const salida=[];
 
   for (const grupo of grupos) {
-    const cols = Array.from(
-      { length: 8 },
-      () => []
-    );
+    const cols=Array.from({length:8},()=>[]);
 
     for (const p of grupo) {
-      const x = (
-        zona.x +
-        (p.x + p.w / 2) / escala
-      ) / zona.ancho;
+      const x=(zona.x+(p.x+p.w/2)/escala)/zona.ancho;
 
-      // Distribución aproximada de la
-      // tabla KUDE de la factura de ejemplo.
-
-      const limites = [
-        .087,
-        .182,
-        .542,
-        .569,
-        .605,
-        .659,
-        .704,
-        .761
+      const limites=[
+        .087,.182,.542,.569,.605,.659,.704,.761
       ];
 
-      const indice = limites.findIndex(
-        l => x < l
-      );
-
-      if (indice >= 0) {
-        cols[indice].push(p);
-      }
+      const indice=limites.findIndex(l=>x<l);
+      if (indice>=0) cols[indice].push(p);
     }
 
-    const texto = i =>
-      cols[i]
-        .map(p => p.texto)
-        .join(' ')
-        .trim();
+    const texto=i=>cols[i].map(p=>p.texto).join(' ').trim();
 
-    const codigo = texto(0)
-      .replace(/[^a-zA-Z0-9-]/g, '')
+    const codigo=texto(0)
+      .replace(/[^a-zA-Z0-9-]/g,'')
       .toUpperCase();
 
-    const ean = texto(1)
-      .replace(/\D/g, '');
+    const ean=texto(1).replace(/\D/g,'');
+    const descripcion=texto(2).replace(/\s+/g,' ').trim();
 
-    const descripcion = texto(2)
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    const cantidad = leerColumna(
-      cols[4]
-    );
-
-    const precio = leerColumna(
-      cols[5]
-    );
-
-    const importe = leerColumna(
-      cols[7]
-    );
+    const cantidad=leerColumna(cols[4]);
+    const precio=leerColumna(cols[5]);
+    const importe=leerColumna(cols[7]);
 
     if (
-      !(
-        codigo.length >= 4 ||
-        ean.length >= 8
-      ) ||
-      descripcion.length < 5
-    ) {
-      continue;
-    }
+      !(codigo.length>=4 || ean.length>=8) ||
+      descripcion.length<5
+    ) continue;
 
-    if (
-      /subtotal|total|descripcion/i.test(
-        sinAcentos(descripcion)
-      )
-    ) {
-      continue;
-    }
+    if (/subtotal|total|descripcion/i.test(
+      sinAcentos(descripcion)
+    )) continue;
 
-    let sospecha = false;
-    let cant = cantidad;
-    let prec = precio;
+    let sospecha=false;
+    let cant=cantidad;
+    let prec=precio;
 
-    const q = numero(cant);
-    const pr = numero(prec);
-    const imp = numero(importe);
-
-    // Si hay importe original legible,
-    // comprobar coherencia aproximada.
+    const q=numero(cant);
+    const pr=numero(prec);
+    const imp=numero(importe);
 
     if (
       Number.isFinite(q) &&
       Number.isFinite(pr) &&
       Number.isFinite(imp) &&
-      imp > 0 &&
-      Math.abs(q * pr - imp) >
-        Math.max(0.1, imp * 0.08)
-    ) {
-      sospecha = true;
-    }
+      imp>0 &&
+      Math.abs(q*pr-imp)>Math.max(0.1,imp*.08)
+    ) sospecha=true;
 
     if (
       cant &&
-      (
-        !Number.isFinite(q) ||
-        q <= 0 ||
-        q > 100000
-      )
+      (!Number.isFinite(q) || q<=0 || q>100000)
     ) {
-      cant = '';
-      sospecha = true;
+      cant='';
+      sospecha=true;
     }
 
     if (
       prec &&
-      (
-        !Number.isFinite(pr) ||
-        pr < 0 ||
-        pr > 100000000
-      )
+      (!Number.isFinite(pr) || pr<0 || pr>100000000)
     ) {
-      prec = '';
-      sospecha = true;
+      prec='';
+      sospecha=true;
     }
 
     if (
       sospecha &&
-      q > 10000 &&
+      q>10000 &&
       Number.isFinite(imp) &&
-      imp > 0
-    ) {
-      cant = '';
-    }
+      imp>0
+    ) cant='';
 
     salida.push({
-      codigo,
-      descripcion,
-      cantidad: cant,
-      precio: prec,
-      descuento: '',
+      codigo,descripcion,
+      cantidad:cant,
+      precio:prec,
+      descuento:'',
       sospecha
     });
   }
@@ -1593,870 +790,502 @@ function extraerFilasCoordenadas(
   return salida;
 }
 
-// =======================================
-// LECTURA ALTERNATIVA POR TEXTO
-// =======================================
-
 function extraerFilasTexto(texto) {
-  const salida = [];
+  const salida=[];
 
-  for (
-    const linea of texto.split(/\r?\n/)
-  ) {
-    const m = linea
-      .trim()
-      .replace(/\s+/g, ' ')
-      .match(
-        /^([A-Z0-9-]{4,20})\s+\d{8,14}\s+(.+?)\s+(?:UNI|UN|UND|PZA|KG|CJ|BOT)\s+([\d.,]+)\s+([\d.,]+)/i
-      );
+  for (const linea of texto.split(/\r?\n/)) {
+    const m=linea.trim().replace(/\s+/g,' ').match(
+      /^([A-Z0-9-]{4,20})\s+\d{8,14}\s+(.+?)\s+(?:UNI|UN|UND|PZA|KG|CJ|BOT)\s+([\d.,]+)\s+([\d.,]+)/i
+    );
 
     if (!m) continue;
 
     salida.push({
-      codigo: m[1],
-      descripcion: m[2],
-      cantidad: limpiarOCRNumero(m[3]),
-      precio: limpiarOCRNumero(m[4]),
-      descuento: '',
-      sospecha: false
+      codigo:m[1],
+      descripcion:m[2],
+      cantidad:limpiarOCRNumero(m[3]),
+      precio:limpiarOCRNumero(m[4]),
+      descuento:'',
+      sospecha:false
     });
   }
 
   return salida;
 }
 
-// =======================================
-// DETECTAR TABLA DE PRODUCTOS
-// =======================================
+function detectarZona(palabras,ancho,alto) {
+  const cab=palabras.filter(
+    p=>p.y>alto*.24 &&
+    p.y<alto*.65 &&
+    /descripcion|descripci[oó]n/i.test(p.texto)
+  ).sort((a,b)=>a.y-b.y)[0];
 
-function detectarZona(
-  palabras,
-  ancho,
-  alto
-) {
-  const cab = palabras
-    .filter(
-      p =>
-        p.y > alto * .24 &&
-        p.y < alto * .65 &&
-        /descripcion|descripci[oó]n/i.test(
-          p.texto
-        )
-    )
-    .sort((a, b) => a.y - b.y)[0];
+  const subtotal=palabras.filter(
+    p=>p.y>alto*.42 &&
+    /^sub\s*total/i.test(sinAcentos(p.texto))
+  ).sort((a,b)=>a.y-b.y)[0];
 
-  const subtotal = palabras
-    .filter(
-      p =>
-        p.y > alto * .42 &&
-        /^sub\s*total/i.test(
-          sinAcentos(p.texto)
-        )
-    )
-    .sort((a, b) => a.y - b.y)[0];
-
-  const inicio = cab
-    ? cab.y + cab.h + 4
-    : alto * .425;
-
-  const fin = subtotal
-    ? subtotal.y - 3
-    : alto * .68;
-
-  const y = Math.max(
-    0,
-    Math.round(inicio)
-  );
+  const inicio=cab?cab.y+cab.h+4:alto*.425;
+  const fin=subtotal?subtotal.y-3:alto*.68;
+  const y=Math.max(0,Math.round(inicio));
 
   return {
-    x: Math.floor(ancho * .018),
+    x:Math.floor(ancho*.018),
     y,
-    w: Math.floor(ancho * .751),
-    h: Math.max(
+    w:Math.floor(ancho*.751),
+    h:Math.max(
       80,
       Math.floor(
         Math.min(
-          alto * .87,
-          Math.max(fin, y + alto * .12)
-        ) - y
+          alto*.87,
+          Math.max(fin,y+alto*.12)
+        )-y
       )
     ),
     ancho
   };
 }
 
-// =======================================
-// MEJORAR IMAGEN PARA OCR
-// =======================================
-
-function procesarTabla(img, zona) {
-  const escala = Math.min(
+function procesarTabla(img,zona) {
+  const escala=Math.min(
     3,
-    Math.max(1.5, 2400 / zona.w)
+    Math.max(1.5,2400/zona.w)
   );
 
-  const c = document.createElement(
-    'canvas'
-  );
+  const c=document.createElement('canvas');
+  c.width=Math.round(zona.w*escala);
+  c.height=Math.round(zona.h*escala);
 
-  c.width = Math.round(
-    zona.w * escala
-  );
-
-  c.height = Math.round(
-    zona.h * escala
-  );
-
-  const ctx = c.getContext('2d', {
-    willReadFrequently: true
+  const ctx=c.getContext('2d',{
+    willReadFrequently:true
   });
 
-  ctx.fillStyle = '#fff';
-
-  ctx.fillRect(
-    0,
-    0,
-    c.width,
-    c.height
-  );
+  ctx.fillStyle='#fff';
+  ctx.fillRect(0,0,c.width,c.height);
 
   ctx.drawImage(
     img,
-    zona.x,
-    zona.y,
-    zona.w,
-    zona.h,
-    0,
-    0,
-    c.width,
-    c.height
+    zona.x,zona.y,zona.w,zona.h,
+    0,0,c.width,c.height
   );
 
-  const d = ctx.getImageData(
-    0,
-    0,
-    c.width,
-    c.height
+  const d=ctx.getImageData(
+    0,0,c.width,c.height
   );
 
-  for (
-    let i = 0;
-    i < d.data.length;
-    i += 4
-  ) {
-    const g =
-      .299 * d.data[i] +
-      .587 * d.data[i + 1] +
-      .114 * d.data[i + 2];
+  for(let i=0;i<d.data.length;i+=4) {
+    const g=.299*d.data[i]+.587*d.data[i+1]+.114*d.data[i+2];
+    const v=Math.max(0,Math.min(255,(g-128)*1.45+156));
 
-    const v = Math.max(
-      0,
-      Math.min(
-        255,
-        (g - 128) * 1.45 + 156
-      )
-    );
-
-    d.data[i] = v;
-    d.data[i + 1] = v;
-    d.data[i + 2] = v;
+    d.data[i]=v;
+    d.data[i+1]=v;
+    d.data[i+2]=v;
   }
 
-  ctx.putImageData(d, 0, 0);
-
-  return {
-    canvas: c,
-    escala
-  };
+  ctx.putImageData(d,0,0);
+  return {canvas:c,escala};
 }
 
-// =======================================
-// ABRIR FOTO
-// =======================================
-
 async function abrirImagen(archivo) {
-  if (
-    typeof createImageBitmap === 'function'
-  ) {
+  if(typeof createImageBitmap==='function') {
     return createImageBitmap(archivo);
   }
 
-  return new Promise(
-    (resolve, reject) => {
-      const url = URL.createObjectURL(
-        archivo
-      );
+  return new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(archivo);
+    const img=new Image();
 
-      const img = new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
 
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        resolve(img);
-      };
+    img.onerror=()=>{
+      URL.revokeObjectURL(url);
+      reject(Error('No se pudo abrir la imagen.'));
+    };
 
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
+    img.src=url;
+  });
+}
 
-        reject(
-          Error(
-            'No se pudo abrir la imagen.'
-          )
-        );
-      };
-
-      img.src = url;
-    }
+function calidad(lista) {
+  return lista.length*5+lista.reduce(
+    (s,x)=>s+(x.cantidad?1:0)+(x.precio?1:0)-(x.sospecha?1:0),
+    0
   );
 }
 
-// =======================================
-// CALIDAD DEL RECONOCIMIENTO
-// =======================================
-
-function calidad(lista) {
-  return lista.length * 5 +
-    lista.reduce(
-      (s, x) =>
-        s +
-        (x.cantidad ? 1 : 0) +
-        (x.precio ? 1 : 0) -
-        (x.sospecha ? 1 : 0),
-      0
-    );
-}
-
-// =======================================
-// LEER FACTURA AUTOMÁTICAMENTE
-// =======================================
+// =====================================
+// PROCESAR FACTURA
+// =====================================
 
 async function leerFactura() {
-  const archivo = $('archivo').files[0];
+  const archivo=$('archivo').files[0];
 
-  if (!archivo) {
-    return alert(
-      'Seleccioná una fotografía de factura.'
-    );
+  if(!archivo) {
+    return alert('Seleccioná una fotografía de factura.');
   }
 
-  if (
-    ![
-      'image/jpeg',
-      'image/png',
-      'image/webp'
-    ].includes(archivo.type)
-  ) {
-    return alert(
-      'Seleccioná JPG, PNG o WebP.'
-    );
+  if(!['image/jpeg','image/png','image/webp'].includes(archivo.type)) {
+    return alert('Seleccioná JPG, PNG o WebP.');
   }
 
-  if (!window.Tesseract) {
-    return alert(
-      'No cargó el motor OCR. Revisá tu conexión.'
-    );
+  if(!window.Tesseract) {
+    return alert('No cargó el motor OCR. Revisá tu conexión.');
   }
 
-  if (
+  if(
     filas.length &&
-    !confirm(
-      '¿Reemplazar los productos actuales si se detectan nuevos?'
-    )
-  ) {
-    return;
-  }
+    !confirm('¿Reemplazar los productos actuales si se detectan nuevos?')
+  ) return;
 
-  $('leerBtn').disabled = true;
+  $('leerBtn').disabled=true;
+  $('estadoOCR').textContent='Preparando imagen...';
 
-  $('estadoOCR').textContent =
-    'Preparando imagen...';
-
-  let img = null;
-  let worker = null;
+  let img=null;
+  let worker=null;
 
   try {
-    img = await abrirImagen(archivo);
+    img=await abrirImagen(archivo);
 
-    worker = await Tesseract.createWorker(
-      'spa',
-      1,
-      {
-        logger: m => {
-          if (
-            m.status === 'recognizing text'
-          ) {
-            $('estadoOCR').textContent =
-              'Leyendo factura: ' +
-              Math.round(
-                (m.progress || 0) * 100
-              ) +
+    worker=await Tesseract.createWorker(
+      'spa',1,{
+        logger:m=>{
+          if(m.status==='recognizing text') {
+            $('estadoOCR').textContent=
+              'Leyendo factura: '+
+              Math.round((m.progress||0)*100)+
               ' %';
           }
         }
       }
     );
 
-    // Lectura general de la factura.
-
-    const doc = await worker.recognize(
-      archivo,
-      {},
-      {
-        text: true,
-        tsv: true
-      }
+    const doc=await worker.recognize(
+      archivo,{},{text:true,tsv:true}
     );
 
-    const texto = doc.data.text || '';
+    const texto=doc.data.text||'';
+    $('textoOCR').value='FACTURA COMPLETA\n'+texto;
 
-    $('textoOCR').value =
-      'FACTURA COMPLETA\n' + texto;
+    const cabecera=analizarCabecera(texto);
 
-    const cabecera = analizarCabecera(
-      texto
-    );
-
-    camposFactura.forEach(c => {
-      if (cabecera[c]) {
-        $(c).value = cabecera[c];
-      }
+    camposFactura.forEach(c=>{
+      if(cabecera[c]) $(c).value=cabecera[c];
     });
 
-    // Recortar área de productos.
-
-    const zona = detectarZona(
+    const zona=detectarZona(
       palabrasTSV(doc.data.tsv),
-      img.width,
-      img.height
+      img.width,img.height
     );
 
-    const recorte = procesarTabla(
-      img,
-      zona
-    );
+    const recorte=procesarTabla(img,zona);
+    let mejores=extraerFilasTexto(texto);
 
-    let mejores = extraerFilasTexto(
-      texto
-    );
-
-    // Lectura de tabla en dos modalidades.
-
-    for (const psm of ['11', '6']) {
-      $('estadoOCR').textContent =
+    for(const psm of ['11','6']) {
+      $('estadoOCR').textContent=
         'Reconociendo columnas de productos...';
 
       await worker.setParameters({
-        tessedit_pageseg_mode: psm
+        tessedit_pageseg_mode:psm
       });
 
-      const r = await worker.recognize(
-        recorte.canvas,
-        {},
-        {
-          text: true,
-          tsv: true
-        }
+      const r=await worker.recognize(
+        recorte.canvas,{},{text:true,tsv:true}
       );
 
-      $('textoOCR').value +=
-        '\n\nTABLA - MODO ' +
-        psm +
-        '\n' +
-        (r.data.text || '');
+      $('textoOCR').value+=
+        '\n\nTABLA - MODO '+psm+
+        '\n'+(r.data.text||'');
 
-      const porCoord =
-        extraerFilasCoordenadas(
-          r.data.tsv,
-          zona,
-          recorte.escala
-        );
+      const porCoord=extraerFilasCoordenadas(
+        r.data.tsv,zona,recorte.escala
+      );
 
-      const porTexto =
-        extraerFilasTexto(
-          r.data.text || ''
-        );
+      const porTexto=extraerFilasTexto(
+        r.data.text||''
+      );
 
-      for (
-        const candidato of [
-          porCoord,
-          porTexto
-        ]
-      ) {
-        if (
-          calidad(candidato) >
-          calidad(mejores)
-        ) {
-          mejores = candidato;
+      for(const candidato of [porCoord,porTexto]) {
+        if(calidad(candidato)>calidad(mejores)) {
+          mejores=candidato;
         }
       }
 
-      if (
-        mejores.length >= 8 &&
-        psm === '11'
-      ) {
-        break;
-      }
+      if(mejores.length>=8 && psm==='11') break;
     }
 
-    // Incorporar productos encontrados.
+    if(mejores.length) {
+      filas.length=0;
 
-    if (mejores.length) {
-      filas.length = 0;
-
-      for (const p of mejores) {
+      for(const p of mejores) {
         filas.push({
-          id: nextId++,
-          codigo: p.codigo,
-          descripcion: p.descripcion,
-          cantidad: p.cantidad,
-          precio: p.precio,
-          descuento: '',
-          sospecha: p.sospecha
+          id:nextId++,
+          codigo:p.codigo,
+          descripcion:p.descripcion,
+          cantidad:p.cantidad,
+          precio:p.precio,
+          descuento:'',
+          sospecha:p.sospecha
         });
       }
 
       dibujarFilas();
       pendiente();
 
-      const dudosos = mejores.filter(
-        x =>
-          x.sospecha ||
-          !x.cantidad ||
-          !x.precio
+      const dudosos=mejores.filter(
+        x=>x.sospecha||!x.cantidad||!x.precio
       ).length;
 
-      $('advertenciaOCR').textContent =
-        dudosos
-          ? dudosos +
-            ' fila(s) tienen importes dudosos o incompletos. Revisá los campos resaltados antes del PDF.'
-          : 'Compará las filas detectadas con la fotografía: la lectura automática puede omitir productos.';
+      $('advertenciaOCR').textContent=dudosos
+        ? dudosos+
+          ' fila(s) tienen importes dudosos. Revisá los campos resaltados.'
+        : 'Compará todos los productos con la fotografía.';
 
-      $('estadoOCR').textContent =
-        'Lectura finalizada. Productos detectados: ' +
-        mejores.length +
+      $('estadoOCR').textContent=
+        'Lectura finalizada. Productos detectados: '+
+        mejores.length+
         '. Revisá todas las filas.';
 
     } else {
-      $('estadoOCR').textContent =
-        'No se identificaron productos. Conservé tus filas anteriores; probá una fotografía más frontal o agregalos manualmente.';
+      $('estadoOCR').textContent=
+        'No se identificaron productos. Se conservaron las filas anteriores.';
     }
 
-  } catch (e) {
-    $('estadoOCR').textContent =
-      'Error durante la lectura: ' +
-      e.message;
+  } catch(e) {
+    $('estadoOCR').textContent=
+      'Error durante la lectura: '+e.message;
 
   } finally {
-    if (worker) {
-      try {
-        await worker.terminate();
-      } catch {}
+    if(worker) {
+      try {await worker.terminate();} catch {}
     }
 
-    if (
-      img &&
-      typeof img.close === 'function'
-    ) {
-      img.close();
-    }
+    if(img && typeof img.close==='function') img.close();
 
-    $('leerBtn').disabled = false;
+    $('leerBtn').disabled=false;
   }
 }
 
-// =======================================
-// GENERAR PDF
-// =======================================
+// =====================================
+// EXPORTAR PDF
+// =====================================
 
 function generarPDF() {
-  if (!filas.length) {
-    return alert(
-      'Agregá al menos un producto.'
-    );
+  if(!filas.length) {
+    return alert('Agregá al menos un producto.');
   }
 
-  const r = calcularAutomatico();
+  const r=calcularAutomatico();
 
-  if (!r) {
-    return alert(
-      'Corregí los valores obligatorios.'
-    );
+  if(!r) {
+    return alert('Corregí los valores obligatorios.');
   }
 
-  if (!$('revisado').checked) {
-    return alert(
-      'Confirmá que revisaste los importes.'
-    );
+  if(!$('revisado').checked) {
+    return alert('Confirmá que revisaste los importes.');
   }
 
-  if (!window.jspdf?.jsPDF) {
-    return alert(
-      'No cargó la biblioteca de PDF.'
-    );
+  if(!window.jspdf?.jsPDF) {
+    return alert('No cargó la biblioteca de PDF.');
   }
 
-  const doc = new window.jspdf.jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4'
+  const doc=new window.jspdf.jsPDF({
+    orientation:'landscape',
+    unit:'mm',
+    format:'a4'
   });
 
-  if (
-    typeof doc.autoTable !== 'function'
-  ) {
-    return alert(
-      'No cargó la biblioteca de tablas PDF.'
-    );
+  if(typeof doc.autoTable!=='function') {
+    return alert('No cargó la biblioteca de tablas PDF.');
   }
 
   doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-
-  doc.text(
-    'GUIA DEL DIGITADOR',
-    14,
-    17
-  );
+  doc.setFont('helvetica','bold');
+  doc.text('GUIA DEL DIGITADOR',14,17);
 
   doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica','normal');
 
   doc.text(
     'INFORME DE DESCUENTOS - NO ES FACTURA FISCAL',
-    14,
-    24
+    14,24
   );
 
-  let y = 33;
+  let y=33;
 
-  const pares = [
-    ['Proveedor', 'proveedor'],
-    ['RUC proveedor', 'rucProveedor'],
-    ['Factura', 'numeroFactura'],
-    ['Fecha de emision', 'fechaEmision'],
-    ['Cliente', 'cliente'],
-    ['RUC cliente', 'rucCliente'],
-    ['Vencimiento', 'fechaVencimiento'],
-    ['Condicion', 'condicion'],
-    ['Total impreso', 'totalFactura']
+  const pares=[
+    ['Proveedor','proveedor'],
+    ['RUC proveedor','rucProveedor'],
+    ['Factura','numeroFactura'],
+    ['Fecha de emision','fechaEmision'],
+    ['Cliente','cliente'],
+    ['RUC cliente','rucCliente'],
+    ['Vencimiento','fechaVencimiento'],
+    ['Condicion','condicion'],
+    ['Total impreso','totalFactura']
   ];
 
-  for (
-    let i = 0;
-    i < pares.length;
-    i += 2
-  ) {
-    for (
-      let j = 0;
-      j < 2;
-      j++
-    ) {
-      const par = pares[i + j];
+  for(let i=0;i<pares.length;i+=2) {
+    for(let j=0;j<2;j++) {
+      const par=pares[i+j];
+      if(!par) continue;
 
-      if (!par) continue;
-
-      const s =
-        par[0] +
-        ': ' +
-        (
-          $(par[1]).value.trim() ||
-          'No identificado'
-        );
+      const s=par[0]+': '+
+        ($(par[1]).value.trim()||'No identificado');
 
       doc.text(
-        doc.splitTextToSize(
-          s,
-          125
-        )[0],
-        j ? 151 : 14,
+        doc.splitTextToSize(s,125)[0],
+        j?151:14,
         y
       );
     }
-
-    y += 7;
+    y+=7;
   }
 
   doc.text(
-    'Modalidad: ' +
-    (
-      $('modoDescuento').value === 'general'
-        ? 'General ' +
-          $('general').value +
-          ' %'
-        : 'Individual'
-    ),
-    14,
-    y + 2
+    'Modalidad: '+
+    ($('modoDescuento').value==='general'
+      ? 'General '+$('general').value+' %'
+      : 'Individual'),
+    14,y+2
   );
 
-  // Datos calculados para el informe.
-
-  const datos = r.productos.map(
-    (p, i) => [
-      String(i + 1),
-      p.codigo,
-      p.descripcion,
-      formato(p.cantidad),
-      formato(p.precio, true),
-      formato(p.pct) + ' %',
-      formato(p.precioFinal, true),
-      formato(p.final, true)
-    ]
-  );
+  const datos=r.productos.map((p,i)=>[
+    String(i+1),
+    p.codigo,
+    p.descripcion,
+    formato(p.cantidad),
+    formato(p.precio,true),
+    formato(p.pct)+' %',
+    formato(p.precioFinal,true),
+    formato(p.final,true)
+  ]);
 
   doc.autoTable({
-    startY: y + 9,
-
-    head: [[
-      '#',
-      'Codigo',
-      'Descripcion',
-      'Cantidad',
-      'Precio unit.',
-      'Descuento',
-      'Precio final unit.',
-      'Total final'
+    startY:y+9,
+    head:[[
+      '#','Codigo','Descripcion',
+      'Cantidad','Precio unit.',
+      'Descuento','Precio final unit.','Total final'
     ]],
-
-    body: datos,
-
-    theme: 'grid',
-
-    margin: {
-      left: 14,
-      right: 14
+    body:datos,
+    theme:'grid',
+    margin:{left:14,right:14},
+    styles:{
+      fontSize:8,
+      cellPadding:2,
+      overflow:'linebreak'
     },
-
-    styles: {
-      fontSize: 8,
-      cellPadding: 2,
-      overflow: 'linebreak'
+    headStyles:{
+      fillColor:[175,30,30]
     },
-
-    headStyles: {
-      fillColor: [175, 30, 30]
-    },
-
-    columnStyles: {
-      2: {
-        cellWidth: 78
-      }
+    columnStyles:{
+      2:{cellWidth:78}
     }
   });
 
-  let fin =
-    doc.lastAutoTable.finalY + 10;
+  let fin=doc.lastAutoTable.finalY+10;
 
-  if (fin > 178) {
+  if(fin>178) {
     doc.addPage();
-    fin = 24;
+    fin=24;
   }
 
-  doc.setFont('helvetica', 'bold');
+  doc.setFont('helvetica','bold');
   doc.setFontSize(11);
 
+  doc.text('Subtotal original: '+formato(r.subtotal,true),14,fin);
   doc.text(
-    'Subtotal original: ' +
-    formato(r.subtotal, true),
-    14,
-    fin
+    'Descuento aplicado: '+
+    formato(redondear(r.subtotal-r.total),true),
+    14,fin+8
   );
+  doc.text('TOTAL FINAL: '+formato(r.total,true),14,fin+16);
 
-  doc.text(
-    'Descuento aplicado: ' +
-    formato(
-      redondear(
-        r.subtotal - r.total
-      ),
-      true
-    ),
-    14,
-    fin + 8
-  );
-
-  doc.text(
-    'TOTAL FINAL: ' +
-    formato(r.total, true),
-    14,
-    fin + 16
-  );
-
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica','normal');
   doc.setFontSize(9);
 
   doc.text(
     'Informe de calculo. Valores revisados por el digitador.',
-    14,
-    fin + 25
+    14,fin+25
   );
 
-  const nombre = (
-    $('numeroFactura').value ||
-    'sin_numero'
-  ).replace(
-    /[^a-zA-Z0-9-]/g,
-    '_'
-  );
+  const nombre=($('numeroFactura').value||'sin_numero')
+    .replace(/[^a-zA-Z0-9-]/g,'_');
 
-  doc.save(
-    'descuentos_' + nombre + '.pdf'
-  );
+  doc.save('descuentos_'+nombre+'.pdf');
 }
 
-// =======================================
+// =====================================
 // EVENTOS
-// =======================================
+// =====================================
 
-$('archivo').addEventListener(
-  'change',
-  function() {
-    if (vistaURL) {
-      URL.revokeObjectURL(vistaURL);
-    }
+$('archivo').addEventListener('change',function(){
+  if(vistaURL) URL.revokeObjectURL(vistaURL);
 
-    const f = this.files[0];
+  const f=this.files[0];
 
-    if (f) {
-      vistaURL = URL.createObjectURL(f);
-
-      $('vistaFactura').src = vistaURL;
-
-      $('vistaFactura')
-        .classList.remove('oculto');
-
-    } else {
-      $('vistaFactura')
-        .classList.add('oculto');
-    }
+  if(f) {
+    vistaURL=URL.createObjectURL(f);
+    $('vistaFactura').src=vistaURL;
+    $('vistaFactura').classList.remove('oculto');
+  } else {
+    $('vistaFactura').classList.add('oculto');
   }
-);
-
-$('montoManual').addEventListener(
-  'input',
-  calcularManual
-);
-
-$('porcentajeManual').addEventListener(
-  'input',
-  calcularManual
-);
-
-// Edición de productos.
-
-$('filas').addEventListener(
-  'input',
-  e => {
-    const { id, campo } =
-      e.target.dataset;
-
-    const f = filas.find(
-      x => x.id === Number(id)
-    );
-
-    if (f && campo) {
-      f[campo] = e.target.value;
-
-      f.sospecha = false;
-
-      e.target.classList.remove(
-        'sospechoso'
-      );
-
-      pendiente();
-      calcularAutomatico();
-    }
-  }
-);
-
-// Cambiar entre descuento general
-// y descuento individual.
-
-$('modoDescuento').addEventListener(
-  'change',
-  () => {
-    $('campoGeneral').classList.toggle(
-      'oculto',
-      $('modoDescuento').value !== 'general'
-    );
-
-    dibujarFilas();
-    pendiente();
-  }
-);
-
-// Actualizar descuento general.
-
-$('general').addEventListener(
-  'input',
-  () => {
-    if (
-      $('modoDescuento').value === 'general'
-    ) {
-      $('filas')
-        .querySelectorAll(
-          'input[data-campo="descuento"]'
-        )
-        .forEach(
-          el => el.value = $('general').value
-        );
-    }
-
-    calcularAutomatico();
-    pendiente();
-  }
-);
-
-// Edición de datos de factura.
-
-camposFactura.forEach(id => {
-  $(id).addEventListener(
-    'input',
-    () => {
-      pendiente();
-
-      if (id === 'totalFactura') {
-        calcularAutomatico();
-      }
-    }
-  );
 });
 
-// =======================================
-// PERSONALIZACIÓN DE COLORES
-// =======================================
+$('montoManual').addEventListener('input',calcularManual);
+$('porcentajeManual').addEventListener('input',calcularManual);
 
-try {
-  const fondo =
-    localStorage.getItem('colorFondo');
+$('filas').addEventListener('input',e=>{
+  const {id,campo}=e.target.dataset;
+  const f=filas.find(x=>x.id===Number(id));
 
-  const rojo =
-    localStorage.getItem('colorAcento');
+  if(f&&campo) {
+    f[campo]=e.target.value;
+    f.sospecha=false;
+    e.target.classList.remove('sospechoso');
+    pendiente();
+    calcularAutomatico();
+  }
+});
 
-  if (
-    /^#[a-f\d]{6}$/i.test(fondo || '')
-  ) {
-    document.documentElement.style.setProperty(
-      '--fondo',
-      fondo
-    );
+$('modoDescuento').addEventListener('change',()=>{
+  $('campoGeneral').classList.toggle(
+    'oculto',
+    $('modoDescuento').value!=='general'
+  );
+
+  dibujarFilas();
+  pendiente();
+});
+
+$('general').addEventListener('input',()=>{
+  if($('modoDescuento').value==='general') {
+    $('filas').querySelectorAll(
+      'input[data-campo="descuento"]'
+    ).forEach(el=>{
+      el.value=$('general').value;
+    });
   }
 
-  if (
-    /^#[a-f\d]{6}$/i.test(rojo || '')
-  ) {
-    document.documentElement.style.setProperty(
-      '--rojo',
-      rojo
-    );
-  }
+  calcularAutomatico();
+  pendiente();
+});
 
-} catch {}
+camposFactura.forEach(id=>{
+  $(id).addEventListener('input',()=>{
+    pendiente();
 
-// =======================================
-// INICIALIZACIÓN
-// =======================================
+    if(id==='totalFactura') {
+      calcularAutomatico();
+    }
+  });
+});
 
 calcularManual();
-
 </script>
 </body>
 </html>
