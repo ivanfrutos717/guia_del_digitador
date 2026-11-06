@@ -48,7 +48,9 @@ formLogin.addEventListener('submit', function(event) {
     /* Estructura condicional que evalúa la variable de acceso */
     if (accesoConcedido) {
         /* Guarda el nombre oficial del objeto en localStorage */
-        localStorage.setItem('usuarioActivo', nombreUsuarioValidado);
+        
+GuiaSesion.guardarUsuario(nombreUsuarioValidado);
+
         
         /* Redirige hacia el menú de opciones */
         window.location.href = "menu.html";
