@@ -1,453 +1,266 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Asistente de Cadastro - Guía del Digitador</title>
+  <title>Asistente de Cadastro - Guía del Digitador</title>
 
-    <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="tema-global.css?v=1">
+  <script defer src="tema-global.js?v=1"></script>
 </head>
-
 <body>
 
-<div class="menu-container cadastro-container">
+  <div class="menu-container cadastro-container">
 
-    <!-- HEADER -->
     <header class="header-herramienta">
 
-        <a
-            href="menu.html"
-            class="btn-volver"
-            aria-label="Volver al menú principal"
-        >
-            &larr; VOLVER AL MENÚ
-        </a>
+      <a
+        href="menu.html"
+        class="btn-volver"
+        aria-label="Volver al menú principal">
+        ← VOLVER AL MENÚ
+      </a>
 
-        <div
-            id="badgeNube"
-            class="badge-nube conectando"
-            role="status"
-            aria-live="polite"
-        >
-            <span class="punto-estado"></span>
-            CONECTANDO A LA NUBE...
-        </div>
+      <div
+        id="badgeNube"
+        class="badge-nube conectando"
+        role="status"
+        aria-live="polite">
 
+        <span class="punto-estado"></span>
+        CONECTANDO A LA NUBE...
+
+      </div>
     </header>
 
-
-    <!-- TITULO -->
-
     <div class="titulo-seccion">
+      <h1>ASISTENTE DE CADASTRO</h1>
 
-        <h1>ASISTENTE DE CADASTRO</h1>
-
-        <p class="subtitulo">
-            REGISTRO INTELIGENTE Y ESTANDARIZACIÓN COLABORATIVA DE PRODUCTOS
-        </p>
-
+      <p class="subtitulo">
+        REGISTRO INTELIGENTE Y ESTANDARIZACIÓN
+        COLABORATIVA DE PRODUCTOS
+      </p>
     </div>
 
-
-    <!-- ==========================================================
-         PASO 1 - BUSCADOR UNIVERSAL
-         ========================================================== -->
+    <!-- PASO 1 -->
 
     <section class="bloque-paso">
 
-        <div class="encabezado-paso">
+      <div class="encabezado-paso">
+        <span class="num-paso">1</span>
+        <h2>BUSCAR PRODUCTO</h2>
+      </div>
 
-            <span class="num-paso">1</span>
+      <form
+        id="formBusqueda"
+        class="form-busqueda"
+        autocomplete="off">
 
-            <h2>BUSCAR PRODUCTO</h2>
+        <label
+          for="inputBusqueda"
+          class="label-accesible">
+          CÓDIGO DE BARRAS, MODELO O REFERENCIA:
+        </label>
 
-        </div>
+        <div class="input-escaneo-group">
 
-
-        <form
-            id="formBusqueda"
-            class="form-busqueda"
+          <input
+            type="text"
+            id="inputBusqueda"
+            name="busqueda"
+            placeholder="Ej: 0195950639414 / CFI-1215A / WH-1000XM5"
+            autofocus
             autocomplete="off"
-        >
+            required>
 
-            <label
-                for="inputBusqueda"
-                class="label-accesible"
-            >
-                CÓDIGO DE BARRAS, MODELO O REFERENCIA:
-            </label>
+          <button
+            type="submit"
+            class="btn-primario btn-buscar"
+            id="btnBuscar">
 
+            <span class="icono-btn">🔍</span>
+            BUSCAR
 
-            <div class="input-escaneo-group">
-
-                <input
-                    type="text"
-                    id="inputBusqueda"
-                    name="busqueda"
-                    placeholder="Ej: 0195950639414 / CFI-1215A / WH-1000XM5"
-                    autofocus
-                    autocomplete="off"
-                    required
-                >
-
-
-                <button
-                    type="submit"
-                    class="btn-primario btn-buscar"
-                    id="btnBuscar"
-                >
-
-                    <span class="icono-btn">🔍</span>
-
-                    BUSCAR
-
-                </button>
-
-            </div>
-
-
-            <div
-                id="tipoBusqueda"
-                style="
-                    margin-top:10px;
-                    font-size:13px;
-                    opacity:.75;
-                "
-            >
-                El sistema detectará automáticamente si es EAN, UPC,
-                modelo o referencia.
-            </div>
-
-        </form>
-
-    </section>
-
-
-
-    <!-- ==========================================================
-         RESULTADO DE BÚSQUEDA
-         ========================================================== -->
-
-    <div
-        id="panelAviso"
-        class="panel-aviso oculto"
-        role="alert"
-        aria-live="assertive"
-    >
-
-        <span id="textoAviso"></span>
-
-    </div>
-
-
-
-    <!-- ==========================================================
-         PASO 2 - ATRIBUTOS
-         ========================================================== -->
-
-    <section class="bloque-paso">
-
-        <div class="encabezado-paso">
-
-            <span class="num-paso">2</span>
-
-            <h2>ATRIBUTOS DEL PRODUCTO</h2>
-
+          </button>
         </div>
-
-
-        <form
-            id="formProducto"
-            autocomplete="off"
-        >
-
-            <div class="grid-atributos">
-
-
-                <!-- MARCA -->
-
-                <div class="campo-atributo">
-
-                    <label for="marca">
-                        MARCA
-                    </label>
-
-                    <input
-                        type="text"
-                        id="marca"
-                        placeholder="Ej: SONY"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- MODELO -->
-
-                <div class="campo-atributo">
-
-                    <label for="modelo">
-                        MODELO
-                    </label>
-
-                    <input
-                        type="text"
-                        id="modelo"
-                        placeholder="Ej: CFI-1215A"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- TIPO -->
-
-                <div class="campo-atributo">
-
-                    <label for="tipoProducto">
-                        TIPO DE PRODUCTO
-                    </label>
-
-                    <input
-                        type="text"
-                        id="tipoProducto"
-                        placeholder="Ej: PLAYSTATION 5"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- COLOR -->
-
-                <div class="campo-atributo">
-
-                    <label for="color">
-                        COLOR / VARIANTE
-                    </label>
-
-                    <input
-                        type="text"
-                        id="color"
-                        placeholder="Ej: BLANCO"
-                        required
-                    >
-
-                </div>
-
-            </div>
-
-
-
-            <!-- INFORMACIÓN DE LA FUENTE -->
-
-            <div
-                id="fuenteResultado"
-                style="
-                    margin-top:18px;
-                    padding:12px;
-                    border-radius:8px;
-                    background:rgba(255,255,255,.04);
-                    display:none;
-                    font-size:13px;
-                "
-            ></div>
-
-
-
-            <!-- BOTÓN GUARDAR -->
-
-            <div class="acciones-form">
-
-                <button
-                    type="submit"
-                    class="btn-exito btn-guardar"
-                    id="btnGuardar"
-                >
-
-                    🖫 GUARDAR EN LA NUBE
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </section>
-
-
-
-    <!-- ==========================================================
-         PASO 3 - DESCRIPCIÓN ORIGINAL
-         ========================================================== -->
-
-    <section
-        class="bloque-paso"
-        id="bloqueDescripcionOriginal"
-        style="display:none;"
-    >
-
-        <div class="encabezado-paso">
-
-            <span class="num-paso">3</span>
-
-            <h2>
-                DESCRIPCIÓN ORIGINAL
-            </h2>
-
-        </div>
-
 
         <div
-            style="
-                margin-top:10px;
-                margin-bottom:10px;
-                font-size:13px;
-                opacity:.75;
-            "
-        >
-            Información obtenida directamente de la fuente.
-            El sistema utilizará este contenido para identificar
-            los atributos del producto.
+          id="tipoBusqueda"
+          style="margin-top:10px;font-size:13px;opacity:.75;">
+
+          El sistema detectará automáticamente si
+          es EAN, UPC, modelo o referencia.
+
         </div>
 
-
-        <textarea
-            id="descripcionOriginal"
-            readonly
-            rows="12"
-            placeholder="Aquí aparecerá la descripción original encontrada..."
-            style="
-                width:100%;
-                box-sizing:border-box;
-                resize:vertical;
-                padding:14px;
-                border-radius:8px;
-                border:1px solid rgba(255,255,255,.12);
-                background:rgba(0,0,0,.20);
-                color:inherit;
-                font-family:inherit;
-                font-size:13px;
-                line-height:1.5;
-            "
-        ></textarea>
-
+      </form>
     </section>
 
+    <!-- AVISOS -->
 
+    <div
+      id="panelAviso"
+      class="panel-aviso oculto"
+      role="alert"
+      aria-live="assertive">
 
-    <!-- ==========================================================
-         PASO 4 - DESCRIPCIÓN
-         ========================================================== -->
+      <span id="textoAviso"></span>
+
+    </div>
+
+    <!-- PASO 2 -->
+
+    <section class="bloque-paso">
+
+      <div class="encabezado-paso">
+        <span class="num-paso">2</span>
+        <h2>ATRIBUTOS DEL PRODUCTO</h2>
+      </div>
+
+      <form
+        id="formProducto"
+        autocomplete="off">
+
+        <div class="grid-atributos">
+
+          <div class="campo-atributo">
+            <label for="marca">MARCA</label>
+
+            <input
+              type="text"
+              id="marca"
+              placeholder="Ej: SONY"
+              required>
+          </div>
+
+          <div class="campo-atributo">
+            <label for="modelo">MODELO</label>
+
+            <input
+              type="text"
+              id="modelo"
+              placeholder="Ej: CFI-1215A"
+              required>
+          </div>
+
+          <div class="campo-atributo">
+            <label for="tipoProducto">
+              TIPO DE PRODUCTO
+            </label>
+
+            <input
+              type="text"
+              id="tipoProducto"
+              placeholder="Ej: PLAYSTATION 5"
+              required>
+          </div>
+
+          <div class="campo-atributo">
+            <label for="color">
+              COLOR / VARIANTE
+            </label>
+
+            <input
+              type="text"
+              id="color"
+              placeholder="Ej: BLANCO"
+              required>
+          </div>
+
+        </div>
+
+        <div
+          id="fuenteResultado"
+          style="margin-top:18px;padding:12px;border-radius:8px;background:rgba(120,120,120,.06);display:none;font-size:13px;">
+        </div>
+
+        <div class="acciones-form">
+          <button
+            type="submit"
+            class="btn-exito btn-guardar"
+            id="btnGuardar">
+            💾 GUARDAR EN LA NUBE
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- PASO 3 -->
 
     <section
-        class="bloque-paso bloque-resultado"
-    >
+      class="bloque-paso"
+      id="bloqueDescripcionOriginal"
+      style="display:none;">
 
-        <div class="encabezado-paso">
+      <div class="encabezado-paso">
+        <span class="num-paso">3</span>
+        <h2>DESCRIPCIÓN ORIGINAL</h2>
+      </div>
 
-            <span class="num-paso">4</span>
+      <p class="subtitulo">
+        Información obtenida directamente de la fuente.
+        El sistema utiliza este contenido para identificar
+        los atributos del producto.
+      </p>
 
-            <h2>
-                DESCRIPCIÓN FORMATEADA FINAL
-            </h2>
-
-        </div>
-
-
-        <div class="resultado-group">
-
-            <input
-                type="text"
-                id="resultadoDescripcion"
-                placeholder="[MARCA] [MODELO] [PRODUCTO] [COLOR]"
-                readonly
-            >
-
-
-            <button
-                type="button"
-                id="btnCopiar"
-                class="btn-copiar"
-                disabled
-            >
-
-                📋 COPIAR
-
-            </button>
-
-        </div>
+      <textarea
+        id="descripcionOriginal"
+        readonly
+        rows="12"
+        placeholder="Aquí aparecerá la descripción original encontrada..."
+        style="width:100%;resize:vertical;padding:14px;font-size:13px;line-height:1.5;">
+      </textarea>
 
     </section>
 
-</div>
+    <!-- PASO 4 -->
 
+    <section class="bloque-paso bloque-resultado">
 
+      <div class="encabezado-paso">
+        <span class="num-paso">4</span>
 
-<!-- FOOTER -->
+        <h2>
+          DESCRIPCIÓN FORMATEADA FINAL
+        </h2>
+      </div>
 
-<footer>
+      <div class="resultado-group">
 
+        <input
+          type="text"
+          id="resultadoDescripcion"
+          placeholder="[MARCA] [MODELO] [PRODUCTO] [COLOR]"
+          readonly>
+
+        <button
+          type="button"
+          id="btnCopiar"
+          class="btn-copiar"
+          disabled>
+          📋 COPIAR
+        </button>
+
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
     <div class="desarrollado-by">
-        Desarrollado by: Ivan Frutos
+      Desarrollado by: Ivan Frutos
     </div>
+  </footer>
 
+  <!-- Librerías originales de Cadastro -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
-    <div class="panel-colores">
-
-        <div class="control-color">
-
-            <label for="pickerFondo">
-                Fondo:
-            </label>
-
-            <input
-                type="color"
-                id="pickerFondo"
-                value="#0b0b0d"
-            >
-
-        </div>
-
-
-        <div class="control-color">
-
-            <label for="pickerPrincipal">
-                Acento:
-            </label>
-
-            <input
-                type="color"
-                id="pickerPrincipal"
-                value="#dc2626"
-            >
-
-        </div>
-
-    </div>
-
-</footer>
-
-
-
-<!-- ==========================================================
-     FIREBASE
-     ========================================================== -->
-
-<script src="temas.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-
-<!-- APP -->
-
-<script src="cadastro.js"></script>
+  <script src="cadastro.js"></script>
 
 </body>
 </html>
