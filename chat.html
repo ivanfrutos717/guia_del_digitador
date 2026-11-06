@@ -169,8 +169,16 @@
     }
   </style>
 
+  <!-- TEMA GLOBAL -->
   <link rel="stylesheet" href="tema-global.css?v=1">
   <script defer src="tema-global.js?v=1"></script>
+
+  <!-- SESIONES INDEPENDIENTES POR PESTAÑA -->
+  <script src="sesion.js?v=2"></script>
+
+  <script>
+    GuiaSesion.verificarSesion();
+  </script>
 </head>
 
 <body>
@@ -244,16 +252,26 @@
   </main>
 
   <script>
+    'use strict';
+
+    // =====================================
+    // OBTENER USUARIO DE ESTA PESTAÑA
+    // =====================================
+
     const usuarioGuardado =
-      localStorage.getItem('usuarioActivo');
+      GuiaSesion.obtenerUsuario();
 
     if (
       !usuarioGuardado ||
       !usuarioGuardado.trim()
     ) {
-      location.replace('index.html');
+      window.location.replace('index.html');
 
     } else {
+
+      // =====================================
+      // PREPARAR NOMBRE DEL USUARIO
+      // =====================================
 
       const nombre = usuarioGuardado
         .replace(/["'<>]/g, '')
@@ -264,6 +282,10 @@
         'nombreUsuario'
       ).textContent = nombre;
 
+      // =====================================
+      // CONFIGURAR SALA DEL CHAT
+      // =====================================
+
       const sala =
         document.getElementById('tlkio');
 
@@ -272,10 +294,13 @@
         nombre
       );
 
-      // CSS personalizado dentro del
-      // chat externo de tlk.io.
-      // Funciona con la URL publicada
-      // tanto en GitHub Pages como Vercel.
+      // =====================================
+      // CSS PERSONALIZADO DEL CHAT
+      // =====================================
+
+      // Conservamos el CSS original.
+      // Se carga desde la URL publicada
+      // en GitHub Pages o Vercel.
 
       sala.setAttribute(
         'data-custom-css',
@@ -285,7 +310,9 @@
         ).href
       );
 
-      // CARGAR CHAT
+      // =====================================
+      // CARGAR CHAT EN VIVO
+      // =====================================
 
       const script =
         document.createElement('script');
