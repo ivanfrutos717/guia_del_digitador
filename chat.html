@@ -1,217 +1,176 @@
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Chat en Vivo | Guía del Digitador</title>
 
   <style>
     :root {
-      --fondo: #0b0b0d;
-      --panel: #17171b;
-      --rojo: #dc2626;
-      --texto: #f5f5f5;
-      --borde: #35353d;
-      --suave: #a1a1aa;
+      --fondo:#0b0b0d;
+      --panel:#17171b;
+      --rojo:#dc2626;
+      --texto:#f5f5f5;
+      --borde:#35353d;
+      --suave:#a1a1aa;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing:border-box; }
 
     body {
-      margin: 0;
-      background: var(--fondo);
-      color: var(--texto);
-      font-family: Arial, sans-serif;
+      margin:0;
+      background:var(--fondo);
+      color:var(--texto);
+      font-family:Arial,sans-serif;
     }
 
     .contenedor {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px;
+      max-width:1100px;
+      margin:auto;
+      padding:20px;
     }
 
     .encabezado {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      margin-bottom:20px;
     }
 
-    h1 {
-      font-size: 26px;
-      margin: 0;
-    }
+    h1 { font-size:26px; margin:0; }
 
     .subtitulo {
-      font-size: 13px;
-      color: var(--suave);
-      margin-top: 7px;
+      font-size:13px;
+      color:var(--suave);
+      margin-top:7px;
     }
 
     .volver {
-      background: #28282e;
-      color: white;
-      text-decoration: none;
-      padding: 11px 17px;
-      border: 1px solid var(--borde);
-      border-radius: 9px;
-      font-weight: bold;
-      white-space: nowrap;
+      background:#28282e;
+      color:white;
+      text-decoration:none;
+      padding:11px 17px;
+      border:1px solid var(--borde);
+      border-radius:9px;
+      font-weight:bold;
+      white-space:nowrap;
     }
 
     .panel {
-      background: var(--panel);
-      border: 1px solid var(--borde);
-      border-radius: 15px;
-      overflow: hidden;
+      background:var(--panel);
+      border:1px solid var(--borde);
+      border-radius:15px;
+      overflow:hidden;
     }
 
     .barra {
-      padding: 17px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid var(--borde);
+      padding:17px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      border-bottom:1px solid var(--borde);
     }
 
     .grupo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display:flex;
+      align-items:center;
+      gap:12px;
     }
 
     .icono {
-      background: var(--rojo);
-      padding: 12px;
-      border-radius: 12px;
-      font-size: 23px;
+      background:var(--rojo);
+      padding:12px;
+      border-radius:12px;
+      font-size:23px;
     }
 
     .nombre-grupo {
-      font-size: 17px;
-      font-weight: bold;
+      font-size:17px;
+      font-weight:bold;
     }
 
     .estado {
-      color: #4ade80;
-      font-size: 12px;
-      margin-top: 5px;
+      color:#4ade80;
+      font-size:12px;
+      margin-top:5px;
     }
 
     .usuario {
-      color: var(--suave);
-      font-size: 13px;
-      text-align: right;
+      color:var(--suave);
+      font-size:13px;
+      text-align:right;
     }
 
     .usuario strong {
-      display: block;
-      color: white;
-      font-size: 15px;
+      display:block;
+      color:white;
+      font-size:15px;
     }
 
     #tlkio {
-      width: 100%;
-      height: min(75vh, 750px);
-      min-height: 450px;
-      background: #18181d;
+      width:100%;
+      height:min(75vh,750px);
+      min-height:450px;
+      background:#18181d;
     }
 
     .pie {
-      padding: 12px 18px;
-      border-top: 1px solid var(--borde);
-      color: var(--suave);
-      font-size: 12px;
-      text-align: center;
+      padding:12px 18px;
+      border-top:1px solid var(--borde);
+      color:var(--suave);
+      font-size:12px;
+      text-align:center;
     }
 
-    .pie a {
-      color: #f87171;
-    }
+    .pie a { color:var(--rojo); }
 
-    .aviso {
-      color: #fbbf24;
-      font-size: 13px;
-      text-align: center;
-    }
-
-    @media (max-width: 600px) {
-      .contenedor {
-        padding: 10px;
-      }
-
-      h1 {
-        font-size: 20px;
-      }
-
-      .barra {
-        padding: 12px;
-      }
-
-      .usuario {
-        font-size: 11px;
-      }
-
-      #tlkio {
-        height: 75dvh;
-        min-height: 400px;
-      }
+    @media(max-width:600px) {
+      .contenedor { padding:10px; }
+      h1 { font-size:20px; }
+      .barra { padding:12px; }
+      .usuario { font-size:11px; }
+      #tlkio { height:75dvh; min-height:400px; }
     }
   </style>
+
+  <!-- APARIENCIA GLOBAL -->
+  <link rel="stylesheet" href="tema-global.css?v=1">
+  <script defer src="tema-global.js?v=1"></script>
 </head>
 
 <body>
-
   <main class="contenedor">
 
     <header class="encabezado">
       <div>
         <h1>Chat en Vivo</h1>
-        <p class="subtitulo">
-          GUÍA DEL DIGITADOR
-        </p>
+        <p class="subtitulo">GUÍA DEL DIGITADOR</p>
       </div>
 
-      <a href="menu.html" class="volver">
-        ← Menú
-      </a>
+      <a href="menu.html" class="volver">← Menú</a>
     </header>
 
     <section class="panel">
 
       <div class="barra">
-
         <div class="grupo">
+
           <div class="icono">💬</div>
 
           <div>
-            <div class="nombre-grupo">
-              Chat General
-            </div>
-
-            <div class="estado">
-              ● Sala compartida
-            </div>
+            <div class="nombre-grupo">Chat General</div>
+            <div class="estado">● Sala compartida</div>
           </div>
         </div>
 
         <div class="usuario">
           Conectado como
-          <strong id="nombreUsuario">
-            Cargando...
-          </strong>
+          <strong id="nombreUsuario">Cargando...</strong>
         </div>
-
       </div>
-
-      <!-- SALA DE CHAT -->
 
       <div
         id="tlkio"
@@ -220,120 +179,66 @@
       </div>
 
       <div class="pie">
-        <span id="estadoChat">
-          Conectando al chat...
-        </span>
+        <span id="estadoChat">Conectando al chat...</span>
 
         <p>
-          Si el chat no aparece,
+          Si no aparece,
           <a
             href="https://tlk.io/guia_digitador_equipo_717_2026"
             target="_blank"
             rel="noopener noreferrer">
-            abrir la sala directamente
+            abrí la sala directamente
           </a>.
         </p>
       </div>
-
     </section>
-
   </main>
 
   <script>
-    // ====================================
-    // RECUPERAR USUARIO DEL SISTEMA
-    // ====================================
-
     const usuarioGuardado =
-      localStorage.getItem("usuarioActivo");
-
-    // Si no inició sesión, regresar
-    // al formulario original.
+      localStorage.getItem('usuarioActivo');
 
     if (
       !usuarioGuardado ||
       !usuarioGuardado.trim()
     ) {
-      window.location.replace("index.html");
+      location.replace('index.html');
 
     } else {
 
-      // ====================================
-      // NOMBRE DE USUARIO
-      // ====================================
-
       const nombre = usuarioGuardado
-        .replace(/["'<>]/g, "")
+        .replace(/["'<>]/g,'')
         .trim()
-        .slice(0, 30);
+        .slice(0,30);
 
       document.getElementById(
-        "nombreUsuario"
+        'nombreUsuario'
       ).textContent = nombre;
 
-      // ====================================
-      // COLORES DEL SISTEMA
-      // ====================================
+      const sala = document.getElementById('tlkio');
 
-      const fondo =
-        localStorage.getItem("colorFondo");
+      sala.setAttribute('data-nickname',nombre);
 
-      const acento =
-        localStorage.getItem("colorAcento");
-
-      if (/^#[0-9a-f]{6}$/i.test(fondo || "")) {
-        document.documentElement.style
-          .setProperty("--fondo", fondo);
-      }
-
-      if (/^#[0-9a-f]{6}$/i.test(acento || "")) {
-        document.documentElement.style
-          .setProperty("--rojo", acento);
-      }
-
-      // ====================================
-      // INICIAR CHAT AUTOMÁTICAMENTE
-      // ====================================
-
-      const sala =
-        document.getElementById("tlkio");
-
-      // Utiliza el nombre del usuario
-      // que inició sesión en la Guía.
-
-      sala.setAttribute(
-        "data-nickname",
-        nombre
-      );
-
-      // Se carga después de configurar
-      // el nombre del participante.
-
-      const script =
-        document.createElement("script");
-
-      script.src =
-        "https://tlk.io/embed.js";
-
+      const script = document.createElement('script');
+      script.src = 'https://tlk.io/embed.js';
       script.async = true;
 
-      script.onload = function() {
+      script.onload = () => {
         document.getElementById(
-          "estadoChat"
+          'estadoChat'
         ).textContent =
-          "Chat cargado. Podés enviar mensajes.";
+          'Chat cargado. Podés enviar mensajes.';
       };
 
-      script.onerror = function() {
+      script.onerror = () => {
         document.getElementById(
-          "estadoChat"
+          'estadoChat'
         ).textContent =
-          "No se pudo cargar el chat integrado. Usá el enlace directo.";
+          'No se pudo cargar el chat integrado. Usá el enlace directo.';
       };
 
       document.body.appendChild(script);
     }
   </script>
-
 </body>
 </html>
