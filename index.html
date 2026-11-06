@@ -4,15 +4,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Iniciar Sesión - Guía del Digitador</title>
 
+  <!-- ESTILOS ORIGINALES -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- SISTEMA GLOBAL DE TEMAS -->
   <link rel="stylesheet" href="tema-global.css?v=1">
   <script defer src="tema-global.js?v=1"></script>
 </head>
+
 <body>
 
+  <!-- FORMULARIO DE INICIO DE SESIÓN -->
   <form id="formLogin">
+
     <h1>GUÍA DEL DIGITADOR (BETA 1)</h1>
     <h2>Ingreso al Sistema</h2>
 
@@ -21,26 +28,37 @@
       id="usuario"
       placeholder="USUARIO"
       autocomplete="username"
-      required>
+      required
+    >
 
     <input
       type="password"
       id="clave"
       placeholder="CONTRASEÑA"
       autocomplete="current-password"
-      required>
+      required
+    >
 
-    <button type="submit">Entrar</button>
+    <button type="submit">
+      Entrar
+    </button>
 
     <p id="mensajeError" aria-live="polite"></p>
+
   </form>
 
+  <!-- PIE DE PÁGINA -->
   <footer>
     <div class="desarrollado-by">
       Desarrollado by: Ivan Frutos
     </div>
   </footer>
 
-  <script src="login.js"></script>
+  <!-- CONTROL DE SESIONES INDEPENDIENTES -->
+  <script src="sesion.js?v=2"></script>
+
+  <!-- VALIDACIÓN DE USUARIOS -->
+  <script src="login.js?v=2"></script>
+
 </body>
 </html>
