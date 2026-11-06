@@ -1,145 +1,126 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal - Guía del Digitador</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú Principal - Guía del Digitador</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tema-global.css?v=1">
+  <script defer src="tema-global.js?v=1"></script>
 </head>
 <body>
 
-    <div class="menu-container">
-        <h1>GUÍA DEL DIGITADOR</h1>
-        
-        <!-- Saludo -->
-        <h2 id="saludoUsuario" class="saludo-degradado">
-            ¡Bienvenido!
-        </h2>
+  <div class="menu-container">
 
-        <div class="menu-grid">
-            <!-- TARJETA 1: CALCULADORA -->
-            <a href="calculadora.html" class="opcion-card">
-                <h3>Calculadora de Vencimientos</h3>
-                <p>Cálculo de fechas límite de pago para facturas.</p>
-                <span class="estado activo">Disponible</span>
-            </a>
+    <h1>GUÍA DEL DIGITADOR</h1>
 
-            <!-- TARJETA 2: CADASTRO AUTOMÁTICO -->
-            <a href="cadastro.html" class="opcion-card">
-                <h3>Cadastro Automático</h3>
-                <p>Escaneo EAN, consulta con IA y crea descripciones para productos (en desarrollo).</p>
-                <span class="estado activo">Disponible</span>
-            </a>
+    <h2 id="saludoUsuario" class="saludo-degradado">
+      ¡Bienvenido!
+    </h2>
 
-<!-- TARJETA 4: CHAT EN VIVO -->
-<a href="chat.html" class="opcion-card">
-  <h3>Chat en Vivo</h3>
-  <p>
-    Conversá en tiempo real con tus
-    compañeros de digitación.
-  </p>
-  <span class="estado activo">Disponible</span>
-</a>
+    <div class="menu-grid">
 
-           
-<!-- TARJETA 3: DESCUENTOS -->
-<a href="descuentos.html" class="opcion-card">
-  <h3>Calculadora de Descuentos</h3>
-  <p>
-    Calcula descuentos manualmente y procesa
-    facturas mediante reconocimiento de texto.
-  </p>
-  <span class="estado activo">Disponible</span>
-</a>
+      <!-- VENCIMIENTOS -->
+      <a href="calculadora.html" class="opcion-card">
+        <h3>Calculadora de Vencimientos</h3>
+        <p>
+          Cálculo de fechas límite de pago
+          para facturas.
+        </p>
+        <span class="estado activo">Disponible</span>
+      </a>
 
-        </div>
+      <!-- CADASTRO -->
+      <a href="cadastro.html" class="opcion-card">
+        <h3>Cadastro Automático</h3>
+        <p>
+          Escaneo EAN, consulta con IA y
+          creación de descripciones para productos.
+        </p>
+        <span class="estado activo">Disponible</span>
+      </a>
 
-        <a href="index.html" class="btn-salir" id="btnCerrarSesion">Cerrar Sesión</a>
+      <!-- DESCUENTOS -->
+      <a href="descuentos.html" class="opcion-card">
+        <h3>Calculadora de Descuentos</h3>
+        <p>
+          Descuentos manuales y lectura
+          automática de facturas.
+        </p>
+        <span class="estado activo">Disponible</span>
+      </a>
+
+      <!-- CHAT -->
+      <a href="chat.html" class="opcion-card">
+        <h3>Chat en Vivo</h3>
+        <p>
+          Conversá con tus compañeros
+          de digitación.
+        </p>
+        <span class="estado activo">Disponible</span>
+      </a>
+
     </div>
 
-    <footer>
-        <div class="desarrollado-by">Desarrollado by: Ivan Frutos</div>
-        
-        <div class="panel-colores">
-            <div class="control-color">
-                <label for="pickerFondo">Fondo:</label>
-                <input type="color" id="pickerFondo" value="#0b0b0d">
-            </div>
-            <div class="control-color">
-                <label for="pickerPrincipal">Acento:</label>
-                <input type="color" id="pickerPrincipal" value="#dc2626">
-            </div>
-        </div>
-    </footer>
+    <a
+      href="index.html"
+      class="btn-salir"
+      id="btnCerrarSesion">
+      Cerrar Sesión
+    </a>
 
-    <script src="temas.js"></script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. OBTENER Y MOSTRAR NOMBRE DE USUARIO
-            const saludoElemento = document.getElementById('saludoUsuario');
-            const usuarioGuardado = localStorage.getItem('usuarioActivo');
+  </div>
 
-            if (usuarioGuardado && usuarioGuardado.trim() !== '') {
-                const nombreLimpio = usuarioGuardado.replace(/["']/g, '');
-                const nombreFormateado = nombreLimpio.charAt(0).toUpperCase() + nombreLimpio.slice(1).toLowerCase();
-                saludoElemento.textContent = `¡Bienvenido, ${nombreFormateado}!`;
-            } else {
-                saludoElemento.textContent = '¡Bienvenido!';
-            }
+  <footer>
+    <div class="desarrollado-by">
+      Desarrollado by: Ivan Frutos
+    </div>
+  </footer>
 
-            // Mantiene el saludo visible 3 segundos y luego se oculta
-            setTimeout(function() {
-                if (saludoElemento) {
-                    saludoElemento.classList.add('saludo-oculto');
-                    setTimeout(function() {
-                        saludoElemento.style.display = 'none';
-                    }, 1000);
-                }
-            }, 3000);
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-            // 2. PERSONALIZACIÓN DE COLORES DE ACENTO Y FONDO
-            const pickerFondo = document.getElementById('pickerFondo');
-            const pickerPrincipal = document.getElementById('pickerPrincipal');
+      const saludo = document.getElementById(
+        'saludoUsuario'
+      );
 
-            const fondoGuardado = localStorage.getItem('colorFondo') || '#0b0b0d';
-            const acentoGuardado = localStorage.getItem('colorAcento') || '#dc2626';
+      const usuario = localStorage.getItem(
+        'usuarioActivo'
+      );
 
-            aplicarColorFondo(fondoGuardado);
-            aplicarColorAcento(acentoGuardado);
+      if (usuario && usuario.trim()) {
+        const limpio = usuario
+          .replace(/["']/g, '')
+          .trim();
 
-            if (pickerFondo) {
-                pickerFondo.value = fondoGuardado;
-                pickerFondo.addEventListener('input', (e) => aplicarColorFondo(e.target.value));
-            }
+        const nombre =
+          limpio.charAt(0).toUpperCase() +
+          limpio.slice(1).toLowerCase();
 
-            if (pickerPrincipal) {
-                pickerPrincipal.value = acentoGuardado;
-                pickerPrincipal.addEventListener('input', (e) => aplicarColorAcento(e.target.value));
-            }
+        saludo.textContent = `¡Bienvenido, ${nombre}!`;
+      }
 
-            function aplicarColorFondo(color) {
-                document.documentElement.style.setProperty('--color-fondo', color);
-                document.documentElement.style.setProperty('--bg-color', color);
-                document.body.style.backgroundColor = color;
-                localStorage.setItem('colorFondo', color);
-            }
+      setTimeout(() => {
+        if (!saludo) return;
 
-            function aplicarColorAcento(color) {
-                document.documentElement.style.setProperty('--color-acento', color);
-                document.documentElement.style.setProperty('--color-principal', color);
-                document.documentElement.style.setProperty('--accent-color', color);
-                localStorage.setItem('colorAcento', color);
-            }
+        saludo.classList.add('saludo-oculto');
 
-            // 3. BOTÓN DE SALIR
-            const btnSalir = document.getElementById('btnCerrarSesion');
-            if (btnSalir) {
-                btnSalir.addEventListener('click', function() {
-                    localStorage.removeItem('usuarioActivo');
-                });
-            }
-        });
-    </script>
+        setTimeout(() => {
+          saludo.style.display = 'none';
+        }, 1000);
+
+      }, 3000);
+
+      document.getElementById(
+        'btnCerrarSesion'
+      ).addEventListener('click', () => {
+        localStorage.removeItem('usuarioActivo');
+      });
+
+    });
+  </script>
+
 </body>
 </html>
