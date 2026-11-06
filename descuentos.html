@@ -6,92 +6,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calculadora de Descuentos | Guía del Digitador</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js" defer></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     :root {
       --fondo: #0b0b0d;
+      --panel: #17171b;
       --rojo: #dc2626;
-      --panel: #151518;
-      --borde: #333339;
+      --borde: #35353d;
       --texto: #f5f5f6;
       --suave: #a1a1aa;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
+      margin: 0;
       background: var(--fondo);
       color: var(--texto);
       font: 15px/1.5 Arial, sans-serif;
-      margin: 0;
     }
 
-    .contenedor {
-      max-width: 1190px;
-      margin: 0 auto;
-      padding: 22px 16px 45px;
+    main {
+      max-width: 1180px;
+      margin: auto;
+      padding: 24px 16px 50px;
     }
 
-    .encabezado {
+    header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
+      gap: 14px;
       margin-bottom: 20px;
     }
 
     h1 {
-      font-size: clamp(22px, 3vw, 30px);
+      font-size: clamp(22px, 3vw, 29px);
       margin: 0;
     }
 
     h2 {
-      font-size: 18px;
-      margin: 0 0 15px;
+      font-size: 19px;
+      margin: 0 0 14px;
     }
 
-    .subtitulo {
+    p {
+      margin: 10px 0;
+    }
+
+    .subtitulo,
+    .nota {
       color: var(--suave);
-      margin: 5px 0 0;
+      font-size: 13px;
     }
 
-    .volver {
-      color: #fff;
-      text-decoration: none;
-      border: 1px solid var(--borde);
-      padding: 10px 13px;
-      border-radius: 9px;
-      white-space: nowrap;
+    .advertencia {
+      color: #fbbf24;
     }
 
-    .pestanas {
-      display: flex;
-      gap: 8px;
-      padding: 6px;
-      border: 1px solid var(--borde);
-      background: var(--panel);
-      border-radius: 12px;
-      margin-bottom: 20px;
+    .error {
+      color: #f87171;
     }
 
-    .pestanas button {
-      flex: 1;
-      background: transparent;
-      border: 0;
-      color: var(--suave);
-      font: inherit;
-      font-weight: bold;
-      padding: 13px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .pestanas button.activa {
-      background: var(--rojo);
-      color: #fff;
+    .oculto {
+      display: none !important;
     }
 
     .panel {
@@ -102,7 +85,32 @@
       margin-bottom: 17px;
     }
 
-    .oculto { display: none !important; }
+    .pestanas {
+      display: flex;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid var(--borde);
+      margin-bottom: 20px;
+    }
+
+    .pestanas button {
+      flex: 1;
+      border: 0;
+      border-radius: 8px;
+      padding: 13px 9px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--suave);
+      font: inherit;
+      font-weight: bold;
+    }
+
+    .pestanas button.activa {
+      background: var(--rojo);
+      color: white;
+    }
 
     .rejilla {
       display: grid;
@@ -112,19 +120,21 @@
 
     label {
       display: block;
-      color: #d2d2d8;
       font-size: 13px;
+      color: #dedee3;
       font-weight: bold;
       margin-bottom: 6px;
     }
 
-    input, select, textarea {
-      background: #09090b;
-      border: 1px solid #44444b;
-      color: var(--texto);
-      border-radius: 8px;
-      padding: 11px;
+    input,
+    select,
+    textarea {
       width: 100%;
+      padding: 11px;
+      border-radius: 8px;
+      border: 1px solid #494952;
+      color: var(--texto);
+      background: #09090b;
       font: inherit;
     }
 
@@ -135,22 +145,27 @@
       outline-offset: 1px;
     }
 
-    input:disabled { opacity: .7; }
-
-    .campo { min-width: 0; }
-
-    .boton {
-      background: var(--rojo);
-      border: 1px solid var(--rojo);
-      border-radius: 9px;
-      color: #fff;
-      cursor: pointer;
-      font: inherit;
-      font-weight: bold;
-      padding: 11px 15px;
+    input:disabled {
+      opacity: .75;
+      background: #26262b;
     }
 
-    .boton.secundario {
+    .boton,
+    .volver {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--rojo);
+      border: 1px solid var(--rojo);
+      color: white;
+      border-radius: 9px;
+      padding: 11px 15px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .boton.secundario,
+    .volver {
       background: #303038;
       border-color: #474752;
     }
@@ -167,145 +182,173 @@
       margin-top: 15px;
     }
 
-    .resultados {
+    .resumen {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 12px;
     }
 
-    .resultado {
+    .caja {
+      background: #0c0c0f;
       border: 1px solid var(--borde);
-      background: #0b0b0d;
-      border-radius: 11px;
-      padding: 16px;
+      border-radius: 10px;
+      padding: 15px;
     }
 
-    .resultado small { color: var(--suave); }
-
-    .resultado strong {
+    .caja small {
       display: block;
-      font-size: clamp(18px, 2.8vw, 26px);
+      color: var(--suave);
+    }
+
+    .caja strong {
+      display: block;
+      font-size: clamp(18px, 2.5vw, 26px);
       margin-top: 7px;
       overflow-wrap: anywhere;
     }
 
-    .verde { color: #4ade80; }
-
-    .nota {
-      font-size: 13px;
-      color: var(--suave);
-      margin: 10px 0;
+    .verde {
+      color: #4ade80;
     }
-
-    .alerta { color: #fbbf24; }
-    .error { color: #f87171; }
 
     .tabla {
       overflow-x: auto;
       border: 1px solid var(--borde);
-      border-radius: 9px;
+      border-radius: 10px;
     }
 
     table {
       width: 100%;
+      min-width: 780px;
       border-collapse: collapse;
-      min-width: 1080px;
     }
 
-    td, th {
-      padding: 8px;
-      border-bottom: 1px solid var(--borde);
+    th,
+    td {
       text-align: left;
-      vertical-align: middle;
+      padding: 9px;
+      border-bottom: 1px solid var(--borde);
     }
 
     th {
-      font-size: 12px;
-      color: #d4d4d8;
-      background: #222228;
+      background: #25252c;
+      color: #ddd;
+      font-size: 13px;
     }
 
     td input {
-      padding: 8px;
-      min-width: 75px;
+      padding: 9px;
+      min-width: 80px;
     }
 
-    td .desc { min-width: 180px; }
-    td .dato { white-space: nowrap; }
-    td button { padding: 7px 10px; }
+    .codigo {
+      min-width: 115px;
+    }
+
+    .descripcion {
+      min-width: 290px;
+    }
+
+    .numero {
+      min-width: 95px;
+    }
+
+    .numero.sospechoso {
+      border-color: #fbbf24;
+    }
+
+    .fila-accion {
+      background: #303038;
+      border: 1px solid #474752;
+      color: white;
+      border-radius: 8px;
+      padding: 8px 11px;
+      cursor: pointer;
+    }
 
     .archivo {
-      border: 1px dashed #666673;
+      border: 1px dashed #777;
       padding: 15px;
     }
 
     .vista {
       max-width: 100%;
-      max-height: 300px;
+      max-height: 310px;
       object-fit: contain;
       display: block;
       margin: 15px auto;
       border-radius: 8px;
     }
 
-    .confirmar {
+    .confirmacion {
       display: flex;
-      gap: 10px;
       align-items: flex-start;
-      margin: 14px 0;
-      color: #e4e4e7;
-      font-size: 14px;
+      gap: 10px;
+      margin: 17px 0;
     }
 
-    .confirmar input {
+    .confirmacion input {
       width: 18px;
-      margin: 3px 0 0;
       flex: none;
+      margin-top: 4px;
     }
-
-    details { margin-top: 15px; }
 
     textarea {
-      min-height: 130px;
-      margin-top: 10px;
+      min-height: 150px;
       resize: vertical;
     }
 
-    @media (max-width: 680px) {
-      .encabezado { align-items: flex-start; }
-      .rejilla, .resultados { grid-template-columns: 1fr; }
-      .panel { padding: 15px; }
-      h1 { font-size: 21px; }
+    details {
+      margin-top: 18px;
+    }
+
+    @media (max-width: 700px) {
+      .rejilla,
+      .resumen {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 15px;
+      }
+
+      header {
+        align-items: flex-start;
+      }
+
+      .pestanas button {
+        font-size: 13px;
+      }
     }
   </style>
 </head>
 
 <body>
-<main class="contenedor">
+<main>
 
-  <header class="encabezado">
+  <header>
     <div>
       <h1>Calculadora de Descuentos</h1>
       <p class="subtitulo">GUÍA DEL DIGITADOR</p>
     </div>
 
-    <a href="menu.html" class="volver">← Menú</a>
+    <a class="volver" href="menu.html">← Menú</a>
   </header>
+
+  <!-- MODALIDADES -->
 
   <nav class="pestanas" aria-label="Modo de calculadora">
     <button
+      type="button"
       id="tabManual"
       class="activa"
-      type="button"
-      aria-selected="true"
       onclick="mostrarModo('manual')">
       Calculadora manual
     </button>
 
     <button
-      id="tabAuto"
       type="button"
-      aria-selected="false"
+      id="tabAuto"
       onclick="mostrarModo('auto')">
       Calculadora automática
     </button>
@@ -314,111 +357,128 @@
   <!-- CALCULADORA MANUAL -->
 
   <section id="manual" class="panel">
+
     <h2>Descuento rápido</h2>
 
     <div class="rejilla">
-      <div class="campo">
+
+      <div>
         <label for="montoManual">Monto original</label>
         <input
           id="montoManual"
           inputmode="decimal"
-          placeholder="Ej.: 100.000"
-          value="100000">
+          value="100000"
+          placeholder="100.000">
       </div>
 
-      <div class="campo">
-        <label for="porcentajeManual">Descuento (%)</label>
+      <div>
+        <label for="porcentajeManual">
+          Porcentaje de descuento (%)
+        </label>
         <input
           id="porcentajeManual"
           inputmode="decimal"
-          placeholder="Ej.: 20"
-          value="20">
+          value="20"
+          placeholder="20">
       </div>
+
     </div>
 
-    <p id="errorManual" class="nota error" role="alert"></p>
+    <p id="errorManual" class="nota error"></p>
 
-    <div class="resultados">
-      <div class="resultado">
-        <small>Original</small>
-        <strong id="originalManual">100.000</strong>
+    <div class="resumen">
+
+      <div class="caja">
+        <small>Monto original</small>
+        <strong id="originalManual">—</strong>
       </div>
 
-      <div class="resultado">
-        <small>Descuento</small>
-        <strong id="rebajaManual">20.000</strong>
+      <div class="caja">
+        <small>Descuento aplicado</small>
+        <strong id="rebajaManual">—</strong>
       </div>
 
-      <div class="resultado">
+      <div class="caja">
         <small>Resultado final</small>
-        <strong class="verde" id="finalManual">80.000</strong>
+        <strong class="verde" id="finalManual">—</strong>
       </div>
+
     </div>
 
     <div class="acciones">
       <button
         class="boton"
         id="copiarManual"
+        type="button"
         onclick="copiarResultado()">
         Copiar resultado
       </button>
 
       <button
         class="boton secundario"
+        type="button"
         onclick="limpiarManual()">
         Limpiar
       </button>
     </div>
 
     <p class="nota">
-      Sin símbolos de moneda. Admite importes enteros
-      y con decimales.
+      Solo números, sin símbolos de moneda.
     </p>
+
   </section>
 
   <!-- CALCULADORA AUTOMÁTICA -->
 
   <div id="automatico" class="oculto">
 
+    <!-- CARGA DE FACTURA -->
+
     <section class="panel">
       <h2>1. Cargar factura</h2>
 
-      <label for="archivo">Imagen de la factura</label>
+      <label for="archivo">
+        Fotografía o imagen de la factura
+      </label>
 
       <input
-        id="archivo"
         class="archivo"
         type="file"
-        accept="image/png,image/jpeg,image/webp">
+        id="archivo"
+        accept="image/jpeg,image/png,image/webp">
 
       <img
         id="vistaFactura"
         class="vista oculto"
-        alt="Vista previa de la factura">
+        alt="Vista previa de factura">
 
       <div class="acciones">
         <button
-          class="boton"
           id="leerBtn"
+          class="boton"
+          type="button"
           onclick="leerFactura()">
           Leer factura automáticamente
         </button>
       </div>
-
-      <p class="nota">
-        Formatos: JPG, PNG y WebP.
-        El reconocimiento se realiza en tu navegador.
-      </p>
 
       <p
         id="estadoOCR"
         class="nota"
         role="status"
         aria-live="polite"></p>
+
+      <p class="nota">
+        Admite JPG, PNG y WebP. El OCR funciona
+        en el navegador. Revisá los datos:
+        no siempre reconoce correctamente los importes.
+      </p>
     </section>
 
+    <!-- DATOS DE FACTURA -->
+
     <section class="panel">
-      <h2>2. Datos reconocidos</h2>
+      <h2>2. Datos de la factura (opcionales)</h2>
 
       <div class="rejilla">
 
@@ -428,18 +488,24 @@
         </div>
 
         <div>
-          <label for="rucProveedor">RUC del proveedor</label>
+          <label for="rucProveedor">RUC proveedor</label>
           <input id="rucProveedor">
         </div>
 
         <div>
-          <label for="numeroFactura">Número de factura</label>
+          <label for="numeroFactura">
+            Número de factura
+          </label>
           <input id="numeroFactura">
         </div>
 
         <div>
-          <label for="fechaEmision">Fecha de emisión</label>
-          <input id="fechaEmision" placeholder="DD/MM/AAAA">
+          <label for="fechaEmision">
+            Fecha de emisión
+          </label>
+          <input
+            id="fechaEmision"
+            placeholder="DD/MM/AAAA">
         </div>
 
         <div>
@@ -448,76 +514,89 @@
         </div>
 
         <div>
-          <label for="rucCliente">RUC del cliente</label>
+          <label for="rucCliente">RUC cliente</label>
           <input id="rucCliente">
         </div>
 
         <div>
-          <label for="fechaVencimiento">Vencimiento</label>
-          <input id="fechaVencimiento" placeholder="DD/MM/AAAA">
+          <label for="fechaVencimiento">
+            Fecha de vencimiento
+          </label>
+          <input id="fechaVencimiento">
         </div>
 
         <div>
-          <label for="condicion">Condición de venta</label>
-          <input id="condicion" placeholder="Contado / Crédito">
+          <label for="condicion">
+            Condición de venta
+          </label>
+          <input id="condicion">
         </div>
 
         <div>
-          <label for="totalFactura">Total impreso en factura</label>
+          <label for="totalFactura">
+            Total impreso en factura
+          </label>
           <input
             id="totalFactura"
-            inputmode="decimal"
-            placeholder="Ej.: 12.791,40">
+            inputmode="decimal">
         </div>
 
       </div>
     </section>
 
+    <!-- DESCUENTOS -->
+
     <section class="panel">
-      <h2>3. Descuentos</h2>
+      <h2>3. Modalidad de descuento</h2>
 
       <div class="rejilla">
+
         <div>
-          <label for="modoDescuento">Modalidad</label>
+          <label for="modoDescuento">
+            Tipo de descuento
+          </label>
 
           <select id="modoDescuento">
             <option value="general">
-              General: mismo porcentaje para todos
+              General: el mismo porcentaje para todos
             </option>
 
             <option value="individual">
-              Individual: porcentaje por producto
+              Individual: un porcentaje por producto
             </option>
           </select>
         </div>
 
         <div id="campoGeneral">
           <label for="general">
-            Descuento general (%)
+            Porcentaje general (%)
           </label>
 
           <input
             id="general"
-            value="20"
-            inputmode="decimal">
+            inputmode="decimal"
+            value="10">
         </div>
+
       </div>
 
       <p class="nota">
-        El descuento original de la factura se interpreta
-        como un importe por unidad. Primero se resta del
-        precio unitario; después se aplica el nuevo
-        porcentaje de descuento.
+        El porcentaje se aplica al precio unitario
+        de cada producto y luego se multiplica por
+        la cantidad. No se toma la columna «Dto.»
+        impresa como porcentaje.
       </p>
     </section>
+
+    <!-- PRODUCTOS -->
 
     <section class="panel">
       <h2>4. Productos detectados</h2>
 
-      <p class="nota alerta">
-        El sistema intentará reconocer automáticamente
-        las columnas de productos. Revisá cantidades,
-        precios y descuentos antes de generar el PDF.
+      <p class="nota">
+        Solo son obligatorios
+        <b>cantidad, precio unitario y descuento a aplicar</b>.
+        Código y descripción son opcionales.
       </p>
 
       <div class="tabla">
@@ -525,14 +604,10 @@
           <thead>
             <tr>
               <th>Código</th>
-              <th>EAN</th>
               <th>Descripción</th>
-              <th>Cantidad</th>
-              <th>Precio unit.</th>
-              <th>Dto. original / unid.</th>
-              <th>Nuevo dto. %</th>
-              <th>Precio final / unid.</th>
-              <th>Importe final</th>
+              <th>Cantidad *</th>
+              <th>Precio unitario *</th>
+              <th>Descuento % *</th>
               <th></th>
             </tr>
           </thead>
@@ -542,77 +617,101 @@
       </div>
 
       <div class="acciones">
+
         <button
           class="boton secundario"
+          type="button"
           onclick="agregarFila()">
           + Agregar producto
         </button>
 
         <button
           class="boton secundario"
+          type="button"
           onclick="borrarFilas()">
           Vaciar productos
         </button>
+
       </div>
+
+      <p
+        id="advertenciaOCR"
+        class="nota advertencia"></p>
+
     </section>
 
-    <section class="panel">
-      <h2>5. Resumen y PDF</h2>
+    <!-- TOTALES -->
 
-      <div class="resultados">
-        <div class="resultado">
-          <small>Subtotal neto original</small>
+    <section class="panel">
+      <h2>5. Totales e informe PDF</h2>
+
+      <div class="resumen">
+
+        <div class="caja">
+          <small>Subtotal original</small>
           <strong id="subtotal">0,00</strong>
         </div>
 
-        <div class="resultado">
-          <small>Descuento nuevo</small>
+        <div class="caja">
+          <small>Descuento aplicado</small>
           <strong id="descuentoTotal">0,00</strong>
         </div>
 
-        <div class="resultado">
+        <div class="caja">
           <small>Total final</small>
-          <strong id="totalFinal" class="verde">0,00</strong>
+          <strong class="verde" id="totalFinal">0,00</strong>
         </div>
+
       </div>
 
-      <p id="avisoCalculo" class="nota" role="status"></p>
+      <p
+        id="avisoCalculo"
+        class="nota"
+        role="status"></p>
 
-      <label class="confirmar">
+      <label class="confirmacion">
         <input type="checkbox" id="revisado">
 
         <span>
-          Confirmo que revisé los datos y los importes
+          Revisé cantidades, precios y descuentos
           antes de generar el informe.
         </span>
       </label>
 
-      <div class="acciones">
-        <button class="boton" onclick="generarPDF()">
-          Generar informe PDF
-        </button>
-      </div>
+      <button
+        class="boton"
+        type="button"
+        onclick="generarPDF()">
+        Generar PDF
+      </button>
 
       <p class="nota">
-        El PDF es un informe de descuentos,
-        no reemplaza ni modifica la factura fiscal.
+        El PDF es un informe de cálculo;
+        no modifica ni reemplaza la factura fiscal.
       </p>
 
       <details>
-        <summary>Ver texto completo reconocido (OCR)</summary>
+        <summary>
+          Mostrar texto detectado por OCR
+        </summary>
 
         <textarea
           id="textoOCR"
           readonly
-          aria-label="Texto OCR"></textarea>
+          aria-label="Texto reconocido"></textarea>
       </details>
-    </section>
 
+    </section>
   </div>
+
 </main>
 
 <script>
 'use strict';
+
+// =======================================
+// VARIABLES GLOBALES
+// =======================================
 
 const $ = id => document.getElementById(id);
 
@@ -630,19 +729,29 @@ const camposFactura = [
 
 const filas = [];
 
-let identificador = 0;
-let ultimoResultadoManual = null;
-let urlVista = null;
+let nextId = 1;
+let resultadoManual = null;
+let vistaURL = null;
 
 // =======================================
-// NÚMEROS Y FORMATOS
+// NÚMEROS
 // =======================================
+
+// Admite:
+// 100000
+// 100.000
+// 100,50
+// 1.234,56
+// 1234.56
 
 function numero(valor) {
-  let s = String(valor ?? '').trim().replace(/\s/g, '');
+  let s = String(valor ?? '')
+    .trim()
+    .replace(/\s/g, '');
 
-  if (!s) return NaN;
-  if (!/^[\d.,]+$/.test(s)) return NaN;
+  if (!s || !/^[\d.,]+$/.test(s)) {
+    return NaN;
+  }
 
   const coma = s.lastIndexOf(',');
   const punto = s.lastIndexOf('.');
@@ -670,50 +779,68 @@ function numero(valor) {
 }
 
 function redondear(n) {
-  return Math.round((n + Number.EPSILON) * 100) / 100;
+  return Math.round(
+    (n + Number.EPSILON) * 100
+  ) / 100;
 }
 
-function formato(n, forzarDecimales = false) {
+function formato(n, decimales = false) {
   return new Intl.NumberFormat('es-PY', {
-    minimumFractionDigits: forzarDecimales ? 2 : 0,
+    minimumFractionDigits: decimales ? 2 : 0,
     maximumFractionDigits: 2
   }).format(n);
 }
 
-function porcentaje(valor) {
-  const n = numero(valor);
+function porcentaje(v) {
+  const n = numero(v);
 
-  return Number.isFinite(n) && n >= 0 && n <= 100
-    ? n
-    : NaN;
+  return Number.isFinite(n) &&
+    n >= 0 &&
+    n <= 100
+      ? n
+      : NaN;
 }
 
-function mensajeError(texto) {
-  $('avisoCalculo').textContent = texto;
-
-  $('avisoCalculo').className =
-    'nota ' + (texto ? 'alerta' : '');
-}
-
-function marcarPendiente() {
+function pendiente() {
   $('revisado').checked = false;
 }
 
 // =======================================
-// CAMBIAR ENTRE CALCULADORAS
+// MODALIDAD MANUAL / AUTOMÁTICA
 // =======================================
 
 function mostrarModo(modo) {
   const manual = modo === 'manual';
 
-  $('manual').classList.toggle('oculto', !manual);
-  $('automatico').classList.toggle('oculto', manual);
+  $('manual').classList.toggle(
+    'oculto',
+    !manual
+  );
 
-  $('tabManual').classList.toggle('activa', manual);
-  $('tabAuto').classList.toggle('activa', !manual);
+  $('automatico').classList.toggle(
+    'oculto',
+    manual
+  );
 
-  $('tabManual').setAttribute('aria-selected', manual);
-  $('tabAuto').setAttribute('aria-selected', !manual);
+  $('tabManual').classList.toggle(
+    'activa',
+    manual
+  );
+
+  $('tabAuto').classList.toggle(
+    'activa',
+    !manual
+  );
+
+  $('tabManual').setAttribute(
+    'aria-selected',
+    String(manual)
+  );
+
+  $('tabAuto').setAttribute(
+    'aria-selected',
+    String(!manual)
+  );
 }
 
 // =======================================
@@ -721,8 +848,13 @@ function mostrarModo(modo) {
 // =======================================
 
 function calcularManual() {
-  const monto = numero($('montoManual').value);
-  const pct = porcentaje($('porcentajeManual').value);
+  const monto = numero(
+    $('montoManual').value
+  );
+
+  const pct = porcentaje(
+    $('porcentajeManual').value
+  );
 
   const valido =
     Number.isFinite(monto) &&
@@ -731,48 +863,63 @@ function calcularManual() {
 
   $('errorManual').textContent = valido
     ? ''
-    : 'Ingresá un monto válido y un porcentaje entre 0 y 100.';
+    : 'Ingresá un monto válido y un descuento del 0 al 100 %.';
 
   $('copiarManual').disabled = !valido;
 
   if (!valido) {
-    ultimoResultadoManual = null;
+    resultadoManual = null;
 
     [
       'originalManual',
       'rebajaManual',
       'finalManual'
-    ].forEach(id => $(id).textContent = '—');
+    ].forEach(id => {
+      $(id).textContent = '—';
+    });
 
     return;
   }
 
-  const rebaja = redondear(monto * pct / 100);
-  const total = redondear(monto - rebaja);
+  const rebaja = redondear(
+    monto * pct / 100
+  );
 
-  ultimoResultadoManual = formato(total);
+  const total = redondear(
+    monto - rebaja
+  );
 
-  $('originalManual').textContent = formato(monto);
-  $('rebajaManual').textContent = formato(rebaja);
-  $('finalManual').textContent = ultimoResultadoManual;
+  $('originalManual').textContent =
+    formato(monto);
+
+  $('rebajaManual').textContent =
+    formato(rebaja);
+
+  $('finalManual').textContent =
+    resultadoManual = formato(total);
 }
 
 async function copiarResultado() {
-  if (ultimoResultadoManual === null) return;
+  if (resultadoManual === null) return;
 
   try {
     await navigator.clipboard.writeText(
-      ultimoResultadoManual
+      resultadoManual
     );
 
-    $('copiarManual').textContent = '¡Copiado!';
+    $('copiarManual').textContent =
+      '¡Copiado!';
 
     setTimeout(() => {
-      $('copiarManual').textContent = 'Copiar resultado';
-    }, 1300);
+      $('copiarManual').textContent =
+        'Copiar resultado';
+    }, 1200);
 
   } catch {
-    prompt('Copiá el resultado:', ultimoResultadoManual);
+    prompt(
+      'Copiá el resultado:',
+      resultadoManual
+    );
   }
 }
 
@@ -781,186 +928,213 @@ function limpiarManual() {
   $('porcentajeManual').value = '';
 
   calcularManual();
+
   $('montoManual').focus();
 }
 
 // =======================================
-// PRODUCTOS DE LA FACTURA
+// AGREGAR Y ELIMINAR PRODUCTOS
 // =======================================
 
 function agregarFila(datos = {}) {
   filas.push({
-    id: ++identificador,
+    id: nextId++,
     codigo: datos.codigo || '',
-    ean: datos.ean || '',
     descripcion: datos.descripcion || '',
-    cantidad: String(datos.cantidad ?? '1'),
-    precio: String(datos.precio ?? '0'),
-    dtoOriginal: String(datos.dtoOriginal ?? '0'),
-    descuento: String(datos.descuento ?? '0')
+    cantidad: String(datos.cantidad ?? ''),
+    precio: String(datos.precio ?? ''),
+    descuento: String(datos.descuento ?? ''),
+    sospecha: !!datos.sospecha
   });
 
   dibujarFilas();
-  marcarPendiente();
+  pendiente();
 }
 
 function borrarFilas() {
   if (
     filas.length &&
-    !confirm('¿Eliminar todas las filas?')
-  ) return;
+    !confirm('¿Eliminar todos los productos?')
+  ) {
+    return;
+  }
 
   filas.length = 0;
 
   dibujarFilas();
-  marcarPendiente();
+  pendiente();
+
+  $('advertenciaOCR').textContent = '';
 }
 
-function control(valor, campo, id) {
+// =======================================
+// INPUTS DE LA TABLA
+// =======================================
+
+function crearInput(f, campo) {
   const td = document.createElement('td');
-  const inp = document.createElement('input');
+  const input = document.createElement('input');
 
-  inp.type = 'text';
-  inp.value = valor;
+  input.type = 'text';
+  input.value = f[campo];
 
-  inp.dataset.id = id;
-  inp.dataset.campo = campo;
+  input.dataset.id = f.id;
+  input.dataset.campo = campo;
 
-  if (campo === 'descripcion') {
-    inp.className = 'desc';
-  }
+  input.className =
+    campo === 'descripcion'
+      ? 'descripcion'
+      : campo === 'codigo'
+        ? 'codigo'
+        : 'numero';
 
   if (
-    ['cantidad', 'precio', 'dtoOriginal', 'descuento']
+    ['cantidad', 'precio', 'descuento']
       .includes(campo)
   ) {
-    inp.inputMode = 'decimal';
+    input.inputMode = 'decimal';
+  }
+
+  if (campo === 'descuento') {
+    input.disabled =
+      $('modoDescuento').value === 'general';
+
+    if (input.disabled) {
+      input.value = $('general').value;
+    }
   }
 
   if (
-    campo === 'descuento' &&
-    $('modoDescuento').value === 'general'
+    f.sospecha &&
+    (campo === 'cantidad' || campo === 'precio')
   ) {
-    inp.disabled = true;
+    input.classList.add('sospechoso');
   }
 
-  td.append(inp);
+  td.append(input);
 
   return td;
 }
 
+// =======================================
+// MOSTRAR PRODUCTOS
+// =======================================
+
 function dibujarFilas() {
-  const tb = $('filas');
-  tb.replaceChildren();
+  const cuerpo = $('filas');
+
+  cuerpo.replaceChildren();
 
   for (const f of filas) {
     const tr = document.createElement('tr');
+
     tr.dataset.id = f.id;
 
     for (const campo of [
       'codigo',
-      'ean',
       'descripcion',
       'cantidad',
       'precio',
-      'dtoOriginal',
       'descuento'
     ]) {
-      tr.append(
-        control(f[campo], campo, f.id)
-      );
-    }
-
-    for (const clase of ['unitario', 'importe']) {
-      const td = document.createElement('td');
-
-      td.className = 'dato ' + clase;
-      td.textContent = '—';
-
-      tr.append(td);
+      tr.append(crearInput(f, campo));
     }
 
     const td = document.createElement('td');
     const btn = document.createElement('button');
 
-    btn.className = 'boton secundario';
     btn.type = 'button';
     btn.textContent = 'Quitar';
+    btn.className = 'fila-accion';
 
     btn.addEventListener('click', () => {
       const i = filas.findIndex(
         x => x.id === f.id
       );
 
-      if (i >= 0) {
+      if (i !== -1) {
         filas.splice(i, 1);
       }
 
       dibujarFilas();
-      marcarPendiente();
+      pendiente();
     });
 
     td.append(btn);
     tr.append(td);
-    tb.append(tr);
+    cuerpo.append(tr);
   }
 
   calcularAutomatico();
 }
 
 // =======================================
-// CÁLCULOS AUTOMÁTICOS
+// CÁLCULO DE DESCUENTOS
 // =======================================
 
 function datosCalculados() {
-  const pctGeneral = porcentaje($('general').value);
-
   const general =
     $('modoDescuento').value === 'general';
 
-  if (general && !Number.isFinite(pctGeneral)) {
+  const pctGeneral = porcentaje(
+    $('general').value
+  );
+
+  if (
+    general &&
+    !Number.isFinite(pctGeneral)
+  ) {
     throw Error(
       'El descuento general debe estar entre 0 y 100.'
     );
   }
 
-  return filas.map(f => {
+  return filas.map((f, i) => {
     const cantidad = numero(f.cantidad);
     const precio = numero(f.precio);
-    const dto = numero(f.dtoOriginal);
 
     const pct = general
       ? pctGeneral
       : porcentaje(f.descuento);
 
     if (
-      ![cantidad, precio, dto, pct].every(Number.isFinite) ||
+      !Number.isFinite(cantidad) ||
       cantidad <= 0 ||
+      !Number.isFinite(precio) ||
       precio < 0 ||
-      dto < 0 ||
-      dto > precio
+      !Number.isFinite(pct)
     ) {
       throw Error(
-        'Revisá cantidades, precios y descuentos de los productos.'
+        'Producto ' + (i + 1) +
+        ': ingresá cantidad mayor a 0, precio unitario y descuento válido (0 a 100).'
       );
     }
 
-    const baseUnit = redondear(precio - dto);
+    // Primero se aplica el descuento
+    // sobre el precio unitario.
 
     const precioFinal = redondear(
-      baseUnit * (1 - pct / 100)
+      precio * (1 - pct / 100)
+    );
+
+    // Después se multiplica por la cantidad.
+
+    const bruto = redondear(
+      cantidad * precio
+    );
+
+    const final = redondear(
+      cantidad * precioFinal
     );
 
     return {
       ...f,
       cantidad,
       precio,
-      dto,
       pct,
-      baseUnit,
       precioFinal,
-      bruto: redondear(cantidad * baseUnit),
-      final: redondear(cantidad * precioFinal)
+      bruto,
+      final
     };
   });
 }
@@ -969,90 +1143,77 @@ function calcularAutomatico() {
   try {
     const productos = datosCalculados();
 
-    let subtotal = 0;
-    let total = 0;
+    const subtotal = redondear(
+      productos.reduce(
+        (a, p) => a + p.bruto,
+        0
+      )
+    );
 
-    for (const p of productos) {
-      subtotal += p.bruto;
-      total += p.final;
-
-      const tr = $('filas').querySelector(
-        `tr[data-id="${p.id}"]`
-      );
-
-      if (tr) {
-        tr.querySelector('.unitario').textContent =
-          formato(p.precioFinal, true);
-
-        tr.querySelector('.importe').textContent =
-          formato(p.final, true);
-      }
-    }
-
-    subtotal = redondear(subtotal);
-    total = redondear(total);
+    const total = redondear(
+      productos.reduce(
+        (a, p) => a + p.final,
+        0
+      )
+    );
 
     $('subtotal').textContent =
       formato(subtotal, true);
 
     $('descuentoTotal').textContent =
-      formato(redondear(subtotal - total), true);
+      formato(
+        redondear(subtotal - total),
+        true
+      );
 
     $('totalFinal').textContent =
       formato(total, true);
 
-    const declarado = $('totalFactura').value.trim();
+    const impreso =
+      $('totalFactura').value.trim();
 
-    if (declarado) {
-      const original = numero(declarado);
-
-      if (
-        !Number.isFinite(original) ||
-        original < 0
-      ) {
-        throw Error(
-          'Corregí el total original impreso.'
-        );
-      }
-
-      const diferencia = redondear(
-        subtotal - original
+    if (
+      impreso &&
+      Number.isFinite(numero(impreso))
+    ) {
+      const dif = redondear(
+        subtotal - numero(impreso)
       );
 
-      mensajeError(
-        Math.abs(diferencia) > 0.02
-          ? 'Atención: el subtotal neto difiere del total impreso en ' +
-            formato(diferencia, true) +
-            '. Revisá OCR, impuestos y descuentos originales.'
-          : 'El subtotal neto coincide con el total impreso.'
-      );
+      $('avisoCalculo').textContent =
+        Math.abs(dif) > 0.02
+          ? 'Aviso: el subtotal de productos difiere del total impreso en ' +
+            formato(dif, true) +
+            '. Puede deberse a errores del OCR, impuestos o descuentos de la factura.'
+          : 'El subtotal coincide con el total original impreso.';
 
     } else {
-      mensajeError('');
+      $('avisoCalculo').textContent = '';
     }
 
-    return { productos, subtotal, total };
+    return {
+      productos,
+      subtotal,
+      total
+    };
 
   } catch (e) {
     $('subtotal').textContent = '—';
     $('descuentoTotal').textContent = '—';
     $('totalFinal').textContent = '—';
 
-    $('filas')
-      .querySelectorAll('.unitario,.importe')
-      .forEach(c => c.textContent = '—');
-
-    mensajeError(e.message);
+    $('avisoCalculo').textContent =
+      e.message;
 
     return null;
   }
 }
 
 // =======================================
-// MOTOR OCR MEJORADO
+// RECONOCIMIENTO DE FACTURA
 // =======================================
 
-function normalizarTexto(s) {
+function sinAcentos(s) {
   return String(s || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -1071,13 +1232,15 @@ function analizarCabecera(texto) {
     .map(s => s.trim())
     .filter(Boolean);
 
-  const vendedor = lineas.slice(0, 18).find(s =>
-    /(?:\bS\s*\.?\s*A\s*\.?\b|\bS\s*\.?\s*R\s*\.?\s*L\s*\.?\b)/i.test(s) &&
-    !/cliente|nombre o raz[oó]n|RUC\s*\//i.test(s)
+  const prov = lineas.slice(0, 16).find(s =>
+    /\bS\.?\s*A\.?\b|\bS\.?\s*R\.?\s*L\.?\b/i.test(s) &&
+    !/cliente|nombre o razon/i.test(
+      sinAcentos(s)
+    )
   );
 
   return {
-    proveedor: vendedor || '',
+    proveedor: prov || '',
 
     rucProveedor: buscar(
       texto,
@@ -1121,153 +1284,167 @@ function analizarCabecera(texto) {
   };
 }
 
-// Extraer palabras con sus coordenadas.
-// Tesseract devuelve datos TSV con posiciones X/Y.
+// =======================================
+// EXTRAER PALABRAS DEL OCR
+// =======================================
 
 function palabrasTSV(tsv) {
-  if (typeof tsv !== 'string') return [];
+  if (typeof tsv !== 'string') {
+    return [];
+  }
 
-  const lineas = tsv.split(/\r?\n/);
+  return tsv
+    .split(/\r?\n/)
+    .slice(1)
+    .map(l => {
+      const p = l.split('\t');
 
-  return lineas.slice(1).map(linea => {
-    const c = linea.split('\t');
+      if (
+        p.length < 12 ||
+        p[0] !== '5'
+      ) {
+        return null;
+      }
 
-    if (
-      c.length < 12 ||
-      Number(c[0]) !== 5
-    ) {
-      return null;
-    }
+      const texto = p.slice(11)
+        .join(' ')
+        .trim();
 
-    const texto = c.slice(11).join(' ').trim();
+      const x = Number(p[6]);
+      const y = Number(p[7]);
+      const w = Number(p[8]);
+      const h = Number(p[9]);
 
-    const izquierda = Number(c[6]);
-    const arriba = Number(c[7]);
-    const ancho = Number(c[8]);
-    const alto = Number(c[9]);
-    const confianza = Number(c[10]);
+      if (
+        !texto ||
+        ![x, y, w, h].every(Number.isFinite) ||
+        w <= 0 ||
+        h <= 0
+      ) {
+        return null;
+      }
 
-    if (
-      !texto ||
-      ![izquierda, arriba, ancho, alto]
-        .every(Number.isFinite) ||
-      ancho <= 0 ||
-      alto <= 0 ||
-      confianza < 0
-    ) {
-      return null;
-    }
-
-    return {
-      texto,
-      x: izquierda,
-      y: arriba,
-      w: ancho,
-      h: alto,
-      cy: arriba + alto / 2,
-      confianza
-    };
-
-  }).filter(Boolean);
+      return {
+        texto,
+        x,
+        y,
+        w,
+        h,
+        cy: y + h / 2
+      };
+    })
+    .filter(Boolean);
 }
 
-// Reconstruir líneas usando la posición vertical.
+// =======================================
+// AGRUPAR PALABRAS POR FILAS
+// =======================================
 
-function gruposVisuales(palabras) {
+function agruparPalabras(palabras) {
   const orden = [...palabras].sort(
     (a, b) => a.cy - b.cy || a.x - b.x
   );
 
-  const alturas = orden
-    .map(p => p.h)
+  const hs = orden
+    .map(x => x.h)
     .sort((a, b) => a - b);
 
-  const altoMedio = alturas.length
-    ? alturas[Math.floor(alturas.length / 2)]
-    : 16;
-
-  const tolerancia = Math.max(
-    8,
-    altoMedio * 0.57
+  const tol = Math.max(
+    6,
+    (hs[Math.floor(hs.length / 2)] || 14) * 0.53
   );
 
   const grupos = [];
 
-  for (const palabra of orden) {
-    let mejor = null;
-    let distancia = Infinity;
+  for (const p of orden) {
+    let g = grupos.find(
+      g => Math.abs(g.cy - p.cy) <= tol
+    );
 
-    for (const g of grupos) {
-      const d = Math.abs(g.y - palabra.cy);
+    if (!g) {
+      g = {
+        cy: p.cy,
+        palabras: []
+      };
 
-      if (
-        d <= tolerancia &&
-        d < distancia
-      ) {
-        mejor = g;
-        distancia = d;
-      }
+      grupos.push(g);
     }
 
-    if (mejor) {
-      mejor.palabras.push(palabra);
+    g.palabras.push(p);
 
-      mejor.y = mejor.palabras.reduce(
-        (a, p) => a + p.cy,
-        0
-      ) / mejor.palabras.length;
-
-    } else {
-      grupos.push({
-        y: palabra.cy,
-        palabras: [palabra]
-      });
-    }
+    g.cy = g.palabras.reduce(
+      (a, b) => a + b.cy,
+      0
+    ) / g.palabras.length;
   }
 
   return grupos
-    .sort((a, b) => a.y - b.y)
-    .map(g => g.palabras.sort(
-      (a, b) => a.x - b.x
-    ));
+    .sort((a, b) => a.cy - b.cy)
+    .map(g =>
+      g.palabras.sort(
+        (a, b) => a.x - b.x
+      )
+    );
 }
 
-// Limpiar errores frecuentes de lectura numérica.
+// =======================================
+// LIMPIAR NÚMEROS OCR
+// =======================================
 
-function limpiarNumeroOCR(s) {
-  return String(s || '')
+function limpiarOCRNumero(s) {
+  s = String(s || '')
     .replace(/[Oo]/g, '0')
     .replace(/[Il|]/g, '1')
-    .replace(/[^0-9.,]/g, '')
-    .replace(/([.,]){2,}/g, '$1');
-}
-
-function numeroColumna(palabras) {
-  const partes = palabras
-    .map(p => p.texto)
-    .filter(Boolean);
+    .replace(/\s/g, '')
+    .replace(/[^\d.,]/g, '');
 
   if (
-    partes.length > 1 &&
-    !partes.some(p => /[,.]/.test(p))
+    !s ||
+    (
+      !/^\d{1,8}(?:[,.]\d{1,3})?$/.test(s) &&
+      !/^\d{1,3}(?:[.,]\d{3})+(?:,\d{1,2})?$/.test(s)
+    )
   ) {
     return '';
   }
 
-  return limpiarNumeroOCR(partes.join(''));
+  return s;
 }
 
-// Interpretar productos según sus columnas KUDE.
+function leerColumna(grupo) {
+  const partes = grupo
+    .map(p => p.texto)
+    .filter(t => /[0-9OoIl]/.test(t));
 
-function leerFilasPorCoordenadas(tsv, zona) {
-  const grupos = gruposVisuales(
+  if (
+    !partes.length ||
+    partes.length > 2
+  ) {
+    return '';
+  }
+
+  return limpiarOCRNumero(
+    partes.join('')
+  );
+}
+
+// =======================================
+// LECTURA DE COLUMNAS KUDE
+// =======================================
+
+function extraerFilasCoordenadas(
+  tsv,
+  zona,
+  escala
+) {
+  const grupos = agruparPalabras(
     palabrasTSV(tsv)
   );
 
-  const encontrados = [];
+  const salida = [];
 
   for (const grupo of grupos) {
-    const c = Array.from(
+    const cols = Array.from(
       { length: 8 },
       () => []
     );
@@ -1275,305 +1452,414 @@ function leerFilasPorCoordenadas(tsv, zona) {
     for (const p of grupo) {
       const x = (
         zona.x +
-        (p.x + p.w / 2) / zona.escala
-      ) / zona.anchoImagen;
+        (p.x + p.w / 2) / escala
+      ) / zona.ancho;
 
-      let indice;
+      // Distribución aproximada de la
+      // tabla KUDE de la factura de ejemplo.
 
-      // Límites basados en la factura de ejemplo.
-      // Código / EAN / Descripción / Unidad /
-      // Cantidad / Precio / Descuento / Importe.
+      const limites = [
+        .087,
+        .182,
+        .542,
+        .569,
+        .605,
+        .659,
+        .704,
+        .761
+      ];
 
-      if (x < .087) indice = 0;
-      else if (x < .182) indice = 1;
-      else if (x < .542) indice = 2;
-      else if (x < .572) indice = 3;
-      else if (x < .611) indice = 4;
-      else if (x < .663) indice = 5;
-      else if (x < .708) indice = 6;
-      else if (x < .765) indice = 7;
-      else continue;
+      const indice = limites.findIndex(
+        l => x < l
+      );
 
-      c[indice].push(p);
+      if (indice >= 0) {
+        cols[indice].push(p);
+      }
     }
 
-    const texto = i => c[i]
-      .map(p => p.texto)
-      .join(' ')
-      .trim();
+    const texto = i =>
+      cols[i]
+        .map(p => p.texto)
+        .join(' ')
+        .trim();
 
     const codigo = texto(0)
-      .replace(/[^A-Z0-9-]/gi, '');
+      .replace(/[^a-zA-Z0-9-]/g, '')
+      .toUpperCase();
 
     const ean = texto(1)
-      .replace(/[^0-9]/g, '');
+      .replace(/\D/g, '');
 
     const descripcion = texto(2)
       .replace(/\s+/g, ' ')
       .trim();
 
-    const cantidad = numeroColumna(c[4]);
-    const precio = numeroColumna(c[5]);
-    const dto = numeroColumna(c[6]);
+    const cantidad = leerColumna(
+      cols[4]
+    );
 
-    // Acepta filas incompletas para revisión,
-    // pero nunca inventa cantidades o precios.
+    const precio = leerColumna(
+      cols[5]
+    );
+
+    const importe = leerColumna(
+      cols[7]
+    );
 
     if (
-      !(codigo.length >= 5 || ean.length >= 8)
-    ) continue;
+      !(
+        codigo.length >= 4 ||
+        ean.length >= 8
+      ) ||
+      descripcion.length < 5
+    ) {
+      continue;
+    }
 
     if (
-      !descripcion ||
-      /^(?:subtotal|total|descripcion)$/i.test(
-        normalizarTexto(descripcion)
+      /subtotal|total|descripcion/i.test(
+        sinAcentos(descripcion)
       )
-    ) continue;
+    ) {
+      continue;
+    }
+
+    let sospecha = false;
+    let cant = cantidad;
+    let prec = precio;
+
+    const q = numero(cant);
+    const pr = numero(prec);
+    const imp = numero(importe);
+
+    // Si hay importe original legible,
+    // comprobar coherencia aproximada.
 
     if (
-      !(cantidad || precio || ean.length >= 8)
-    ) continue;
+      Number.isFinite(q) &&
+      Number.isFinite(pr) &&
+      Number.isFinite(imp) &&
+      imp > 0 &&
+      Math.abs(q * pr - imp) >
+        Math.max(0.1, imp * 0.08)
+    ) {
+      sospecha = true;
+    }
 
-    encontrados.push({
+    if (
+      cant &&
+      (
+        !Number.isFinite(q) ||
+        q <= 0 ||
+        q > 100000
+      )
+    ) {
+      cant = '';
+      sospecha = true;
+    }
+
+    if (
+      prec &&
+      (
+        !Number.isFinite(pr) ||
+        pr < 0 ||
+        pr > 100000000
+      )
+    ) {
+      prec = '';
+      sospecha = true;
+    }
+
+    if (
+      sospecha &&
+      q > 10000 &&
+      Number.isFinite(imp) &&
+      imp > 0
+    ) {
+      cant = '';
+    }
+
+    salida.push({
       codigo,
-      ean,
       descripcion,
-      cantidad: cantidad || '',
-      precio: precio || '',
-      dtoOriginal: dto || '0',
-      descuento: '0'
+      cantidad: cant,
+      precio: prec,
+      descuento: '',
+      sospecha
     });
   }
 
-  return encontrados;
+  return salida;
 }
 
-// Lectura alternativa de líneas completas.
+// =======================================
+// LECTURA ALTERNATIVA POR TEXTO
+// =======================================
 
-function leerFilasPorTexto(texto) {
-  const resultado = [];
+function extraerFilasTexto(texto) {
+  const salida = [];
 
-  for (const linea of texto.split(/\r?\n/)) {
-    const s = linea
+  for (
+    const linea of texto.split(/\r?\n/)
+  ) {
+    const m = linea
+      .trim()
       .replace(/\s+/g, ' ')
-      .trim();
-
-    const m = s.match(
-      /^([A-Z0-9-]{5,20})\s+(\d{8,14})\s+(.+?)\s+(?:UNI|UN[I1]|UN|UND|PZA|KG|BOT|CJ)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)/i
-    );
+      .match(
+        /^([A-Z0-9-]{4,20})\s+\d{8,14}\s+(.+?)\s+(?:UNI|UN|UND|PZA|KG|CJ|BOT)\s+([\d.,]+)\s+([\d.,]+)/i
+      );
 
     if (!m) continue;
 
-    resultado.push({
+    salida.push({
       codigo: m[1],
-      ean: m[2],
-      descripcion: m[3],
-      cantidad: m[4],
-      precio: m[5],
-      dtoOriginal: m[6],
-      descuento: '0'
+      descripcion: m[2],
+      cantidad: limpiarOCRNumero(m[3]),
+      precio: limpiarOCRNumero(m[4]),
+      descuento: '',
+      sospecha: false
     });
   }
 
-  return resultado;
+  return salida;
 }
 
 // =======================================
-// DETECCIÓN DE LA TABLA
+// DETECTAR TABLA DE PRODUCTOS
 // =======================================
 
-function detectarZona(palabras, ancho, alto) {
-  const encabezados = palabras.filter(p =>
-    p.y > alto * .26 &&
-    p.y < alto * .7 &&
-    /^(descripcion|descripci[oó]n|cod|codigo|c[oó]d|cantidad|cant|barras|precio)$/i
-      .test(normalizarTexto(p.texto).replace(/[.:]/g, ''))
-  );
-
-  const descripcion = encabezados.find(p =>
-    /^(descripcion|descripci[oó]n)$/.test(
-      normalizarTexto(p.texto).replace(/[.:]/g, '')
+function detectarZona(
+  palabras,
+  ancho,
+  alto
+) {
+  const cab = palabras
+    .filter(
+      p =>
+        p.y > alto * .24 &&
+        p.y < alto * .65 &&
+        /descripcion|descripci[oó]n/i.test(
+          p.texto
+        )
     )
-  );
+    .sort((a, b) => a.y - b.y)[0];
 
-  const cod = encabezados.find(p =>
-    /^(cod|codigo|c[oó]d)$/.test(
-      normalizarTexto(p.texto).replace(/[.:]/g, '')
+  const subtotal = palabras
+    .filter(
+      p =>
+        p.y > alto * .42 &&
+        /^sub\s*total/i.test(
+          sinAcentos(p.texto)
+        )
     )
-  );
+    .sort((a, b) => a.y - b.y)[0];
 
-  const ultimo = palabras.filter(p =>
-    p.y > alto * .47 &&
-    /^(subtotal|sub-total)$/i.test(
-      normalizarTexto(p.texto).replace(/[:.]/g, '')
-    )
-  ).sort((a, b) => a.y - b.y)[0];
+  const inicio = cab
+    ? cab.y + cab.h + 4
+    : alto * .425;
 
-  let comienzo = descripcion
-    ? descripcion.y + descripcion.h + 7
-    : cod
-      ? cod.y + cod.h + 8
-      : alto * .428;
-
-  let final = ultimo
-    ? ultimo.y - 3
+  const fin = subtotal
+    ? subtotal.y - 3
     : alto * .68;
 
-  comienzo = Math.max(
-    alto * .23,
-    Math.min(comienzo, alto * .68)
-  );
-
-  final = Math.min(
-    alto * .87,
-    Math.max(final, comienzo + alto * .12)
+  const y = Math.max(
+    0,
+    Math.round(inicio)
   );
 
   return {
     x: Math.floor(ancho * .018),
-    y: Math.floor(comienzo),
-    w: Math.floor(ancho * .765),
-    h: Math.floor(final - comienzo),
-    anchoImagen: ancho
+    y,
+    w: Math.floor(ancho * .751),
+    h: Math.max(
+      80,
+      Math.floor(
+        Math.min(
+          alto * .87,
+          Math.max(fin, y + alto * .12)
+        ) - y
+      )
+    ),
+    ancho
   };
 }
 
 // =======================================
-// MEJORAR LA IMAGEN PARA EL OCR
+// MEJORAR IMAGEN PARA OCR
 // =======================================
 
-function crearImagenTabla(imagen, zona) {
+function procesarTabla(img, zona) {
   const escala = Math.min(
     3,
-    Math.max(1.5, 2600 / zona.w)
+    Math.max(1.5, 2400 / zona.w)
   );
 
-  const lienzo = document.createElement('canvas');
+  const c = document.createElement(
+    'canvas'
+  );
 
-  lienzo.width = Math.floor(zona.w * escala);
-  lienzo.height = Math.floor(zona.h * escala);
+  c.width = Math.round(
+    zona.w * escala
+  );
 
-  const ctx = lienzo.getContext('2d', {
+  c.height = Math.round(
+    zona.h * escala
+  );
+
+  const ctx = c.getContext('2d', {
     willReadFrequently: true
   });
 
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = '#fff';
 
   ctx.fillRect(
     0,
     0,
-    lienzo.width,
-    lienzo.height
+    c.width,
+    c.height
   );
 
   ctx.drawImage(
-    imagen,
+    img,
     zona.x,
     zona.y,
     zona.w,
     zona.h,
     0,
     0,
-    lienzo.width,
-    lienzo.height
+    c.width,
+    c.height
   );
 
-  const pix = ctx.getImageData(
+  const d = ctx.getImageData(
     0,
     0,
-    lienzo.width,
-    lienzo.height
+    c.width,
+    c.height
   );
 
-  const a = pix.data;
+  for (
+    let i = 0;
+    i < d.data.length;
+    i += 4
+  ) {
+    const g =
+      .299 * d.data[i] +
+      .587 * d.data[i + 1] +
+      .114 * d.data[i + 2];
 
-  // Escala de grises y contraste.
-
-  for (let i = 0; i < a.length; i += 4) {
-    const gris =
-      .299 * a[i] +
-      .587 * a[i + 1] +
-      .114 * a[i + 2];
-
-    const color = Math.max(
+    const v = Math.max(
       0,
       Math.min(
         255,
-        (gris - 128) * 1.42 + 157
+        (g - 128) * 1.45 + 156
       )
     );
 
-    a[i] = color;
-    a[i + 1] = color;
-    a[i + 2] = color;
+    d.data[i] = v;
+    d.data[i + 1] = v;
+    d.data[i + 2] = v;
   }
 
-  ctx.putImageData(pix, 0, 0);
+  ctx.putImageData(d, 0, 0);
 
-  return { lienzo, escala };
+  return {
+    canvas: c,
+    escala
+  };
 }
 
 // =======================================
-// ABRIR IMAGEN
+// ABRIR FOTO
 // =======================================
 
 async function abrirImagen(archivo) {
-  if (typeof createImageBitmap === 'function') {
+  if (
+    typeof createImageBitmap === 'function'
+  ) {
     return createImageBitmap(archivo);
   }
 
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(archivo);
-    const img = new Image();
-
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-
-      reject(
-        Error('No se pudo abrir la imagen.')
+  return new Promise(
+    (resolve, reject) => {
+      const url = URL.createObjectURL(
+        archivo
       );
-    };
 
-    img.src = url;
-  });
+      const img = new Image();
+
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+
+        reject(
+          Error(
+            'No se pudo abrir la imagen.'
+          )
+        );
+      };
+
+      img.src = url;
+    }
+  );
 }
 
 // =======================================
-// RECONOCIMIENTO AUTOMÁTICO
+// CALIDAD DEL RECONOCIMIENTO
+// =======================================
+
+function calidad(lista) {
+  return lista.length * 5 +
+    lista.reduce(
+      (s, x) =>
+        s +
+        (x.cantidad ? 1 : 0) +
+        (x.precio ? 1 : 0) -
+        (x.sospecha ? 1 : 0),
+      0
+    );
+}
+
+// =======================================
+// LEER FACTURA AUTOMÁTICAMENTE
 // =======================================
 
 async function leerFactura() {
   const archivo = $('archivo').files[0];
 
   if (!archivo) {
-    alert('Seleccioná una fotografía de factura.');
-    return;
+    return alert(
+      'Seleccioná una fotografía de factura.'
+    );
   }
 
   if (
-    !['image/png', 'image/jpeg', 'image/webp']
-      .includes(archivo.type)
+    ![
+      'image/jpeg',
+      'image/png',
+      'image/webp'
+    ].includes(archivo.type)
   ) {
-    alert('Solo JPG, PNG o WebP.');
-    return;
+    return alert(
+      'Seleccioná JPG, PNG o WebP.'
+    );
   }
 
   if (!window.Tesseract) {
-    alert(
-      'No cargó Tesseract.js. Revisá la conexión.'
+    return alert(
+      'No cargó el motor OCR. Revisá tu conexión.'
     );
-    return;
   }
 
   if (
     filas.length &&
     !confirm(
-      'Se reemplazarán los productos actuales si se detectan nuevos. ¿Continuar?'
+      '¿Reemplazar los productos actuales si se detectan nuevos?'
     )
   ) {
     return;
@@ -1582,36 +1868,36 @@ async function leerFactura() {
   $('leerBtn').disabled = true;
 
   $('estadoOCR').textContent =
-    'Analizando encabezado y estructura de la factura...';
+    'Preparando imagen...';
 
-  let worker;
-  let imagen;
+  let img = null;
+  let worker = null;
 
   try {
-    imagen = await abrirImagen(archivo);
-
-    const ancho = imagen.width;
-    const alto = imagen.height;
+    img = await abrirImagen(archivo);
 
     worker = await Tesseract.createWorker(
       'spa',
       1,
       {
         logger: m => {
-          if (m.status === 'recognizing text') {
+          if (
+            m.status === 'recognizing text'
+          ) {
             $('estadoOCR').textContent =
-              'Reconociendo factura: ' +
-              Math.round((m.progress || 0) * 100) +
+              'Leyendo factura: ' +
+              Math.round(
+                (m.progress || 0) * 100
+              ) +
               ' %';
           }
         }
       }
     );
 
-    // Primera lectura del documento completo.
-    // Solicitar TSV con coordenadas.
+    // Lectura general de la factura.
 
-    const documento = await worker.recognize(
+    const doc = await worker.recognize(
       archivo,
       {},
       {
@@ -1620,86 +1906,50 @@ async function leerFactura() {
       }
     );
 
-    const texto = documento.data.text || '';
+    const texto = doc.data.text || '';
 
     $('textoOCR').value =
-      '=== FACTURA ===\n' + texto;
+      'FACTURA COMPLETA\n' + texto;
 
-    const cabecera = analizarCabecera(texto);
-
-    for (const id of camposFactura) {
-      if (cabecera[id]) {
-        $(id).value = cabecera[id];
-      }
-    }
-
-    // Detectar la zona de la tabla.
-
-    const zona = detectarZona(
-      palabrasTSV(documento.data.tsv),
-      ancho,
-      alto
+    const cabecera = analizarCabecera(
+      texto
     );
 
-    // Recortar y mejorar resolución.
+    camposFactura.forEach(c => {
+      if (cabecera[c]) {
+        $(c).value = cabecera[c];
+      }
+    });
 
-    const procesada = crearImagenTabla(
-      imagen,
+    // Recortar área de productos.
+
+    const zona = detectarZona(
+      palabrasTSV(doc.data.tsv),
+      img.width,
+      img.height
+    );
+
+    const recorte = procesarTabla(
+      img,
       zona
     );
 
-    const cfg = {
-      ...zona,
-      escala: procesada.escala
-    };
-
-    $('estadoOCR').textContent =
-      'Leyendo las columnas de productos...';
-
-    // Lectura con modo de texto disperso.
-    await worker.setParameters({
-      tessedit_pageseg_mode: '11'
-    });
-
-    const primera = await worker.recognize(
-      procesada.lienzo,
-      {},
-      {
-        text: true,
-        tsv: true
-      }
+    let mejores = extraerFilasTexto(
+      texto
     );
 
-    $('textoOCR').value +=
-      '\n\n=== TABLA RECORTADA ===\n' +
-      (primera.data.text || '');
+    // Lectura de tabla en dos modalidades.
 
-    let productos = leerFilasPorCoordenadas(
-      primera.data.tsv,
-      cfg
-    );
-
-    const porTexto = leerFilasPorTexto(
-      primera.data.text || ''
-    );
-
-    if (porTexto.length > productos.length) {
-      productos = porTexto;
-    }
-
-    // Si reconoce muy pocas filas,
-    // realizar un segundo intento.
-
-    if (productos.length < 3) {
+    for (const psm of ['11', '6']) {
       $('estadoOCR').textContent =
-        'Probando un segundo método de lectura...';
+        'Reconociendo columnas de productos...';
 
       await worker.setParameters({
-        tessedit_pageseg_mode: '6'
+        tessedit_pageseg_mode: psm
       });
 
-      const segunda = await worker.recognize(
-        procesada.lienzo,
+      const r = await worker.recognize(
+        recorte.canvas,
         {},
         {
           text: true,
@@ -1708,81 +1958,91 @@ async function leerFactura() {
       );
 
       $('textoOCR').value +=
-        '\n\n=== SEGUNDO INTENTO ===\n' +
-        (segunda.data.text || '');
+        '\n\nTABLA - MODO ' +
+        psm +
+        '\n' +
+        (r.data.text || '');
 
-      const alternativa = leerFilasPorCoordenadas(
-        segunda.data.tsv,
-        cfg
-      );
+      const porCoord =
+        extraerFilasCoordenadas(
+          r.data.tsv,
+          zona,
+          recorte.escala
+        );
 
-      const alternativaTexto = leerFilasPorTexto(
-        segunda.data.text || ''
-      );
+      const porTexto =
+        extraerFilasTexto(
+          r.data.text || ''
+        );
 
-      if (alternativa.length > productos.length) {
-        productos = alternativa;
+      for (
+        const candidato of [
+          porCoord,
+          porTexto
+        ]
+      ) {
+        if (
+          calidad(candidato) >
+          calidad(mejores)
+        ) {
+          mejores = candidato;
+        }
       }
 
       if (
-        alternativaTexto.length > productos.length
+        mejores.length >= 8 &&
+        psm === '11'
       ) {
-        productos = alternativaTexto;
+        break;
       }
     }
 
-    // Comparar con el reconocimiento original.
+    // Incorporar productos encontrados.
 
-    const completa = leerFilasPorTexto(texto);
-
-    if (completa.length > productos.length) {
-      productos = completa;
-    }
-
-    // Incorporar productos detectados.
-
-    if (productos.length) {
+    if (mejores.length) {
       filas.length = 0;
 
-      for (const p of productos) {
+      for (const p of mejores) {
         filas.push({
-          id: ++identificador,
-          ...p
+          id: nextId++,
+          codigo: p.codigo,
+          descripcion: p.descripcion,
+          cantidad: p.cantidad,
+          precio: p.precio,
+          descuento: '',
+          sospecha: p.sospecha
         });
       }
 
       dibujarFilas();
-      marcarPendiente();
+      pendiente();
 
-      const incompletos = productos.filter(
-        p => !p.cantidad || !p.precio
+      const dudosos = mejores.filter(
+        x =>
+          x.sospecha ||
+          !x.cantidad ||
+          !x.precio
       ).length;
 
+      $('advertenciaOCR').textContent =
+        dudosos
+          ? dudosos +
+            ' fila(s) tienen importes dudosos o incompletos. Revisá los campos resaltados antes del PDF.'
+          : 'Compará las filas detectadas con la fotografía: la lectura automática puede omitir productos.';
+
       $('estadoOCR').textContent =
-        'Productos detectados: ' +
-        productos.length +
-        (
-          incompletos
-            ? '. ' + incompletos +
-              ' tienen datos incompletos.'
-            : '.'
-        ) +
-        ' Revisá las filas y el subtotal antes de generar el PDF.';
+        'Lectura finalizada. Productos detectados: ' +
+        mejores.length +
+        '. Revisá todas las filas.';
 
     } else {
-      // No borrar los productos que el usuario
-      // haya introducido manualmente.
-
       $('estadoOCR').textContent =
-        'No se pudieron reconocer filas completas. ' +
-        'Conservé tus productos existentes. ' +
-        'Probá una foto más frontal y nítida ' +
-        'o agregá las filas manualmente.';
+        'No se identificaron productos. Conservé tus filas anteriores; probá una fotografía más frontal o agregalos manualmente.';
     }
 
   } catch (e) {
     $('estadoOCR').textContent =
-      'Error al reconocer la factura: ' +
+      'Error durante la lectura: ' +
       e.message;
 
   } finally {
@@ -1793,10 +2053,10 @@ async function leerFactura() {
     }
 
     if (
-      imagen &&
-      typeof imagen.close === 'function'
+      img &&
+      typeof img.close === 'function'
     ) {
-      imagen.close();
+      img.close();
     }
 
     $('leerBtn').disabled = false;
@@ -1809,95 +2069,105 @@ async function leerFactura() {
 
 function generarPDF() {
   if (!filas.length) {
-    alert('Agregá por lo menos un producto.');
-    return;
+    return alert(
+      'Agregá al menos un producto.'
+    );
   }
 
-  const resumen = calcularAutomatico();
+  const r = calcularAutomatico();
 
-  if (!resumen) {
-    alert('Corregí los valores inválidos.');
-    return;
+  if (!r) {
+    return alert(
+      'Corregí los valores obligatorios.'
+    );
   }
 
   if (!$('revisado').checked) {
-    alert(
-      'Primero revisá la factura y marcá la confirmación.'
+    return alert(
+      'Confirmá que revisaste los importes.'
     );
-    return;
   }
 
   if (!window.jspdf?.jsPDF) {
-    alert(
-      'No se cargó la biblioteca para PDF.'
+    return alert(
+      'No cargó la biblioteca de PDF.'
     );
-    return;
   }
 
-  const pdf = new window.jspdf.jsPDF({
+  const doc = new window.jspdf.jsPDF({
     orientation: 'landscape',
     unit: 'mm',
     format: 'a4'
   });
 
-  const limpiar = s =>
-    String(s || 'No identificado')
-      .replace(/\s+/g, ' ');
+  if (
+    typeof doc.autoTable !== 'function'
+  ) {
+    return alert(
+      'No cargó la biblioteca de tablas PDF.'
+    );
+  }
 
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(16);
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
 
-  pdf.text(
+  doc.text(
     'GUIA DEL DIGITADOR',
     14,
-    16
+    17
   );
 
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
 
-  pdf.text(
+  doc.text(
     'INFORME DE DESCUENTOS - NO ES FACTURA FISCAL',
     14,
-    23
+    24
   );
 
-  const campos = [
+  let y = 33;
+
+  const pares = [
     ['Proveedor', 'proveedor'],
     ['RUC proveedor', 'rucProveedor'],
-    ['Numero de factura', 'numeroFactura'],
+    ['Factura', 'numeroFactura'],
     ['Fecha de emision', 'fechaEmision'],
     ['Cliente', 'cliente'],
     ['RUC cliente', 'rucCliente'],
     ['Vencimiento', 'fechaVencimiento'],
     ['Condicion', 'condicion'],
-    ['Total factura impreso', 'totalFactura']
+    ['Total impreso', 'totalFactura']
   ];
 
-  let y = 31;
+  for (
+    let i = 0;
+    i < pares.length;
+    i += 2
+  ) {
+    for (
+      let j = 0;
+      j < 2;
+      j++
+    ) {
+      const par = pares[i + j];
 
-  for (let i = 0; i < campos.length; i += 2) {
-    const a = campos[i];
-    const b = campos[i + 1];
+      if (!par) continue;
 
-    pdf.text(
-      pdf.splitTextToSize(
-        a[0] + ': ' +
-        limpiar($(a[1]).value),
-        125
-      )[0],
-      14,
-      y
-    );
+      const s =
+        par[0] +
+        ': ' +
+        (
+          $(par[1]).value.trim() ||
+          'No identificado'
+        );
 
-    if (b) {
-      pdf.text(
-        pdf.splitTextToSize(
-          b[0] + ': ' +
-          limpiar($(b[1]).value),
+      doc.text(
+        doc.splitTextToSize(
+          s,
           125
         )[0],
-        150,
+        j ? 151 : 14,
         y
       );
     }
@@ -1905,58 +2175,56 @@ function generarPDF() {
     y += 7;
   }
 
-  pdf.text(
-    'Descuento: ' +
+  doc.text(
+    'Modalidad: ' +
     (
       $('modoDescuento').value === 'general'
-        ? 'General'
+        ? 'General ' +
+          $('general').value +
+          ' %'
         : 'Individual'
     ),
     14,
     y + 2
   );
 
-  const datos = resumen.productos.map(
+  // Datos calculados para el informe.
+
+  const datos = r.productos.map(
     (p, i) => [
       String(i + 1),
       p.codigo,
-      p.ean,
       p.descripcion,
       formato(p.cantidad),
       formato(p.precio, true),
-      formato(p.dto, true),
       formato(p.pct) + ' %',
       formato(p.precioFinal, true),
       formato(p.final, true)
     ]
   );
 
-  if (typeof pdf.autoTable !== 'function') {
-    alert(
-      'No cargó el generador de tablas PDF.'
-    );
-    return;
-  }
-
-  pdf.autoTable({
-    startY: y + 8,
+  doc.autoTable({
+    startY: y + 9,
 
     head: [[
       '#',
       'Codigo',
-      'EAN',
       'Descripcion',
-      'Cant.',
+      'Cantidad',
       'Precio unit.',
-      'Dto. orig.',
-      'Dto. nuevo',
-      'Precio final',
-      'Importe final'
+      'Descuento',
+      'Precio final unit.',
+      'Total final'
     ]],
 
     body: datos,
 
     theme: 'grid',
+
+    margin: {
+      left: 14,
+      right: 14
+    },
 
     styles: {
       fontSize: 8,
@@ -1965,69 +2233,71 @@ function generarPDF() {
     },
 
     headStyles: {
-      fillColor: [170, 30, 30]
+      fillColor: [175, 30, 30]
     },
 
     columnStyles: {
-      3: { cellWidth: 74 }
-    },
-
-    margin: {
-      left: 14,
-      right: 14
+      2: {
+        cellWidth: 78
+      }
     }
   });
 
-  let fin = pdf.lastAutoTable.finalY + 9;
+  let fin =
+    doc.lastAutoTable.finalY + 10;
 
-  if (fin > 175) {
-    pdf.addPage();
-    fin = 22;
+  if (fin > 178) {
+    doc.addPage();
+    fin = 24;
   }
 
-  pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
 
-  pdf.text(
-    'Subtotal neto original: ' +
-    formato(resumen.subtotal, true),
+  doc.text(
+    'Subtotal original: ' +
+    formato(r.subtotal, true),
     14,
     fin
   );
 
-  pdf.text(
-    'Descuento nuevo: ' +
+  doc.text(
+    'Descuento aplicado: ' +
     formato(
       redondear(
-        resumen.subtotal - resumen.total
+        r.subtotal - r.total
       ),
       true
     ),
     14,
-    fin + 7
+    fin + 8
   );
 
-  pdf.text(
+  doc.text(
     'TOTAL FINAL: ' +
-    formato(resumen.total, true),
+    formato(r.total, true),
     14,
-    fin + 14
+    fin + 16
   );
 
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
 
-  pdf.text(
-    'Calculo revisado por el usuario. El documento original conserva validez independiente.',
+  doc.text(
+    'Informe de calculo. Valores revisados por el digitador.',
     14,
-    fin + 23
+    fin + 25
   );
 
   const nombre = (
-    $('numeroFactura').value || 'sin_numero'
-  ).replace(/[^a-zA-Z0-9-]/g, '_');
+    $('numeroFactura').value ||
+    'sin_numero'
+  ).replace(
+    /[^a-zA-Z0-9-]/g,
+    '_'
+  );
 
-  pdf.save(
+  doc.save(
     'descuentos_' + nombre + '.pdf'
   );
 }
@@ -2039,24 +2309,23 @@ function generarPDF() {
 $('archivo').addEventListener(
   'change',
   function() {
-    if (urlVista) {
-      URL.revokeObjectURL(urlVista);
+    if (vistaURL) {
+      URL.revokeObjectURL(vistaURL);
     }
 
     const f = this.files[0];
 
     if (f) {
-      urlVista = URL.createObjectURL(f);
-      $('vistaFactura').src = urlVista;
+      vistaURL = URL.createObjectURL(f);
 
-      $('vistaFactura').classList.remove(
-        'oculto'
-      );
+      $('vistaFactura').src = vistaURL;
+
+      $('vistaFactura')
+        .classList.remove('oculto');
 
     } else {
-      $('vistaFactura').classList.add(
-        'oculto'
-      );
+      $('vistaFactura')
+        .classList.add('oculto');
     }
   }
 );
@@ -2071,20 +2340,35 @@ $('porcentajeManual').addEventListener(
   calcularManual
 );
 
-$('filas').addEventListener('input', e => {
-  const { id, campo } = e.target.dataset;
+// Edición de productos.
 
-  const f = filas.find(
-    x => x.id === Number(id)
-  );
+$('filas').addEventListener(
+  'input',
+  e => {
+    const { id, campo } =
+      e.target.dataset;
 
-  if (f && campo) {
-    f[campo] = e.target.value;
+    const f = filas.find(
+      x => x.id === Number(id)
+    );
 
-    marcarPendiente();
-    calcularAutomatico();
+    if (f && campo) {
+      f[campo] = e.target.value;
+
+      f.sospecha = false;
+
+      e.target.classList.remove(
+        'sospechoso'
+      );
+
+      pendiente();
+      calcularAutomatico();
+    }
   }
-});
+);
+
+// Cambiar entre descuento general
+// y descuento individual.
 
 $('modoDescuento').addEventListener(
   'change',
@@ -2095,49 +2379,70 @@ $('modoDescuento').addEventListener(
     );
 
     dibujarFilas();
-    marcarPendiente();
+    pendiente();
   }
 );
+
+// Actualizar descuento general.
 
 $('general').addEventListener(
   'input',
   () => {
+    if (
+      $('modoDescuento').value === 'general'
+    ) {
+      $('filas')
+        .querySelectorAll(
+          'input[data-campo="descuento"]'
+        )
+        .forEach(
+          el => el.value = $('general').value
+        );
+    }
+
     calcularAutomatico();
-    marcarPendiente();
+    pendiente();
   }
 );
 
-camposFactura.forEach(id => {
-  $(id).addEventListener('input', () => {
-    marcarPendiente();
+// Edición de datos de factura.
 
-    if (id === 'totalFactura') {
-      calcularAutomatico();
+camposFactura.forEach(id => {
+  $(id).addEventListener(
+    'input',
+    () => {
+      pendiente();
+
+      if (id === 'totalFactura') {
+        calcularAutomatico();
+      }
     }
-  });
+  );
 });
 
 // =======================================
-// PERSONALIZACIÓN
+// PERSONALIZACIÓN DE COLORES
 // =======================================
 
 try {
-  const fondo = localStorage.getItem(
-    'colorFondo'
-  );
+  const fondo =
+    localStorage.getItem('colorFondo');
 
   const rojo =
-    localStorage.getItem('colorAcento') ||
-    localStorage.getItem('colorPrincipal');
+    localStorage.getItem('colorAcento');
 
-  if (/^#[0-9a-f]{6}$/i.test(fondo || '')) {
+  if (
+    /^#[a-f\d]{6}$/i.test(fondo || '')
+  ) {
     document.documentElement.style.setProperty(
       '--fondo',
       fondo
     );
   }
 
-  if (/^#[0-9a-f]{6}$/i.test(rojo || '')) {
+  if (
+    /^#[a-f\d]{6}$/i.test(rojo || '')
+  ) {
     document.documentElement.style.setProperty(
       '--rojo',
       rojo
@@ -2146,7 +2451,10 @@ try {
 
 } catch {}
 
-// Iniciar en la calculadora manual.
+// =======================================
+// INICIALIZACIÓN
+// =======================================
+
 calcularManual();
 
 </script>
