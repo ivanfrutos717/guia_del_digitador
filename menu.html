@@ -4,18 +4,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Menú Principal - Guía del Digitador</title>
 
+  <!-- ESTILOS -->
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="tema-global.css?v=1">
+
+  <!-- SISTEMA DE TEMAS -->
   <script defer src="tema-global.js?v=1"></script>
+
+  <!-- CONTROL DE SESIONES POR PESTAÑA -->
+  <script src="sesion.js?v=2"></script>
+
+  <script>
+    // Verificar que esta pestaña tenga un usuario.
+    GuiaSesion.verificarSesion();
+  </script>
 </head>
+
 <body>
 
   <div class="menu-container">
 
     <h1>GUÍA DEL DIGITADOR</h1>
 
+    <!-- SALUDO PERSONALIZADO -->
     <h2 id="saludoUsuario" class="saludo-degradado">
       ¡Bienvenido!
     </h2>
@@ -64,6 +78,7 @@
 
     </div>
 
+    <!-- CERRAR SESIÓN -->
     <a
       href="index.html"
       class="btn-salir"
@@ -73,51 +88,72 @@
 
   </div>
 
+  <!-- PIE DE PÁGINA -->
   <footer>
     <div class="desarrollado-by">
       Desarrollado by: Ivan Frutos
     </div>
   </footer>
 
+  <!-- FUNCIONES DEL MENÚ -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
 
+      // ELEMENTOS
       const saludo = document.getElementById(
         'saludoUsuario'
       );
 
-      const usuario = localStorage.getItem(
-        'usuarioActivo'
+      const btnCerrarSesion = document.getElementById(
+        'btnCerrarSesion'
       );
 
-      if (usuario && usuario.trim()) {
+      // USUARIO EXCLUSIVO DE ESTA PESTAÑA
+      const usuario = GuiaSesion.obtenerUsuario();
+
+      // PROTECCIÓN DEL MENÚ
+      if (!usuario || !usuario.trim()) {
+        GuiaSesion.verificarSesion();
+        return;
+      }
+
+      // SALUDO PERSONALIZADO
+      if (saludo) {
+
         const limpio = usuario
           .replace(/["']/g, '')
           .trim();
 
-        const nombre =
-          limpio.charAt(0).toUpperCase() +
-          limpio.slice(1).toLowerCase();
+        // Conservamos la escritura original del nombre.
+        saludo.textContent = `¡Bienvenido, ${limpio}!`;
 
-        saludo.textContent = `¡Bienvenido, ${nombre}!`;
+        // ANIMACIÓN ORIGINAL DEL SALUDO
+        setTimeout(() => {
+
+          saludo.classList.add('saludo-oculto');
+
+          setTimeout(() => {
+            saludo.style.display = 'none';
+          }, 1000);
+
+        }, 3000);
       }
 
-      setTimeout(() => {
-        if (!saludo) return;
+      // CERRAR SESIÓN SOLO EN ESTA PESTAÑA
+      if (btnCerrarSesion) {
 
-        saludo.classList.add('saludo-oculto');
+        btnCerrarSesion.addEventListener(
+          'click',
+          (event) => {
 
-        setTimeout(() => {
-          saludo.style.display = 'none';
-        }, 1000);
+            event.preventDefault();
 
-      }, 3000);
+            GuiaSesion.cerrarSesion();
 
-      document.getElementById(
-        'btnCerrarSesion'
-      ).addEventListener('click', () => {
-        localStorage.removeItem('usuarioActivo');
-      });
+          }
+        );
+
+      }
 
     });
   </script>
