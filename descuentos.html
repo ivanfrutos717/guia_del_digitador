@@ -1,0 +1,543 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descuentos | Guía del Digitador</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --rojo:#dc2626;
+  --fondo:#0b0b0d;
+  --panel:#18181b;
+  --borde:#35353b;
+  --texto:#f5f5f5;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--fondo);
+  color:var(--texto);
+  font-family:Arial,sans-serif;
+}
+main {max-width:1150px;margin:auto;padding:24px}
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:24px;
+}
+h1 {font-size:26px;margin:0}
+h2 {font-size:19px;margin-top:0}
+a {color:#fff;text-decoration:none}
+.panel {
+  background:var(--panel);
+  border:1px solid var(--borde);
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:18px;
+}
+label {display:block;margin:12px 0 6px}
+input,select,textarea {
+  width:100%;
+  padding:11px;
+  background:#101013;
+  color:white;
+  border:1px solid #484850;
+  border-radius:7px;
+  font:inherit;
+}
+input:focus {outline:1px solid var(--rojo)}
+button,.boton {
+  background:var(--rojo);
+  border:0;
+  color:white;
+  padding:12px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:disabled {opacity:.5;cursor:not-allowed}
+.secundario {background:#36363c}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.tabla {overflow-x:auto}
+table {width:100%;border-collapse:collapse;min-width:900px}
+th,td {
+  padding:9px;
+  border-bottom:1px solid var(--borde);
+  text-align:left;
+}
+th {font-size:13px;color:#aaa}
+td input {min-width:75px}
+td .descripcion {min-width:210px}
+td button {padding:8px}
+.resumen {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.cifra {
+  background:#101013;
+  border-radius:9px;
+  padding:16px;
+}
+.cifra small {color:#aaa}
+.cifra strong {
+  display:block;
+  margin-top:8px;
+  font-size:22px;
+  overflow-wrap:anywhere;
+}
+.verde {color:#4ade80}
+.aviso {color:#fbbf24;font-size:13px;line-height:1.5}
+.acciones {display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+#estado {color:#fbbf24}
+#textoOCR {height:135px}
+@media(max-width:650px) {
+  main {padding:12px}
+  h1 {font-size:20px}
+  .grid,.resumen {grid-template-columns:1fr}
+  header {align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Calculadora de Descuentos</h1>
+  <a class="boton secundario" href="menu.html">Volver</a>
+</header>
+
+<section class="panel">
+  <h2>1. Cargar factura</h2>
+  <input id="archivo" type="file" accept="image/*">
+  <p class="aviso">
+    Primera versión: lectura de imágenes JPG y PNG.
+    Los PDF escaneados se incorporarán después.
+    El reconocimiento puede cometer errores.
+  </p>
+  <div class="acciones">
+    <button id="leer" onclick="leerFactura()">Leer factura</button>
+  </div>
+  <p id="estado"></p>
+</section>
+
+<section class="panel">
+  <h2>2. Datos de la factura</h2>
+  <div class="grid">
+    <div>
+      <label>Proveedor</label>
+      <input id="proveedor">
+    </div>
+    <div>
+      <label>RUC</label>
+      <input id="ruc">
+    </div>
+    <div>
+      <label>Número de factura</label>
+      <input id="numero">
+    </div>
+    <div>
+      <label>Fecha de emisión</label>
+      <input id="fecha">
+    </div>
+    <div>
+      <label>Cliente</label>
+      <input id="cliente">
+    </div>
+    <div>
+      <label>Total original impreso</label>
+      <input id="totalImpreso" placeholder="Ej: 12791,40">
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>3. Aplicar descuentos</h2>
+  <label>Modalidad</label>
+  <select id="modalidad" onchange="calcular()">
+    <option value="general">Descuento general</option>
+    <option value="individual">Descuento individual</option>
+  </select>
+  <label>Descuento general (%)</label>
+  <input id="general" value="20" oninput="calcular()">
+  <p class="aviso">
+    Los descuentos se aplican al precio unitario.
+    Después se multiplica por la cantidad.
+    Los descuentos originales de la factura se
+    conservan como referencia y no se vuelven
+    a aplicar automáticamente.
+  </p>
+</section>
+
+<section class="panel">
+  <h2>4. Productos</h2>
+  <p class="aviso">
+    Revisá cada línea antes de generar el informe.
+    Podés corregir o agregar productos manualmente.
+  </p>
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Descripción</th>
+          <th>Cantidad</th>
+          <th>Precio unit.</th>
+          <th>Dto. original</th>
+          <th>Dto. nuevo %</th>
+          <th>Precio final</th>
+          <th>Importe final</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="productos"></tbody>
+    </table>
+  </div>
+  <div class="acciones">
+    <button onclick="agregar()">+ Agregar producto</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>5. Resultado</h2>
+  <div class="resumen">
+    <div class="cifra">
+      <small>Subtotal base</small>
+      <strong id="subtotal">0,00</strong>
+    </div>
+    <div class="cifra">
+      <small>Descuento nuevo</small>
+      <strong id="descontado">0,00</strong>
+    </div>
+    <div class="cifra">
+      <small>Total final</small>
+      <strong class="verde" id="total">0,00</strong>
+    </div>
+  </div>
+  <p id="comparacion" class="aviso"></p>
+  <div class="acciones">
+    <button onclick="generarPDF()">Generar PDF</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Texto reconocido</h2>
+  <p class="aviso">
+    Este texto permite comprobar lo que detectó el OCR.
+    No todos los datos se interpretan automáticamente.
+  </p>
+  <textarea id="textoOCR" readonly></textarea>
+</section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+let items = [];
+
+function numero(valor) {
+  let s = String(valor ?? "").trim().replace(/\s/g,"");
+  if (!s) return 0;
+  if (s.includes(",") && s.includes(".")) {
+    if (s.lastIndexOf(",") > s.lastIndexOf(".")) {
+      s = s.replace(/\./g,"").replace(",",".");
+    } else {
+      s = s.replace(/,/g,"");
+    }
+  } else if (s.includes(",")) {
+    s = s.replace(",",".");
+  } else if (/^\d{1,3}(\.\d{3})+$/.test(s)) {
+    s = s.replace(/\./g,"");
+  }
+  const n = Number(s);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function formato(n) {
+  return new Intl.NumberFormat("es-PY", {
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  }).format(n);
+}
+
+function escapar(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function agregar(datos={}) {
+  items.push({
+    codigo:datos.codigo || "",
+    descripcion:datos.descripcion || "",
+    cantidad:datos.cantidad ?? "1",
+    precio:datos.precio ?? "0",
+    original:datos.original ?? "0",
+    descuento:datos.descuento ?? "0"
+  });
+  dibujar();
+}
+
+function cambiar(i,campo,valor) {
+  items[i][campo]=valor;
+  calcular();
+}
+
+function eliminar(i) {
+  items.splice(i,1);
+  dibujar();
+}
+
+function dibujar() {
+  $("productos").innerHTML = items.map((p,i)=>`
+    <tr>
+      ${["codigo","descripcion","cantidad","precio",
+         "original","descuento"].map(c=>`
+        <td><input class="${c==="descripcion"?"descripcion":""}"
+          value="${escapar(p[c])}"
+          data-i="${i}" data-c="${c}"></td>
+      `).join("")}
+      <td id="pu${i}">0,00</td>
+      <td id="imp${i}">0,00</td>
+      <td><button class="secundario"
+        onclick="eliminar(${i})">X</button></td>
+    </tr>
+  `).join("");
+
+  document.querySelectorAll("[data-i]").forEach(el=>{
+    el.addEventListener("input",()=>{
+      cambiar(Number(el.dataset.i),el.dataset.c,el.value);
+    });
+  });
+  calcular();
+}
+
+function obtenerCalculos() {
+  const general = numero($("general").value);
+  const modo = $("modalidad").value;
+  if (!Number.isFinite(general) || general<0 || general>100) {
+    throw Error("El descuento general debe estar entre 0 y 100.");
+  }
+
+  return items.map(p=>{
+    const cantidad=numero(p.cantidad);
+    const precio=numero(p.precio);
+    const descuento=modo==="general" ?
+      general : numero(p.descuento);
+
+    if (![cantidad,precio,descuento].every(Number.isFinite)
+      || cantidad<0 || precio<0
+      || descuento<0 || descuento>100) {
+      throw Error("Revisá cantidades, precios y descuentos.");
+    }
+
+    const precioFinal=precio*(1-descuento/100);
+    return {
+      ...p,cantidad,precio,descuento,
+      precioFinal,
+      bruto:cantidad*precio,
+      final:cantidad*precioFinal
+    };
+  });
+}
+
+function calcular() {
+  try {
+    const filas=obtenerCalculos();
+    const subtotal=filas.reduce((a,p)=>a+p.bruto,0);
+    const total=filas.reduce((a,p)=>a+p.final,0);
+
+    filas.forEach((p,i)=>{
+      $("pu"+i).textContent=formato(p.precioFinal);
+      $("imp"+i).textContent=formato(p.final);
+    });
+
+    $("subtotal").textContent=formato(subtotal);
+    $("descontado").textContent=formato(subtotal-total);
+    $("total").textContent=formato(total);
+
+    const imp=numero($("totalImpreso").value);
+    $("comparacion").textContent =
+      $("totalImpreso").value.trim() && Number.isFinite(imp)
+      ? "Diferencia entre subtotal base y total impreso: "+
+        formato(subtotal-imp)+
+        ". Revisá descuentos originales e impuestos."
+      : "";
+    return true;
+  } catch(e) {
+    $("comparacion").textContent=e.message;
+    return false;
+  }
+}
+
+function extraerCabecera(texto) {
+  const lineas=texto.split(/\n/).map(x=>x.trim());
+  const ruc=texto.match(/\b\d{6,9}-\d\b/);
+  const factura=texto.match(/\b\d{3}-\d{3}-\d{7}\b/);
+  const fecha=texto.match(/\b\d{2}[-/]\d{2}[-/]\d{4}\b/);
+
+  const proveedor=lineas.find(x=>
+    /S\.?\s*A\.?|S\.?R\.?L\.?/i.test(x) &&
+    !/RUC|CLIENTE|RAZON|RAZÓN/i.test(x)
+  );
+
+  if(proveedor) $("proveedor").value=proveedor;
+  if(ruc) $("ruc").value=ruc[0];
+  if(factura) $("numero").value=factura[0];
+  if(fecha) $("fecha").value=fecha[0];
+
+  const cliente=texto.match(
+    /(?:Nombre o Raz[oó]n Social)\s*:?\s*([^\n]+)/i
+  );
+  if(cliente) $("cliente").value=cliente[1].trim();
+
+  const total=texto.match(
+    /TOTAL DE LA OPERACI[OÓ]N\s+([\d.,]+)/i
+  );
+  if(total) $("totalImpreso").value=total[1];
+}
+
+function extraerProductos(texto) {
+  // Interpretación preliminar para facturas con
+  // columnas: código, EAN, descripción, unidad,
+  // cantidad, precio, descuento e importe.
+  const resultados=[];
+  const lineas=texto.split("\n");
+
+  for(const linea of lineas) {
+    const m=linea.trim().match(
+      /^([A-Z0-9]{5,15})\s+(\d{8,14})\s+(.+?)\s+(?:UNI|UN|UND|PZA|KG)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)/
+    );
+    if(!m) continue;
+
+    const cantidad=numero(m[4]);
+    const precio=numero(m[5]);
+    if(!Number.isFinite(cantidad) ||
+       !Number.isFinite(precio)) continue;
+
+    resultados.push({
+      codigo:m[1],
+      descripcion:m[3],
+      cantidad:m[4],
+      precio:m[5],
+      original:m[6],
+      descuento:"0"
+    });
+  }
+  return resultados;
+}
+
+async function leerFactura() {
+  const archivo=$("archivo").files[0];
+  if(!archivo) return alert("Seleccioná una imagen.");
+  if(!archivo.type.startsWith("image/")) {
+    return alert("Por ahora seleccioná una imagen JPG o PNG.");
+  }
+
+  $("leer").disabled=true;
+  $("estado").textContent="Preparando reconocimiento...";
+
+  try {
+    const worker=await Tesseract.createWorker("spa");
+    let resultado;
+    try {
+      resultado=await worker.recognize(archivo);
+    } finally {
+      await worker.terminate();
+    }
+
+    const texto=resultado.data.text || "";
+    $("textoOCR").value=texto;
+    extraerCabecera(texto);
+
+    const encontrados=extraerProductos(texto);
+    if(encontrados.length) {
+      items=encontrados;
+      dibujar();
+    }
+
+    $("estado").textContent=
+      "Lectura terminada. Productos identificados: "+
+      encontrados.length+
+      ". Revisá los datos antes de generar el PDF.";
+  } catch(e) {
+    $("estado").textContent="Error de lectura: "+e.message;
+  } finally {
+    $("leer").disabled=false;
+  }
+}
+
+function generarPDF() {
+  if(!items.length) return alert("Agregá productos.");
+  if(!calcular()) return alert("Corregí los valores.");
+
+  const filas=obtenerCalculos();
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+  const subtotal=filas.reduce((a,p)=>a+p.bruto,0);
+  const total=filas.reduce((a,p)=>a+p.final,0);
+  let y=17;
+
+  function linea(texto) {
+    const partes=pdf.splitTextToSize(String(texto),180);
+    for(const parte of partes) {
+      if(y>275) {pdf.addPage();y=17;}
+      pdf.text(parte,15,y);
+      y+=7;
+    }
+  }
+
+  pdf.setFontSize(16);
+  linea("GUIA DEL DIGITADOR");
+  pdf.setFontSize(11);
+  linea("Informe de descuentos - No es factura fiscal");
+  y+=4;
+
+  [
+    ["Proveedor",$("proveedor").value],
+    ["RUC",$("ruc").value],
+    ["Factura",$("numero").value],
+    ["Fecha",$("fecha").value],
+    ["Cliente",$("cliente").value],
+    ["Total impreso",$("totalImpreso").value],
+    ["Modalidad",$("modalidad").value]
+  ].forEach(([k,v])=>linea(k+": "+(v||"No identificado")));
+
+  y+=5;
+  filas.forEach((p,i)=>{
+    linea("Producto "+(i+1)+": "+p.descripcion);
+    linea("Codigo: "+p.codigo+
+      " | Cantidad: "+formato(p.cantidad));
+    linea("Precio original: "+formato(p.precio)+
+      " | Dto. factura: "+p.original);
+    linea("Descuento nuevo: "+formato(p.descuento)+"%");
+    linea("Precio unitario final: "+formato(p.precioFinal));
+    linea("Importe final: "+formato(p.final));
+    y+=3;
+  });
+
+  y+=4;
+  linea("Subtotal base: "+formato(subtotal));
+  linea("Descuento aplicado: "+formato(subtotal-total));
+  linea("TOTAL FINAL: "+formato(total));
+  y+=4;
+  linea("Importes sujetos a revision del digitador.");
+
+  const nombre=($("numero").value||"sin_numero")
+    .replace(/[^a-zA-Z0-9-]/g,"_");
+  pdf.save("descuentos_"+nombre+".pdf");
+}
+
+$("totalImpreso").addEventListener("input",calcular);
+agregar();
+</script>
+</body>
+</html>
