@@ -1,10 +1,13 @@
 /* Matriz de objetos que contiene los credenciales de acceso predeterminados */
 const usuariosPermitidos = [
-    { usuario: "Ivan", clave: "220606" }, 
-    { usuario: "Ulises", clave: "QWERTY12345" },  
-    { usuario: "Mario", clave: "papoi" }, 
-    { usuario: "Junior", clave: "gtafifa2008nfs" }, 
-    { usuario: "monica", clave: "chefeechefenepai" }
+    { usuario: "Ivan Frutos", clave: "220606" }, 
+    { usuario: "Ulises Bareiro", clave: "QWERTY12345" },  
+    { usuario: "Mario Cardozo", clave: "papoi" }, 
+    { usuario: "Junior chavez", clave: "Sendokaichampions.gta.rocketleague1" }, 
+    { usuario: "Diego Duarte", clave: "Dieguito_2468" },
+    { usuario: "Alfonso Sung", clave: "Bolitamike8867" },
+    { usuario: "Zoeli Alderete", clave: "Milo1907" },
+    { usuario: "Patrick Flores", clave: "Mortadela549" },
 ];
 
 /* Referencias a los elementos del DOM en login.html */
