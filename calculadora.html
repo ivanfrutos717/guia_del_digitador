@@ -7,10 +7,23 @@
 
   <title>Calculadora de Vencimientos - Guía del Digitador</title>
 
+  <!-- ESTILOS ORIGINALES -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- SISTEMA GLOBAL DE TEMAS -->
   <link rel="stylesheet" href="tema-global.css?v=1">
   <script defer src="tema-global.js?v=1"></script>
+
+  <!-- CONTROL DE SESIONES INDEPENDIENTES -->
+  <script src="sesion.js?v=2"></script>
+
+  <!-- VERIFICACIÓN DE USUARIO -->
+  <script>
+    GuiaSesion.verificarSesion();
+  </script>
+
 </head>
+
 <body>
 
   <div class="card">
@@ -19,6 +32,7 @@
 
     <h2>Vencimiento de Factura</h2>
 
+    <!-- FECHA DE EMISIÓN -->
     <label for="fechaEmision">
       FECHA DE EMISIÓN:
     </label>
@@ -26,8 +40,10 @@
     <input
       type="date"
       id="fechaEmision"
-      required>
+      required
+    >
 
+    <!-- DÍAS DE PLAZO -->
     <label for="diasPlazo">
       DÍAS DE PLAZO:
     </label>
@@ -37,22 +53,30 @@
       id="diasPlazo"
       placeholder="Ej: 31"
       min="1"
-      required>
+      required
+    >
 
+    <!-- BOTÓN CALCULAR -->
     <button
       id="btnCalcular"
       type="button">
       Calcular Vencimiento
     </button>
 
+    <!-- RESULTADO -->
     <div class="resultado-box">
-      <span>FECHA LÍMITE DE PAGO</span>
+
+      <span>
+        FECHA LÍMITE DE PAGO
+      </span>
 
       <h3 id="fechaResultado">
         -- / --- / ----
       </h3>
+
     </div>
 
+    <!-- VOLVER AL MENÚ -->
     <a
       href="menu.html"
       class="btn-salir"
@@ -62,12 +86,14 @@
 
   </div>
 
+  <!-- PIE DE PÁGINA -->
   <footer>
     <div class="desarrollado-by">
       Desarrollado by: Ivan Frutos
     </div>
   </footer>
 
+  <!-- FUNCIONES ORIGINALES DE LA CALCULADORA -->
   <script src="calculadora.js"></script>
 
 </body>
