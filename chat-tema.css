@@ -1,0 +1,174 @@
+
+/* =====================================
+   GUÍA DEL DIGITADOR
+   ESTILO INTERNO DEL CHAT TLK.IO
+   ===================================== */
+
+/* FONDO GENERAL */
+
+html,
+body,
+.chat.chat {
+  background: #101827 !important;
+  color: #f1f5f9 !important;
+}
+
+/* ZONA DE MENSAJES */
+
+.chat.chat,
+.chat-content,
+.chat-messages,
+.chat-history,
+.posts,
+.posts-container,
+.messages,
+.message-list,
+.main,
+.content {
+  background-color: #101827 !important;
+  color: #f1f5f9 !important;
+}
+
+/* BURBUJAS DE MENSAJES */
+
+.post.post,
+.message.message,
+.post-content,
+.post-message,
+.post-message.post-message {
+  background-color: #202d42 !important;
+  color: #f1f5f9 !important;
+  border-color: #34445c !important;
+}
+
+.post.post.me,
+.post.me,
+.message.me {
+  background-color: #3d2331 !important;
+  color: #ffffff !important;
+}
+
+/* ENLACES */
+
+.post.post a,
+.chat.chat a {
+  color: #93c5fd !important;
+}
+
+/* NOMBRES Y HORAS */
+
+.post-name.post-name,
+.post-time-tag.post-time-tag,
+.post-time-dot,
+.time.time {
+  color: #aebed2 !important;
+}
+
+/* =====================================
+   CAMPO PARA ESCRIBIR MENSAJES
+   ===================================== */
+
+.message-input.message-input,
+.message-input.message-input:focus,
+.message-input.message-input:hover,
+textarea.message-input,
+textarea.message-input:focus,
+input.message-input,
+input.message-input:focus,
+[contenteditable="true"] {
+  background: #1a2638 !important;
+
+  color: #ffffff !important;
+
+  caret-color: #ffffff !important;
+
+  border: 1px solid #64748b !important;
+
+  box-shadow:
+    0 0 0 1px rgba(220,38,38,.08) !important;
+
+  -webkit-text-fill-color: #ffffff !important;
+
+  opacity: 1 !important;
+}
+
+/* TEXTO DE AYUDA DEL CAMPO */
+
+.message-input::placeholder,
+.message-input::-webkit-input-placeholder,
+textarea::placeholder {
+  color: #c2d0e0 !important;
+  opacity: 1 !important;
+
+  -webkit-text-fill-color: #c2d0e0 !important;
+}
+
+/* BARRA PARA ESCRIBIR Y PANEL LATERAL */
+
+.message,
+.input-area,
+.input-wrap,
+.compose,
+.composer,
+.join.join,
+.aside.aside,
+.participants.participants,
+.menu-item.menu-item,
+.popup-content.popup-content,
+.popup-header.popup-header {
+  background-color: #172235 !important;
+
+  color: #f1f5f9 !important;
+
+  border-color: #34445c !important;
+}
+
+/* ENCABEZADO DEL CHAT */
+
+.header-bar.header-bar {
+  background-color: #26354a !important;
+  color: #f8fafc !important;
+}
+
+/* INFORMACIÓN Y PARTICIPANTES */
+
+.header-channel.header-channel,
+.header-icon.header-icon,
+.join-hint.join-hint,
+.join-hl.join-hl,
+.counter.counter,
+.popup-header-title.popup-header-title {
+  color: #e2e8f0 !important;
+}
+
+/* OTROS INPUTS */
+
+.input-text.input-text,
+.input-text.input-text:focus {
+  background: #1a2638 !important;
+
+  color: #ffffff !important;
+
+  border: 1px solid #64748b !important;
+}
+
+.input-text::placeholder,
+.input-text::-webkit-input-placeholder {
+  color: #c2d0e0 !important;
+}
+
+/* LEGIBILIDAD DEL EDITOR */
+
+.message-input.message-input {
+  min-height: 38px;
+
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* SELECCIÓN DE TEXTO */
+
+::selection {
+  background: #dc2626;
+  color: #ffffff;
+}
