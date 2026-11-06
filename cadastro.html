@@ -7,10 +7,21 @@
 
   <title>Asistente de Cadastro - Guía del Digitador</title>
 
+  <!-- ESTILOS ORIGINALES -->
   <link rel="stylesheet" href="style.css?v=3">
   <link rel="stylesheet" href="tema-global.css?v=1">
+
+  <!-- SISTEMA DE TEMAS -->
   <script defer src="tema-global.js?v=1"></script>
+
+  <!-- SESIONES INDEPENDIENTES POR PESTAÑA -->
+  <script src="sesion.js?v=2"></script>
+
+  <script>
+    GuiaSesion.verificarSesion();
+  </script>
 </head>
+
 <body>
 
   <div class="menu-container cadastro-container">
@@ -34,18 +45,21 @@
         CONECTANDO A LA NUBE...
 
       </div>
+
     </header>
 
     <div class="titulo-seccion">
+
       <h1>ASISTENTE DE CADASTRO</h1>
 
       <p class="subtitulo">
         REGISTRO INTELIGENTE Y ESTANDARIZACIÓN
         COLABORATIVA DE PRODUCTOS
       </p>
+
     </div>
 
-    <!-- PASO 1 -->
+    <!-- PASO 1: BUSCAR PRODUCTO -->
 
     <section class="bloque-paso">
 
@@ -85,6 +99,7 @@
             BUSCAR
 
           </button>
+
         </div>
 
         <div
@@ -97,6 +112,7 @@
         </div>
 
       </form>
+
     </section>
 
     <!-- AVISOS -->
@@ -111,7 +127,7 @@
 
     </div>
 
-    <!-- PASO 2 -->
+    <!-- PASO 2: ATRIBUTOS -->
 
     <section class="bloque-paso">
 
@@ -127,6 +143,7 @@
         <div class="grid-atributos">
 
           <div class="campo-atributo">
+
             <label for="marca">MARCA</label>
 
             <input
@@ -134,9 +151,11 @@
               id="marca"
               placeholder="Ej: SONY"
               required>
+
           </div>
 
           <div class="campo-atributo">
+
             <label for="modelo">MODELO</label>
 
             <input
@@ -144,9 +163,11 @@
               id="modelo"
               placeholder="Ej: CFI-1215A"
               required>
+
           </div>
 
           <div class="campo-atributo">
+
             <label for="tipoProducto">
               TIPO DE PRODUCTO
             </label>
@@ -156,9 +177,11 @@
               id="tipoProducto"
               placeholder="Ej: PLAYSTATION 5"
               required>
+
           </div>
 
           <div class="campo-atributo">
+
             <label for="color">
               COLOR / VARIANTE
             </label>
@@ -168,6 +191,7 @@
               id="color"
               placeholder="Ej: BLANCO"
               required>
+
           </div>
 
         </div>
@@ -178,18 +202,21 @@
         </div>
 
         <div class="acciones-form">
+
           <button
             type="submit"
             class="btn-exito btn-guardar"
             id="btnGuardar">
             💾 GUARDAR EN LA NUBE
           </button>
+
         </div>
 
       </form>
+
     </section>
 
-    <!-- PASO 3 -->
+    <!-- PASO 3: DESCRIPCIÓN ORIGINAL -->
 
     <section
       class="bloque-paso"
@@ -217,16 +244,18 @@
 
     </section>
 
-    <!-- PASO 4 -->
+    <!-- PASO 4: DESCRIPCIÓN FINAL -->
 
     <section class="bloque-paso bloque-resultado">
 
       <div class="encabezado-paso">
+
         <span class="num-paso">4</span>
 
         <h2>
           DESCRIPCIÓN FORMATEADA FINAL
         </h2>
+
       </div>
 
       <div class="resultado-group">
@@ -246,20 +275,25 @@
         </button>
 
       </div>
+
     </section>
 
   </div>
 
+  <!-- PIE DE PÁGINA -->
   <footer>
+
     <div class="desarrollado-by">
       Desarrollado by: Ivan Frutos
     </div>
+
   </footer>
 
-  <!-- Librerías originales de Cadastro -->
+  <!-- LIBRERÍAS ORIGINALES DE CADASTRO -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
+  <!-- FUNCIONES ORIGINALES -->
   <script src="cadastro.js"></script>
 
 </body>
