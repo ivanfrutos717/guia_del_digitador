@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chat en Vivo | Guía del Digitador</title>
+
+  <style>
+    :root {
+      --fondo: #0b0b0d;
+      --panel: #18181d;
+      --panel2: #24242b;
+      --borde: #393943;
+      --texto: #f4f4f5;
+      --suave: #a1a1aa;
+      --rojo: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font: 15px/1.45 Arial, sans-serif;
+      color: var(--texto);
+      background: var(--fondo);
+    }
+
+    .contenedor {
+      width: min(960px, 100%);
+      margin: auto;
+      padding: 18px 14px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    h1 {
+      font-size: clamp(20px, 3vw, 27px);
+      margin: 0;
+    }
+
+    h2 { margin-top: 0; }
+
+    .subtitulo {
+      color: var(--suave);
+      font-size: 12px;
+      margin: 4px 0 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--borde);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .oculto { display: none !important; }
+
+    .boton {
+      background: var(--rojo);
+      color: white;
+      border: 1px solid var(--rojo);
+      border-radius: 9px;
+      padding: 11px 15px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .boton:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .secundario {
+      background: var(--panel2);
+      border-color: var(--borde);
+    }
+
+    a.boton {
+      display: inline-block;
+      text-decoration: none;
+    }
+
+    .fila {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .muted { color: var(--suave); }
+
+    .aviso {
+      min-height: 20px;
+      margin: 9px 0 0;
+      color: #fbbf24;
+      font-size: 13px;
+    }
+
+    .acceso {
+      max-width: 620px;
+      margin: 45px auto;
+    }
+
+    .codigo {
+      padding: 12px;
+      margin: 12px 0;
+      font-family: monospace;
+      overflow-wrap: anywhere;
+      background: #0e0e12;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      user-select: all;
+    }
+
+    .chat {
+      display: flex;
+      flex-direction: column;
+      height: min(78dvh, 760px);
+      min-height: 470px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .barra-chat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--borde);
+    }
+
+    .barra-chat strong { display: block; }
+
+    .barra-chat small { color: var(--suave); }
+
+    .mensajes {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .vacio {
+      color: var(--suave);
+      text-align: center;
+      margin: auto;
+    }
+
+    .mensaje {
+      align-self: flex-start;
+      background: var(--panel2);
+      padding: 10px 12px;
+      border-radius: 12px 12px 12px 3px;
+      max-width: min(83%, 620px);
+      overflow-wrap: anywhere;
+    }
+
+    .mensaje.propio {
+      align-self: flex-end;
+      background: #652020;
+      border-radius: 12px 12px 3px 12px;
+    }
+
+    .meta {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .meta strong { font-size: 12px; }
+
+    .meta time {
+      color: #c3c3ca;
+      font-size: 11px;
+    }
+
+    .contenido { white-space: pre-wrap; }
+
+    .enviar {
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+      gap: 9px;
+      border-top: 1px solid var(--borde);
+    }
+
+    textarea {
+      flex: 1;
+      min-width: 0;
+      min-height: 45px;
+      max-height: 115px;
+      resize: vertical;
+      background: #101014;
+      border: 1px solid #494954;
+      border-radius: 9px;
+      color: var(--texto);
+      font: inherit;
+      padding: 11px;
+    }
+
+    textarea:focus {
+      outline: 2px solid var(--rojo);
+    }
+
+    .pie {
+      padding: 0 16px 10px;
+      color: var(--suave);
+      font-size: 11px;
+    }
+
+    @media (max-width: 600px) {
+      .contenedor { padding: 10px; }
+
+      .panel { padding: 15px; }
+
+      .chat {
+        height: calc(100dvh - 96px);
+        min-height: 410px;
+        padding: 0;
+      }
+
+      .mensaje { max-width: 91%; }
+
+      .boton { padding: 10px 12px; }
+
+      .enviar { padding: 9px; }
+    }
+  </style>
+</head>
+
+<body>
+<main class="contenedor">
+
+  <header>
+    <div>
+      <h1>Chat en Vivo</h1>
+      <p class="subtitulo">
+        GUÍA DEL DIGITADOR · Conversación grupal
+      </p>
+    </div>
+
+    <a class="boton secundario" href="menu.html">
+      ← Menú
+    </a>
+  </header>
+
+  <!-- INICIO DE SESIÓN -->
+
+  <section id="acceso" class="panel acceso">
+    <h2>Chat de compañeros</h2>
+
+    <p class="muted">
+      Ingresá con Google. Solamente las cuentas
+      autorizadas pueden leer y enviar mensajes.
+    </p>
+
+    <button
+      id="btnEntrar"
+      type="button"
+      class="boton">
+      Entrar con Google
+    </button>
+
+    <p
+      id="estadoAcceso"
+      class="aviso"
+      role="status"></p>
+  </section>
+
+  <!-- USUARIO PENDIENTE -->
+
+  <section id="pendiente" class="panel acceso oculto">
+    <h2>Cuenta pendiente de autorización</h2>
+
+    <p>
+      Compartí este código de usuario con quien
+      administra el chat para que te habilite en Firebase.
+    </p>
+
+    <div id="codigoUID" class="codigo"></div>
+
+    <div class="fila">
+      <button
+        id="btnCopiarUID"
+        type="button"
+        class="boton secundario">
+        Copiar código
+      </button>
+
+      <button
+        id="btnRevisar"
+        type="button"
+        class="boton">
+        Comprobar acceso
+      </button>
+
+      <button
+        id="btnCambiar"
+        type="button"
+        class="boton secundario">
+        Cambiar cuenta
+      </button>
+    </div>
+
+    <p
+      id="estadoPendiente"
+      class="aviso"
+      role="status"></p>
+  </section>
+
+  <!-- CHAT PRINCIPAL -->
+
+  <section id="chat" class="panel chat oculto">
+
+    <div class="barra-chat">
+      <div>
+        <strong>Chat general</strong>
+        <small id="usuarioActual"></small>
+      </div>
+
+      <button
+        id="btnSalir"
+        type="button"
+        class="boton secundario">
+        Cerrar sesión
+      </button>
+    </div>
+
+    <div
+      id="mensajes"
+      class="mensajes"
+      role="log"
+      aria-label="Mensajes del chat"
+      aria-live="polite">
+
+      <p class="vacio">Cargando mensajes...</p>
+    </div>
+
+    <form id="formMensaje" class="enviar">
+      <textarea
+        id="textoMensaje"
+        placeholder="Escribí un mensaje..."
+        maxlength="700"
+        required
+        aria-label="Mensaje"></textarea>
+
+      <button
+        id="btnEnviar"
+        type="submit"
+        class="boton">
+        Enviar
+      </button>
+    </form>
+
+    <div class="pie">
+      Enter para enviar · Shift + Enter para salto de línea
+      · Máximo 700 caracteres
+    </div>
+
+    <p
+      id="estadoChat"
+      class="aviso"
+      style="padding: 0 16px"
+      role="status"></p>
+
+  </section>
+</main>
+
+<script type="module">
+
+  // =====================================
+  // IMPORTAR FIREBASE
+  // =====================================
+
+  import { initializeApp }
+    from 'https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js';
+
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    onAuthStateChanged,
+    signInWithPopup,
+    signOut,
+    setPersistence,
+    inMemoryPersistence
+  } from 'https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js';
+
+  import {
+    getDatabase,
+    ref,
+    get,
+    push,
+    query,
+    orderByChild,
+    limitToLast,
+    onValue,
+    serverTimestamp
+  } from 'https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js';
+
+  // =====================================
+  // CONFIGURACIÓN DE FIREBASE
+  // =====================================
+  // REEMPLAZÁ ESTOS VALORES CON LOS
+  // DE TU PROYECTO EN FIREBASE.
+
+  const firebaseConfig = {
+    apiKey: 'PEGAR_API_KEY',
+    authDomain: 'PEGAR_AUTH_DOMAIN',
+    databaseURL: 'PEGAR_DATABASE_URL',
+    projectId: 'PEGAR_PROJECT_ID',
+    appId: 'PEGAR_APP_ID'
+  };
+
+  const $ = id => document.getElementById(id);
+
+  const configurar = Object.values(firebaseConfig)
+    .every(v => v && !v.startsWith('PEGAR_'));
+
+  // =====================================
+  // CONTROLAR PANTALLAS
+  // =====================================
+
+  function mostrar(id) {
+    ['acceso', 'pendiente', 'chat'].forEach(k => {
+      $(k).classList.toggle('oculto', k !== id);
+    });
+  }
+
+  if (!configurar) {
+
+    $('estadoAcceso').textContent =
+      'Falta colocar la configuración de Firebase en chat.html.';
+
+    $('btnEntrar').disabled = true;
+
+  } else {
+
+    // ===================================
+    // INICIALIZAR FIREBASE
+    // ===================================
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const google = new GoogleAuthProvider();
+
+    google.setCustomParameters({
+      prompt: 'select_account'
+    });
+
+    let miembro = null;
+    let cancelarMensajes = null;
+    let primeraCarga = true;
+
+    // ===================================
+    // CERRAR CONEXIÓN ANTERIOR
+    // ===================================
+
+    function detenerChat() {
+      if (cancelarMensajes) {
+        cancelarMensajes();
+      }
+
+      cancelarMensajes = null;
+      miembro = null;
+
+      $('mensajes').replaceChildren();
+      $('textoMensaje').value = '';
+    }
+
+    // ===================================
+    // FORMATO DE HORAS
+    // ===================================
+
+    function fechaHora(ms) {
+      if (!Number.isFinite(ms)) {
+        return 'Enviando...';
+      }
+
+      return new Date(ms).toLocaleTimeString(
+        'es-PY',
+        {
+          hour: '2-digit',
+          minute: '2-digit'
+        }
+      );
+    }
+
+    // ===================================
+    // MOSTRAR MENSAJES
+    // ===================================
+
+    function dibujarMensajes(snapshot) {
+      const area = $('mensajes');
+
+      const estabaAbajo =
+        primeraCarga ||
+        area.scrollHeight -
+        area.scrollTop -
+        area.clientHeight < 130;
+
+      const fragmento =
+        document.createDocumentFragment();
+
+      let cantidad = 0;
+
+      snapshot.forEach(item => {
+        const m = item.val();
+
+        if (
+          !m ||
+          typeof m.texto !== 'string'
+        ) {
+          return;
+        }
+
+        cantidad++;
+
+        const card =
+          document.createElement('article');
+
+        const propio =
+          m.uid === auth.currentUser?.uid;
+
+        card.className =
+          'mensaje' +
+          (propio ? ' propio' : '');
+
+        const meta =
+          document.createElement('div');
+
+        meta.className = 'meta';
+
+        const nombre =
+          document.createElement('strong');
+
+        nombre.textContent =
+          m.nombre || 'Compañero';
+
+        const hora =
+          document.createElement('time');
+
+        hora.textContent =
+          fechaHora(m.creadoEn);
+
+        const cuerpo =
+          document.createElement('div');
+
+        cuerpo.className = 'contenido';
+
+        // textContent evita ejecutar HTML
+        // enviado por otros participantes.
+
+        cuerpo.textContent = m.texto;
+
+        meta.append(nombre, hora);
+        card.append(meta, cuerpo);
+
+        fragmento.append(card);
+      });
+
+      if (!cantidad) {
+        const vacio =
+          document.createElement('p');
+
+        vacio.className = 'vacio';
+
+        vacio.textContent =
+          'Todavía no hay mensajes. ¡Escribí el primero!';
+
+        fragmento.append(vacio);
+      }
+
+      area.replaceChildren(fragmento);
+
+      if (estabaAbajo) {
+        area.scrollTop = area.scrollHeight;
+      }
+
+      primeraCarga = false;
+    }
+
+    // ===================================
+    // RECIBIR MENSAJES EN TIEMPO REAL
+    // ===================================
+
+    function escucharMensajes() {
+      if (cancelarMensajes) {
+        cancelarMensajes();
+      }
+
+      primeraCarga = true;
+
+      const recientes = query(
+        ref(db, 'mensajes'),
+        orderByChild('creadoEn'),
+        limitToLast(100)
+      );
+
+      cancelarMensajes = onValue(
+        recientes,
+
+        dibujarMensajes,
+
+        error => {
+          $('estadoChat').textContent =
+            'Error al recibir mensajes: ' +
+            error.message;
+        }
+      );
+    }
+
+    // ===================================
+    // VERIFICAR USUARIO AUTORIZADO
+    // ===================================
+
+    async function comprobarAcceso(
+      user = auth.currentUser
+    ) {
+      if (!user) {
+        mostrar('acceso');
+        return;
+      }
+
+      $('codigoUID').textContent = user.uid;
+
+      $('estadoPendiente').textContent =
+        'Comprobando autorización...';
+
+      mostrar('pendiente');
+
+      try {
+        const s = await get(
+          ref(db, 'miembros/' + user.uid)
+        );
+
+        if (
+          auth.currentUser?.uid !== user.uid
+        ) {
+          return;
+        }
+
+        const registro = s.val();
+
+        if (
+          registro?.activo === true &&
+          typeof registro.nombre === 'string' &&
+          registro.nombre.trim()
+        ) {
+          miembro = {
+            nombre: registro.nombre.trim()
+          };
+
+          $('usuarioActual').textContent =
+            'Conectado como ' + miembro.nombre;
+
+          $('estadoChat').textContent = '';
+
+          mostrar('chat');
+          escucharMensajes();
+
+        } else {
+          miembro = null;
+
+          $('estadoPendiente').textContent =
+            'Tu cuenta todavía no está habilitada.';
+        }
+
+      } catch (e) {
+        $('estadoPendiente').textContent =
+          'No se pudo comprobar el permiso: ' +
+          e.message;
+      }
+    }
+
+    // ===================================
+    // INICIAR SESIÓN CON GOOGLE
+    // ===================================
+
+    $('btnEntrar').addEventListener(
+      'click',
+      async () => {
+        $('btnEntrar').disabled = true;
+
+        $('estadoAcceso').textContent =
+          'Abriendo Google...';
+
+        try {
+          // La sesión se conserva solo
+          // mientras esta página está abierta.
+
+          await setPersistence(
+            auth,
+            inMemoryPersistence
+          );
+
+          await signInWithPopup(
+            auth,
+            google
+          );
+
+        } catch (e) {
+          $('estadoAcceso').textContent =
+            'No se pudo iniciar sesión: ' +
+            e.message;
+
+        } finally {
+          $('btnEntrar').disabled = false;
+        }
+      }
+    );
+
+    // ===================================
+    // COPIAR CÓDIGO DEL USUARIO
+    // ===================================
+
+    $('btnCopiarUID').addEventListener(
+      'click',
+      async () => {
+        try {
+          await navigator.clipboard.writeText(
+            $('codigoUID').textContent
+          );
+
+          $('estadoPendiente').textContent =
+            'Código copiado.';
+
+        } catch {
+          $('estadoPendiente').textContent =
+            'Seleccioná y copiá manualmente el código.';
+        }
+      }
+    );
+
+    $('btnRevisar').addEventListener(
+      'click',
+      () => comprobarAcceso()
+    );
+
+    $('btnCambiar').addEventListener(
+      'click',
+      () => signOut(auth)
+    );
+
+    $('btnSalir').addEventListener(
+      'click',
+      () => signOut(auth)
+    );
+
+    // ===================================
+    // ENVIAR CON ENTER
+    // ===================================
+
+    $('textoMensaje').addEventListener(
+      'keydown',
+      e => {
+        if (
+          e.key === 'Enter' &&
+          !e.shiftKey &&
+          !e.isComposing
+        ) {
+          e.preventDefault();
+
+          $('formMensaje').requestSubmit();
+        }
+      }
+    );
+
+    // ===================================
+    // ENVIAR MENSAJE A FIREBASE
+    // ===================================
+
+    $('formMensaje').addEventListener(
+      'submit',
+      async e => {
+        e.preventDefault();
+
+        const user = auth.currentUser;
+
+        const texto =
+          $('textoMensaje').value.trim();
+
+        if (
+          !user ||
+          !miembro ||
+          !texto ||
+          texto.length > 700
+        ) {
+          return;
+        }
+
+        $('btnEnviar').disabled = true;
+        $('estadoChat').textContent = '';
+
+        try {
+          await push(
+            ref(db, 'mensajes'),
+            {
+              uid: user.uid,
+              nombre: miembro.nombre,
+              texto: texto,
+              creadoEn: serverTimestamp()
+            }
+          );
+
+          $('textoMensaje').value = '';
+          $('textoMensaje').focus();
+
+        } catch (error) {
+          $('estadoChat').textContent =
+            'No se envió el mensaje: ' +
+            error.message;
+
+        } finally {
+          $('btnEnviar').disabled = false;
+        }
+      }
+    );
+
+    // ===================================
+    // ESTADO DE AUTENTICACIÓN
+    // ===================================
+
+    onAuthStateChanged(
+      auth,
+      async user => {
+        detenerChat();
+
+        if (user) {
+          await comprobarAcceso(user);
+
+        } else {
+          $('estadoAcceso').textContent = '';
+          mostrar('acceso');
+        }
+      }
+    );
+  }
+
+</script>
+</body>
+</html>
