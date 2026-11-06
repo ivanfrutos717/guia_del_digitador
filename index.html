@@ -1,44 +1,46 @@
-<!DOCTYPE html> <!-- Declaración del estándar HTML5 -->
-<html lang="es"> <!-- Idioma configurado en español -->
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8"> <!-- Codificación de caracteres universales -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Diseño adaptable -->
-    <title>Iniciar Sesión - Guía del Digitador</title> <!-- Título del navegador -->
-    <link rel="stylesheet" href="style.css"> <!-- Vinculación con el CSS global -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión - Guía del Digitador</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tema-global.css?v=1">
+  <script defer src="tema-global.js?v=1"></script>
 </head>
 <body>
 
-    <!-- Formulario principal de inicio de sesión -->
-    <form id="formLogin">
-        <h1>GUIA DEL DIGITADOR (BETA 1)</h1>
-        <h2>Ingreso al Sistema</h2>
+  <form id="formLogin">
+    <h1>GUÍA DEL DIGITADOR (BETA 1)</h1>
+    <h2>Ingreso al Sistema</h2>
 
-        <input type="text" id="usuario" placeholder="USUARIO" required>
-        <input type="password" id="clave" placeholder="CONTRASEÑA" required>
+    <input
+      type="text"
+      id="usuario"
+      placeholder="USUARIO"
+      autocomplete="username"
+      required>
 
-        <button type="submit">Entrar</button>
-        <p id="mensajeError"></p>
-    </form>
+    <input
+      type="password"
+      id="clave"
+      placeholder="CONTRASEÑA"
+      autocomplete="current-password"
+      required>
 
-    <!-- Pie de página con créditos de desarrollo y personalización -->
-    <footer>
-        <div class="desarrollado-by">Desarrollado by: Ivan Frutos</div>
-        
-        <!-- Panel para selección de color en tiempo real -->
-        <div class="panel-colores">
-            <div class="control-color">
-                <label for="pickerFondo">Fondo:</label>
-                <input type="color" id="pickerFondo" value="#0b0b0d">
-            </div>
-            <div class="control-color">
-                <label for="pickerPrincipal">Acento:</label>
-                <input type="color" id="pickerPrincipal" value="#dc2626">
-            </div>
-        </div>
-    </footer>
+    <button type="submit">Entrar</button>
 
-    <!-- Scripts necesarios -->
-    <script src="temas.js"></script>
-    <script src="login.js"></script>
+    <p id="mensajeError" aria-live="polite"></p>
+  </form>
+
+  <footer>
+    <div class="desarrollado-by">
+      Desarrollado by: Ivan Frutos
+    </div>
+  </footer>
+
+  <script src="login.js"></script>
 </body>
 </html>
