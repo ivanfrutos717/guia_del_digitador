@@ -1,0 +1,872 @@
+
+/* ===================================================
+   GUÍA DEL DIGITADOR
+   SISTEMA VISUAL GLOBAL
+   MODO OSCURO + CLARO + COLORES
+   =================================================== */
+
+:root,
+:root[data-guia-tema="oscuro"] {
+  color-scheme: dark;
+
+  --g-fondo: #0a101b;
+  --g-superficie: #141d2b;
+  --g-superficie-2: #1c2839;
+  --g-campo: #101826;
+  --g-borde: #314056;
+
+  --g-texto: #f3f6fc;
+  --g-secundario: #a7b4c7;
+
+  --g-sombra: 0 16px 42px rgba(0, 0, 0, .30);
+
+  --g-azul: #60a5fa;
+  --g-verde: #34d399;
+  --g-amarillo: #fbbf24;
+  --g-cian: #22d3ee;
+  --g-violeta: #a78bfa;
+
+  --g-acento: #dc2626;
+  --g-acento-suave: rgba(220, 38, 38, .14);
+}
+
+:root[data-guia-tema="claro"] {
+  color-scheme: light;
+
+  --g-fondo: #f1f5fb;
+  --g-superficie: #ffffff;
+  --g-superficie-2: #f4f7fc;
+  --g-campo: #ffffff;
+  --g-borde: #d5deeb;
+
+  --g-texto: #172236;
+  --g-secundario: #586780;
+
+  --g-sombra: 0 14px 36px rgba(38, 55, 83, .10);
+
+  --g-azul: #1d4ed8;
+  --g-verde: #047857;
+  --g-amarillo: #a16207;
+  --g-cian: #0e7490;
+  --g-violeta: #6d28d9;
+}
+
+/* ===================================================
+   BASE GENERAL
+   =================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  min-width: 0;
+}
+
+body {
+  background-color: var(--g-fondo) !important;
+
+  background-image:
+    radial-gradient(
+      ellipse at 8% 0%,
+      var(--g-acento-suave),
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 97% 94%,
+      rgba(59, 130, 246, .055),
+      transparent 38%
+    ) !important;
+
+  color: var(--g-texto) !important;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Arial,
+    sans-serif !important;
+
+  -webkit-font-smoothing: antialiased;
+
+  transition:
+    background-color .22s ease,
+    color .22s ease;
+}
+
+input,
+select,
+textarea,
+button {
+  font-family:
+    Inter,
+    system-ui,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+p,
+small,
+.subtitulo,
+.nota,
+.muted,
+.desarrollado-by {
+  color: var(--g-secundario);
+}
+
+a {
+  transition:
+    color .18s ease,
+    border-color .18s ease,
+    background-color .18s ease;
+}
+
+/* ===================================================
+   PANELES Y CONTENEDORES
+   =================================================== */
+
+#formLogin,
+.card,
+.menu-container,
+.bloque-paso,
+.panel,
+.caja,
+.resultado-box {
+  background: var(--g-superficie) !important;
+  color: var(--g-texto) !important;
+
+  border: 1px solid var(--g-borde) !important;
+  border-radius: 18px !important;
+
+  box-shadow: var(--g-sombra);
+}
+
+#formLogin {
+  width: min(430px, 100%) !important;
+  max-width: 100%;
+
+  padding: clamp(24px, 5vw, 40px) !important;
+}
+
+.card {
+  width: min(440px, 100%) !important;
+
+  padding: clamp(22px, 5vw, 38px) !important;
+}
+
+.menu-container {
+  max-width: 1080px !important;
+
+  padding: clamp(22px, 4vw, 42px) !important;
+}
+
+.cadastro-container {
+  max-width: 1450px !important;
+  width: min(96%, 1450px) !important;
+}
+
+.bloque-paso {
+  width: 100%;
+}
+
+/* ===================================================
+   TIPOGRAFÍA
+   =================================================== */
+
+h1,
+h2,
+h3,
+.opcion-card h3,
+.encabezado-paso h2 {
+  color: var(--g-texto) !important;
+  letter-spacing: -.025em !important;
+}
+
+h1,
+h2,
+h3 {
+  font-family:
+    Inter,
+    system-ui,
+    "Segoe UI",
+    Arial,
+    sans-serif !important;
+}
+
+h1 {
+  font-weight: 800;
+}
+
+h2 {
+  font-weight: 700;
+}
+
+#formLogin h2 {
+  color: var(--g-acento) !important;
+}
+
+label,
+.label-accesible {
+  color: var(--g-secundario) !important;
+  font-weight: 650;
+}
+
+/* ===================================================
+   LOGIN
+   =================================================== */
+
+body.guia-login #formLogin {
+  position: relative;
+  overflow: hidden;
+}
+
+body.guia-login #formLogin::before {
+  content: "";
+
+  position: absolute;
+
+  height: 5px;
+  left: 0;
+  right: 0;
+  top: 0;
+
+  background: linear-gradient(
+    90deg,
+    var(--g-acento),
+    var(--g-azul),
+    var(--g-violeta)
+  );
+}
+
+body.guia-login #formLogin h1 {
+  font-size: clamp(19px, 2.5vw, 25px) !important;
+  line-height: 1.2;
+}
+
+/* ===================================================
+   INPUTS Y FORMULARIOS
+   =================================================== */
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]),
+select,
+textarea {
+  background: var(--g-campo) !important;
+  color: var(--g-texto) !important;
+
+  border: 1px solid var(--g-borde) !important;
+  border-radius: 11px !important;
+
+  box-shadow: none;
+
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--g-secundario);
+  opacity: .85;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--g-acento) !important;
+
+  box-shadow:
+    0 0 0 3px var(--g-acento-suave) !important;
+
+  outline: none !important;
+}
+
+input[type="file"] {
+  color: var(--g-texto);
+}
+
+input[type="date"] {
+  color-scheme: inherit !important;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--g-acento);
+}
+
+/* ===================================================
+   BOTONES
+   =================================================== */
+
+button:not(.guia-tema-control),
+.boton:not(.guia-tema-control),
+.btn-primario,
+.btn-buscar,
+.btn-guardar,
+.btn-exito {
+  border-radius: 11px !important;
+
+  transition:
+    transform .16s ease,
+    filter .16s ease,
+    box-shadow .16s ease !important;
+}
+
+button:not(.guia-tema-control):not(:disabled):hover,
+.boton:not(.guia-tema-control):not(:disabled):hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+button:focus-visible,
+a:focus-visible,
+.guia-tema-control:focus-visible {
+  outline: 3px solid var(--g-acento) !important;
+  outline-offset: 3px;
+}
+
+body.guia-login #formLogin button[type="submit"],
+.boton:not(.secundario):not(.fila-accion),
+.btn-primario,
+.btn-buscar {
+  background-color: var(--g-acento);
+  border-color: var(--g-acento);
+}
+
+.btn-salir,
+.btn-volver,
+.volver,
+.boton.secundario,
+.fila-accion {
+  background: var(--g-superficie-2) !important;
+  color: var(--g-texto) !important;
+
+  border: 1px solid var(--g-borde) !important;
+  border-radius: 10px !important;
+}
+
+.btn-salir:hover,
+.btn-volver:hover,
+.volver:hover {
+  border-color: var(--g-acento) !important;
+}
+
+/* ===================================================
+   MENÚ PRINCIPAL
+   =================================================== */
+
+.menu-grid {
+  gap: clamp(14px, 2vw, 22px) !important;
+}
+
+.opcion-card {
+  position: relative;
+
+  background: var(--g-superficie-2) !important;
+  color: var(--g-texto) !important;
+
+  border: 1px solid var(--g-borde) !important;
+  border-radius: 16px !important;
+
+  padding: 27px 23px !important;
+
+  overflow: hidden;
+  min-height: 170px;
+
+  box-shadow: none !important;
+}
+
+.opcion-card::before {
+  content: "";
+
+  display: block;
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  right: 0;
+
+  height: 4px;
+
+  background: var(--g-acento);
+}
+
+.opcion-card:nth-child(4n + 2)::before {
+  background: var(--g-azul);
+}
+
+.opcion-card:nth-child(4n + 3)::before {
+  background: var(--g-violeta);
+}
+
+.opcion-card:nth-child(4n + 4)::before {
+  background: var(--g-verde);
+}
+
+.opcion-card h3 {
+  font-size: 17px !important;
+  line-height: 1.35;
+}
+
+.opcion-card p {
+  color: var(--g-secundario) !important;
+
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+.opcion-card:not(.deshabilitado):hover {
+  transform: translateY(-4px) !important;
+
+  border-color: var(--g-acento) !important;
+
+  box-shadow:
+    0 12px 32px var(--g-acento-suave) !important;
+}
+
+.estado.activo {
+  background: var(--g-acento-suave) !important;
+  color: var(--g-acento) !important;
+  border-color: var(--g-acento) !important;
+}
+
+.estado.pendiente {
+  color: var(--g-secundario) !important;
+  border-color: var(--g-borde) !important;
+}
+
+/* ===================================================
+   VENCIMIENTOS Y CADASTRO
+   =================================================== */
+
+.resultado-box,
+.caja {
+  background: var(--g-superficie-2) !important;
+}
+
+.resultado-box h3,
+.num-paso {
+  color: var(--g-acento) !important;
+}
+
+.num-paso {
+  background: var(--g-acento-suave) !important;
+}
+
+.header-herramienta {
+  border-bottom-color: var(--g-borde) !important;
+}
+
+.subtitulo,
+.label-accesible,
+.control-color label {
+  color: var(--g-secundario) !important;
+}
+
+#descripcionOriginal,
+#resultadoDescripcion {
+  background: var(--g-campo) !important;
+  color: var(--g-texto) !important;
+}
+
+/* ===================================================
+   CALCULADORA DE DESCUENTOS
+   =================================================== */
+
+.panel {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .06);
+}
+
+.pestanas {
+  background: var(--g-superficie) !important;
+  border-color: var(--g-borde) !important;
+}
+
+.pestanas button {
+  color: var(--g-secundario) !important;
+}
+
+.pestanas button.activa {
+  background: var(--g-acento) !important;
+  color: white !important;
+}
+
+.caja small {
+  color: var(--g-secundario) !important;
+}
+
+.caja strong,
+.dato {
+  color: var(--g-texto);
+}
+
+.caja strong.verde,
+#totalFinal {
+  color: var(--g-verde) !important;
+}
+
+.tabla {
+  border-color: var(--g-borde) !important;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--g-superficie-2) !important;
+  color: var(--g-texto) !important;
+}
+
+td {
+  color: var(--g-texto) !important;
+}
+
+tr,
+td,
+th {
+  border-color: var(--g-borde) !important;
+}
+
+tbody tr:hover {
+  background: var(--g-acento-suave);
+}
+
+pre,
+code,
+.codigo {
+  background: var(--g-superficie-2);
+  color: var(--g-texto);
+}
+
+/* ===================================================
+   CHAT EN VIVO
+   =================================================== */
+
+.barra,
+.barra-chat,
+.pie,
+.enviar {
+  border-color: var(--g-borde) !important;
+}
+
+.nombre-grupo,
+.usuario strong,
+.barra-chat strong {
+  color: var(--g-texto) !important;
+}
+
+.usuario,
+.pie,
+.barra-chat small {
+  color: var(--g-secundario) !important;
+}
+
+.icono {
+  background: var(--g-acento) !important;
+}
+
+#tlkio {
+  background: var(--g-superficie-2) !important;
+}
+
+/* ===================================================
+   SELECTORES ANTIGUOS
+   =================================================== */
+
+.guia-tema-habilitado .panel-colores {
+  display: none !important;
+}
+
+/* ===================================================
+   BOTÓN FLOTANTE DE APARIENCIA
+   =================================================== */
+
+#guia-apariencia {
+  position: fixed;
+
+  right: 18px;
+  bottom: 18px;
+
+  z-index: 2147483000;
+
+  font-family:
+    Inter,
+    system-ui,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+#guia-apariencia * {
+  box-sizing: border-box;
+}
+
+#guia-apariencia .guia-tema-lanzador {
+  width: auto !important;
+
+  min-width: 132px;
+  min-height: 47px;
+
+  padding: 11px 16px !important;
+  margin: 0 !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  border-radius: 100px !important;
+
+  border: 1px solid var(--g-borde) !important;
+
+  background: var(--g-superficie) !important;
+  color: var(--g-texto) !important;
+
+  box-shadow: var(--g-sombra) !important;
+
+  cursor: pointer;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+
+  letter-spacing: 0 !important;
+  transform: none !important;
+}
+
+#guia-apariencia .guia-tema-lanzador:hover {
+  border-color: var(--g-acento) !important;
+}
+
+/* ===================================================
+   VENTANA DE CONFIGURACIÓN
+   =================================================== */
+
+#guia-apariencia .guia-tema-panel {
+  position: absolute;
+
+  right: 0;
+  bottom: calc(100% + 12px);
+
+  width: min(320px, calc(100vw - 32px));
+
+  padding: 18px;
+
+  border-radius: 18px;
+
+  color: var(--g-texto);
+  background: var(--g-superficie);
+
+  border: 1px solid var(--g-borde);
+
+  box-shadow: var(--g-sombra);
+}
+
+#guia-apariencia .guia-tema-panel[hidden] {
+  display: none !important;
+}
+
+#guia-apariencia .guia-tema-cabecera {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
+}
+
+#guia-apariencia .guia-tema-cabecera strong {
+  color: var(--g-texto);
+  font-size: 16px;
+}
+
+#guia-apariencia .guia-tema-sub {
+  margin: 4px 0 16px;
+
+  color: var(--g-secundario);
+
+  font-size: 12px;
+}
+
+#guia-apariencia .guia-tema-label {
+  display: block;
+
+  font-size: 12px;
+
+  color: var(--g-secundario);
+
+  margin: 13px 0 9px;
+}
+
+/* ===================================================
+   BOTONES OSCURO / CLARO
+   =================================================== */
+
+#guia-apariencia .guia-tema-opciones {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+}
+
+#guia-apariencia .guia-tema-opciones button {
+  width: 100% !important;
+  margin: 0 !important;
+
+  padding: 10px !important;
+
+  background: var(--g-superficie-2) !important;
+  color: var(--g-texto) !important;
+
+  border: 1px solid var(--g-borde) !important;
+
+  border-radius: 11px !important;
+
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+
+  letter-spacing: 0 !important;
+
+  cursor: pointer;
+}
+
+#guia-apariencia .guia-tema-opciones button[aria-pressed="true"] {
+  border-color: var(--g-acento) !important;
+
+  box-shadow:
+    inset 0 0 0 1px var(--g-acento);
+
+  background: var(--g-acento-suave) !important;
+}
+
+/* ===================================================
+   PALETA DE COLORES
+   =================================================== */
+
+#guia-apariencia .guia-tema-colores {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 10px;
+}
+
+#guia-apariencia .guia-tema-color {
+  width: 42px !important;
+  height: 42px !important;
+
+  padding: 0 !important;
+  margin: 0 auto !important;
+
+  border-radius: 50% !important;
+
+  border: 3px solid transparent !important;
+
+  background: var(--swatch) !important;
+
+  cursor: pointer;
+
+  position: relative;
+
+  box-shadow:
+    0 0 0 1px var(--g-borde) !important;
+
+  transform: none !important;
+}
+
+#guia-apariencia .guia-tema-color[aria-pressed="true"] {
+  border-color: var(--g-superficie) !important;
+
+  box-shadow:
+    0 0 0 3px var(--g-texto) !important;
+}
+
+#guia-apariencia .guia-tema-color[aria-pressed="true"]::after {
+  content: "✓";
+
+  position: absolute;
+
+  inset: 0;
+
+  display: grid;
+  place-items: center;
+
+  color: white;
+
+  font: 900 18px/1 Arial, sans-serif;
+
+  text-shadow: 0 1px 3px #0009;
+}
+
+/* ===================================================
+   RESTAURAR APARIENCIA
+   =================================================== */
+
+#guia-apariencia .guia-tema-restaurar {
+  margin: 15px 0 0 !important;
+  padding: 9px 10px !important;
+
+  width: 100% !important;
+
+  background: transparent !important;
+
+  color: var(--g-secundario) !important;
+
+  border: 1px solid var(--g-borde) !important;
+  border-radius: 10px !important;
+
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+
+  letter-spacing: 0 !important;
+
+  cursor: pointer;
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+
+@media (max-width: 640px) {
+  .menu-container {
+    width: min(100%, 520px) !important;
+  }
+
+  .opcion-card {
+    min-height: 145px;
+  }
+
+  .card,
+  #formLogin {
+    width: 100% !important;
+  }
+
+  #guia-apariencia {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  #guia-apariencia .guia-tema-lanzador {
+    min-width: 47px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
