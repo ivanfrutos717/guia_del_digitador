@@ -65,6 +65,7 @@
     .confirmacion input { width:18px; flex:none; margin-top:4px; }
     textarea { min-height:150px; resize:vertical; }
     details { margin-top:18px; }
+
     @media(max-width:700px) {
       .rejilla,.resumen { grid-template-columns:1fr; }
       .panel { padding:15px; }
@@ -76,6 +77,12 @@
   <!-- APARIENCIA GLOBAL -->
   <link rel="stylesheet" href="tema-global.css?v=1">
   <script defer src="tema-global.js?v=1"></script>
+
+  <!-- SESIONES INDEPENDIENTES POR PESTAÑA -->
+  <script src="sesion.js?v=2"></script>
+  <script>
+    GuiaSesion.verificarSesion();
+  </script>
 </head>
 
 <body>
